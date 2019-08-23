@@ -1,69 +1,76 @@
 # 山崎研究室実験ネットワーク
 
-##ハード
+##ハードの準備状況
 
-### ベアボーン：　512Gb 23 台 (meinnet)
-	
-* (M+SM+EM+FS)+P  12 台
-* (M+SM+EM+FS)+L  11台
+実際の申請では、10台ずつ増加させておく
 
-### ベアボーン：　256Gb   2台 (testnet) lnd
+### ベアボーン：　512Gb 23 台 
 
-* (T+ST+ET+FS)+L　２台
-	
-### ラズベリーパイ　：40台 (testnet)
+ubuntu 18.04.2 LTS (B512)
 
-* (T+ST+ET)+P　40台
+### ベアボーン：　256Gb   2台 
+
+ubuntu 18.04.2 LTS (B256)
+
+### ラズベリーパイ　：256Gb 40台 
+
+Ubuntu 18.04.2 LTS (R256)
 
 ## 稼働させるサービス
 
-* bitcoind (mainnet) (M)
-* bitcoind (testnet) (T)
-* ethereum (mainnet) (EM)
-* ethereum (tesnet) (ET)
-* IPFS (FS)
-* bitcoinサイドチェーン (elements mainnet) (SM)
-* bitcoinサイドチェーン (elements testnet) (ST)
-* ightning network (ptermigan mainnet) 
-* lightning network (ptermigan testnet)
-* lightning network (lnd mainnet) 
-* lightning network (lnd testnet)
+### bitcoin (bitcoin core)
+#### lightning network (ptermigan, Ind)
+#### sidechain (elements)
+### Ethereum (parity)
+### IPFS
+### Libra
 
-## ノードの種類
+## main net サービス
 
-### mainnet
+ベアボーン(512Gb) 23台
 
-* (M+SM+EM+FS)+P
-* (M+SM+EM+FS)+L
+* bitcoind (BC)　（20台）
+	* ightning network (ptermigan) (BC+LNP)　（10/20台）
+	* ightning network (Ind) (BC+LNI)　（10/20台）
+	* Elements (BC+EL) (10/20台)
+* Ethereum (parity)(ET) (2台)
+* IPFS(IP) (1台)	
 
-### testnet
+## test net サービス
 
-* (T+ST+ET+FS)+P
-* (T+ST+ET+FS)+L
+ベアボーン(256Gb) 2台
+ラズベリーパイ(256Gb) 40台
+
+* bitcoind (BC)　（ラズベリーパイ 40台）
+	* ightning network (ptermigan) (BC+LNP)　（20/40台）
+	* ightning network (Ind) (BC+LNI)　（20/40台）
+	* Elements (BC+EL) （40/40台）
+* Ethereum (parity)(ET) (ベアボーン(256Gb) 1台)
+* Libra (ベアボーン(256Gb) 1台)
 
 
 ## 利用するポート番号一覧
 
 ### bitcoind (mainnet)
 
-* TCP 8333 : ノード接続待ち受け
+* ★TCP 8333 : ノード接続待ち受け
 * TCP 8332 : RPC待ち受け
 
 ### bitcoind (testnet)
 
-* TCP 18333 : ノード接続待ち受け
+* ★TCP 18333 : ノード接続待ち受け
 * TCP 18332 : RPC待ち受け
 
 ### lightning network (ptermigan mainnet)
 
-* TCP 6000 	: ifpaytt
-* TCP 9735 	: lightningd (mainnetもtestnetも)
-* TCP 9736 	: lightningd (mainnetもtestnetも)
+* ★TCP 6000 	: ifpaytt (If Pay Then That)
+* ★TCP 9735 	: lightningd (mainnetもtestnetも)
+* ★TCP 9736 	: lightningd (mainnetもtestnetも)
 
 ### lightning network (lnd mainnet)
 
-* TCP 9735 	: lightningd (mainnetもtestnetも)
-* TCP 9736 	: lightningd (mainnetもtestnetも)
+* ★TCP 9735 	: lightningd (mainnetもtestnetも)
+* ★TCP 9736 	: lightningd (mainnetもtestnetも)
 
 ### lightning network (ptermigan testnet)
 
