@@ -59,10 +59,24 @@ rpcpassword= "パスワード"
 rpcport=18332 
 ```
 
-### bitcoind の起動
-
-同期させる
+### bitcoind の起動確認
 
 ```bash
 bitcoind &
 ```
+
+## 自動起動設定
+
+bitcoind.setvice ファイルの存在を確認
+
+```bash
+sudo systemctl list-unit-files bitcoind.service
+
+UNIT FILE        STATE   
+bitcoind.service disabled
+
+1 unit files listed.
+```
+
+ユーザ名を bitcoin から yamalaboに変更
+

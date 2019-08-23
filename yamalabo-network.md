@@ -1,8 +1,14 @@
 # 山崎研究室実験ネットワーク
 
-##ハードの準備状況
+## IPアドレス申請
 
-実際の申請では、10台ずつ増加させておく
+IPアドレスとポート番号の申請では実際よりも多く申請
+
+* main net：157.13.61.130~220 (90台)
+* test net   ：157.13.61.66~126   (60台)
+* application : 157.13.61.221~25    (5台)
+
+## ハードの準備状況
 
 ### ベアボーン：　512Gb 23 台 
 
@@ -24,17 +30,18 @@ Ubuntu 18.04.2 LTS (R256)
 ### Ethereum (parity)
 ### IPFS
 ### Libra
+### web (apache ssl)
 
 ## main net サービス
 
 ベアボーン(512Gb) 23台
 
-* bitcoind (BC)　（20台）
-	* ightning network (ptermigan) (BC+LNP)　（10/20台）
-	* ightning network (Ind) (BC+LNI)　（10/20台）
-	* Elements (BC+EL) (10/20台)
-* Ethereum (parity)(ET) (2台)
-* IPFS(IP) (1台)	
+* bitcoind (BC)　            （20台）
+	* ightning network (ptermigan)   （10/20台）
+	* ightning network (Ind) 　　　　（10/20台）
+	* Elements (BC+EL) 　　　　　　  (10/20台)
+* Ethereum (parity)(ET)      (2台)
+* IPFS(IP)                          (1台)	
 
 ## test net サービス
 
@@ -48,34 +55,37 @@ Ubuntu 18.04.2 LTS (R256)
 * Ethereum (parity)(ET) (ベアボーン(256Gb) 1台)
 * Libra (ベアボーン(256Gb) 1台)
 
-
 ## 利用するポート番号一覧
 
 ### bitcoind (mainnet)
 
-* ★TCP 8333 : ノード接続待ち受け
-* TCP 8332 : RPC待ち受け
+* ★TCP 8333 : ノード接続
+* TCP 8332 : RPC
 
 ### bitcoind (testnet)
 
-* ★TCP 18333 : ノード接続待ち受け
-* TCP 18332 : RPC待ち受け
+* ★TCP 18333 : ノード接続
+* TCP 18332 : RPC
 
 ### lightning network (ptermigan mainnet)
 
 * ★TCP 6000 	: ifpaytt (If Pay Then That)
-* ★TCP 9735 	: lightningd (mainnetもtestnetも)
-* ★TCP 9736 	: lightningd (mainnetもtestnetも)
+* ★TCP 9735 	: ノード接続
+* TCP 9736 	: RPC
 
 ### lightning network (lnd mainnet)
 
-* ★TCP 9735 	: lightningd (mainnetもtestnetも)
-* ★TCP 9736 	: lightningd (mainnetもtestnetも)
+* ★TCP 9735 	: ノード接続
+* TCP 9736 	: RPC
 
 ### lightning network (ptermigan testnet)
 
 * bitcoinサイドチェーン (elements)
-* ethereum (mainnet)
+
+### Ethereum
+
+* TCP: 8545  ethereum (mainnet)
+* 
 * ethereum (tesnet)
 
 * UDP 30303 
