@@ -12,11 +12,11 @@ IPアドレスとポート番号の申請では実際よりも多く申請
 
 ### ベアボーン：　512Gb 23 台 
 
-ubuntu 18.04.2 LTS (B512)
+ubuntu 18.04.3 LTS (B512)
 
 ### ベアボーン：　256Gb   2台 
 
-ubuntu 18.04.2 LTS (B256)
+ubuntu 18.04.3 LTS (B256)
 
 ### ラズベリーパイ　：256Gb 40台 
 
@@ -24,13 +24,13 @@ Ubuntu 18.04.2 LTS (R256)
 
 ## 稼働させるサービス
 
-### bitcoin (bitcoin core)
-#### lightning network (ptermigan, Ind)
-#### sidechain (elements)
-### Ethereum (parity)
-### IPFS
-### Libra
-### web (apache ssl)
+* bitcoin (bitcoin core)
+* lightning network (ptermigan, Ind)
+* sidechain (elements)
+* Ethereum (parity)
+* IPFS
+* Libra
+* web (apache ssl) web wallet用
 
 ## main net サービス
 
@@ -39,13 +39,13 @@ Ubuntu 18.04.2 LTS (R256)
 * bitcoind (BC)　            （20台）
 	* ightning network (ptermigan)   （10/20台）
 	* ightning network (Ind) 　　　　（10/20台）
-	* Elements (BC+EL) 　　　　　　  (10/20台)
-* Ethereum (parity)(ET)      (2台)
-* IPFS(IP)                          (1台)	
+	* Elements 　　　　　　  (20/20台)
+* Ethereum (parity)　　　     (2台)
+* IPFS(IP) 　　　　　　　　 (1台)	
 
 ## test net サービス
 
-ベアボーン(256Gb) 2台
+ベアボーン(256Gb) 3台
 ラズベリーパイ(256Gb) 40台
 
 * bitcoind (BC)　（ラズベリーパイ 40台）
@@ -54,6 +54,9 @@ Ubuntu 18.04.2 LTS (R256)
 	* Elements (BC+EL) （40/40台）
 * Ethereum (parity)(ET) (ベアボーン(256Gb) 1台)
 * Libra (ベアボーン(256Gb) 1台)
+
+ベアボーン(256Gb)
+* アプリケーションサーバ (1台)
 
 ## 利用するポート番号一覧
 
@@ -104,4 +107,7 @@ Ubuntu 18.04.2 LTS (R256)
 
 ### etherum (parity) 
 
-[]()
+[./ethereum.md](./ethereum.md)
+
+### ptermigan
+
