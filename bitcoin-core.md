@@ -65,18 +65,61 @@ rpcport=18332
 bitcoind &
 ```
 
-## 自動起動設定
+### bitcoind の停止
 
-bitcoind.setvice ファイルの存在を確認
+bitcoin-cli を使って停止させる
 
 ```bash
-sudo systemctl list-unit-files bitcoind.service
-
-UNIT FILE        STATE   
-bitcoind.service disabled
-
-1 unit files listed.
+bitcoin-cli stop
 ```
 
-ユーザ名を bitcoin から yamalaboに変更
 
+## 自動起動設定
+
+cron を使って設定
+
+* ベアボーンではユーザは yamalabo
+* raspberry pi ではユーザは ubuntu
+*
+
+### ベアボーン
+
+```bash
+crontab -u yamalabo -e
+
+# 1 nano エディタを選ぶ
+```
+
+### raspberry pi
+
+```bash
+crontab -u ubuntu -e
+
+# 1 nano エディタを選ぶ
+```
+
+### crontab の編集
+
+以下を最後に追加
+
+```
+# ...
+
+@reboot /usr/bin/bitcoind
+```
+
+^(コントロール)o ^(コントロール)x でnanoエディタを保存終了
+
+### 再起動で確認
+
+```bash
+sudo reboot
+```
+
+再起動後
+
+bitcoind のhelpが出力されれば成功
+
+```bash
+bitcoin-cli help
+```
