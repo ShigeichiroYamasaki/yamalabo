@@ -27,7 +27,7 @@ Ubuntu 18.04.2 LTS (R256)
 ## 稼働させるサービス
 
 * bitcoin (bitcoin core)
-* lightning network (ptermigan, Ind)
+* lightning network (ptermigan, Lnd)
 * sidechain (elements)
 * Ethereum (parity)
 * IPFS
@@ -38,36 +38,34 @@ Ubuntu 18.04.2 LTS (R256)
 
 ベアボーン(512Gb) 23台
 
-* bitcoind (BC)　            （20台）
+* bitcoLnd (BC)　                （20台）
 	* ightning network (ptermigan)   （10/20台）
-	* ightning network (Ind) 　　　　（10/20台）
+	* ightning network (Lnd) 　　　　（10/20台）
 	* Elements 　　　　　　  (20/20台)
 * Ethereum (parity)　　　     (2台)
 * IPFS(IP) 　　　　　　　　 (1台)	
 
 ## test net サービス
 
-ベアボーン(256Gb) 3台
+ベアボーン(256Gb) 6台
 ラズベリーパイ(256Gb) 40台
 
-* bitcoind　（ラズベリーパイ 40台）
+* bitcoLnd　（ラズベリーパイ 40台）
 	* ightning network (ptermigan)（20/40台）
-	* ightning network (Ind) 　（20/40台）
-	* Elements (BC+EL) （40/40台）
-* Ethereum (parity) (ベアボーン(256Gb) 1台)
-* Libra (ベアボーン(256Gb) 1台)
-
-ベアボーン(256Gb)
-* アプリケーションサーバ (1台)
+	* ightning network (Lnd) 　（20/40台）
+	* Elements （40/40台）
+* Ethereum (parity) (ベアボーン(256Gb) 2台)
+* Libra (ベアボーン(256Gb) 2台)
+* アプリケーションサーバ (ベアボーン(256Gb)2台)
 
 ## 利用するポート番号一覧
 
-### bitcoind (mainnet)
+### bitcoLnd (mainnet)
 
 * ★TCP 8333 : ノード接続
 * TCP 8332 : RPC
 
-### bitcoind (testnet)
+### bitcoLnd (testnet)
 
 * ★TCP 18333 : ノード接続
 * TCP 18332 : RPC
@@ -133,8 +131,6 @@ brew install xz
 xz -d sudo ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
 ```
 
-
-
 ## ddコマンド
 
 * ベアボーン　（USBメモリ）
@@ -188,9 +184,18 @@ sudo apt install nano -y
 
 [./ptermigan.md](./ptermigan.md)
 
+### lightning network (Lnd)のインストール
+
+[./Lnd.md](./Lnd.md)
+
 ### etherum (parity) のインストール
 
 [./ethereum.md](./ethereum.md)
+
+### IPFS のインストール
+
+[./IPFS.md](./IPFS.md)
+
 
 
 

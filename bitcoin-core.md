@@ -8,7 +8,7 @@ sudo apt-add-repository ppa:bitcoin/bitcoin
 # enterキーを押す
 
 sudo apt-get update
-sudo apt-get install bitcoind
+sudo apt-get install -y bitcoind
 ```
 
 ## bitcoind の一時起動と環境ファイルの作成
@@ -32,7 +32,7 @@ bitcoin-cli stop
 ~/.bitcoin の下に bitcoin.conf を作成する
 
 ```bash
-nano bitcoin.conf
+nano ~/.bitcoin/bitcoin.conf
 ```
 
 ### mainnetの場合
