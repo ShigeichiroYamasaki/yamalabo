@@ -27,7 +27,7 @@ bitcoin-cli stop
 
 これで ~/.bitcoin の下に起動環境が作成される
 
-##　設定ファイルbitcoin.confの作成
+## 設定ファイルbitcoin.confの作成
 
 ~/.bitcoin の下に bitcoin.conf を作成する
 
