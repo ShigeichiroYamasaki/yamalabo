@@ -165,3 +165,10 @@ connected peer: 02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb68
 
 ## チャンネルのオープン
 
+	../ptarmcli -c NODE_ID -f AMOUNT_SAT
+
+AMOUNT_SAT: satoshi 単位の通貨量
+
+```bash
+../ptarmcli -c 03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06 -f 1000
+```

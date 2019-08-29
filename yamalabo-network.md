@@ -2,11 +2,9 @@
 
 ## IPアドレス申請対象
 
-IPアドレスとポート番号の申請では実際よりも多く申請
-
-* main net：157.13.61.130~220 (90台)
-* test net   ：157.13.61.66~126   (60台)
-* application : 157.13.61.221~25    (5台)
+* main net：157.13.61.130~220  (90台)
+* test net   ：157.13.61.1~126   (126台)
+* application : 157.13.61.221~225    (5台)
 
 ## ハードの準備状況
 
@@ -27,31 +25,31 @@ Ubuntu 18.04.2 LTS (R256)
 ## 稼働させるサービス
 
 * bitcoin (bitcoin core)
-* lightning network (ptermigan, Lnd)
+* lightning network (ptarmigan, Lnd)
 * sidechain (elements)
 * Ethereum (parity)
 * IPFS
 * Libra (testnet)
 * web (apache ssl) web wallet用
 
-## main net サービス
+## mainnet サービス
 
 ベアボーン(512Gb) 23台
 
-* bitcoLnd (BC)　                （20台）
-	* ightning network (ptermigan)   （10/20台）
+* bitcoind (BC)　                （20台）
+	* ightning network (ptarmigan)   （10/20台）
 	* ightning network (Lnd) 　　　　（10/20台）
 	* Elements 　　　　　　  (20/20台)
 * Ethereum (parity)　　　     (2台)
 * IPFS(IP) 　　　　　　　　 (1台)	
 
-## test net サービス
+## testnet サービス
 
 ベアボーン(256Gb) 6台
 ラズベリーパイ(256Gb) 40台
 
-* bitcoLnd　（ラズベリーパイ 40台）
-	* ightning network (ptermigan)（20/40台）
+* bitcoind　（ラズベリーパイ 40台）
+	* ightning network (ptarmigan)（20/40台）
 	* ightning network (Lnd) 　（20/40台）
 	* Elements （40/40台）
 * Ethereum (parity) (ベアボーン(256Gb) 2台)
@@ -60,28 +58,28 @@ Ubuntu 18.04.2 LTS (R256)
 
 ## 利用するポート番号一覧
 
-### bitcoLnd (mainnet)
+### bitcoind (mainnet)
 
 * ★TCP 8333 : ノード接続
 * TCP 8332 : RPC
 
-### bitcoLnd (testnet)
+### bitcoind (testnet)
 
 * ★TCP 18333 : ノード接続
 * TCP 18332 : RPC
 
-### lightning network (ptermigan mainnet)
+### lightning network (ptarmigan mainnet)
 
 * ★TCP 6000 	: ifpaytt (If Pay Then That)
 * ★TCP 9735 	: ノード接続
 * TCP 9736 	: RPC
 
-### lightning network (lnd mainnet)
+### lightning network (Lnd mainnet)
 
 * ★TCP 9735 	: ノード接続
 * TCP 9736 	: RPC
 
-### lightning network (ptermigan testnet)
+### lightning network (ptarmigan testnet)
 
 * bitcoinサイドチェーン (elements)
 
@@ -202,13 +200,17 @@ sudo swapon -a
 
 [./bitcoin-core.md](./bitcoin-core.md)
 
-### lightning network (ptermigan)のインストール
+### lightning network (ptarmigan)のインストール
 
-[./ptermigan.md](./ptermigan.md)
+[./ptarmigan.md](./ptarmigan.md)
 
 ### lightning network (Lnd)のインストール
 
 [./Lnd.md](./Lnd.md)
+
+### サイドチェーン Elements のインストール
+
+[./elements.md](./elements.md)
 
 ### etherum (parity) のインストール
 
