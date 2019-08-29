@@ -105,7 +105,7 @@ crontab -u ubuntu -e
 ```
 # ...
 
-@reboot /usr/bin/bitcoind
+@reboot /usr/bin/bitcoind -deamon
 ```
 
 ^(コントロール)o ^(コントロール)x でnanoエディタを保存終了

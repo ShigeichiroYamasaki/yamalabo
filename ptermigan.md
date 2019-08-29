@@ -55,6 +55,37 @@ cd ptermigan-yamalabo
 * bitcoind rpcuser/rpcpassword: read from ~/.bitcoin/bitcoin.conf
 * options...
 
+## crontab の編集
+
+* ベアボーン
+
+```bash
+crontab -u yamalabo -e
+```
+
+* raspberry pi
+
+```bash
+crontab -u ubuntu -e
+```
+
+testnet
+
+```
+# ...
+
+@reboot /usr/bin/bitcoind
+@reboot ~/ptarmigan/install/ptarmd --network=testnet
+```
+
+mainnet
+
+```
+# ...
+
+@reboot /usr/bin/bitcoind
+@reboot ~/ptarmigan/install/ptarmd --network=mainnet
+```
 ## ptarmcli によるデーモンのコントロール
 
 ### ノード情報の例
@@ -63,46 +94,74 @@ cd ptermigan-yamalabo
 
 ```bash
 ~/ptarmigan/install/ptarmcli --getinfo
+
 {
  "result": {
-  "node_id": "03cd9ca175b78427de41a85964fe2e9089c205db25bd80997fdd1067e302747c09",
+  "node_id": "02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb6871",
   "node_port": 9735,
   "total_local_msat": 0,
-  "block_count": 1519992,
+  "block_count": 1576313,
   "peers": []
  }
 }
 
 ```
 
-* ノード２（192.168.0.22）
+* ノード２（192.168.0.18）
 
 ```bash
 ~/ptarmigan/install/ptarmcli --getinfo
+
+
 {
  "result": {
   "node_id": "03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06",
   "node_port": 9735,
   "total_local_msat": 0,
-  "block_count": 206303,
+  "block_count": 1576313,
   "peers": []
  }
 }
+
 
 ```
 
 ### ノードとの接続
 
-（ノード１からノード２へ接続）
+（ノード１ (192.168.0.12)からノード２（192.168.0.18）へ接続）
 
-* 接続先IPアドレス：
-* 接続先ノードID：
-* ポート番号：
+* 接続先IPアドレス：192.168.0.18
+* 接続先ノードID：03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06
+* ポート番号：9735
 
 	ptarmcli -c NODE_ID@IPv4_ADDRESS:PORT
 	
 
+##### ノード１ (192.168.0.12)から接続
 
 ```bash
-~/ptarmigan/instal/ptarmcli -c NODE_ID@IPv4_ADDRESS:PORT
+~/ptarmigan/install/ptarmcli -c 03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06@192.168.0.18:9735
 ```
+
+実行結果
+
+```
+[client]connected: 192.168.0.18:9735
+[client]node_id=03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06
+connected peer: 03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06
+2019-08-29T01:43:58Z [default wallet] keypool reserve 1
+2019-08-29T01:43:58Z [default wallet] keypool keep 1
+{
+ "result": "OK"
+}
+
+```
+
+受信側の接続結果
+
+```
+connected peer: 02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb6871
+```
+
+## チャンネルのオープン
+
