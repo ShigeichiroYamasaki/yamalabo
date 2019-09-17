@@ -174,6 +174,33 @@ sudo apt install ssh -y
 sudo apt install nano -y
 ```
 
+#### expect のインストール
+
+```bash
+sudo apt  install expect -y
+```
+
+#### Rubyのインストール
+
+```bash
+sudo apt  install ruby -y
+```
+
+### sudoerの設定
+
+パスワード入力なしでsudo が実行できるようにする
+
+自動実行の場合、あらためてパスワードを入れることに意味がないため
+
+```bash
+sudo visudo
+```
+
+```
+...
+
+yamalabo ALL=(ALL) NOPASSWD:ALL
+```
 ## raspberry pi の初期設定
 
 ```bash

@@ -1,6 +1,118 @@
 # bitcoin core インストール
 
-## apt でインストール
+## インストールスクリプト
+
+install-bitcoincore.sh
+
+★ユーザ名／パスワードの指定
+
+### testnet
+
+```bash
+#!/bin/bash
+sudo apt update
+sleep 2
+sudo apt upgrade -y
+sleep 2
+sudo apt-get install -y apt-file
+sudo apt-file update
+
+expect -c "
+  set timetout -1
+  spawn sudo apt-add-repository ppa:bitcoin/bitcoin
+  expect {
+    \"ENTER\" { send \"\\n\"}
+  }
+  interact
+"
+sleep 2
+sudo apt-get update
+sudo apt-get install -y bitcoind
+sleep 2
+bitcoind &
+sleep 10
+bitcoin-cli stop
+sleep 30
+cat << EOF > ~/.bitcoin/bitcoin.conf
+testnet=3
+txindex=1  
+server=1   
+rest=1      
+rpcuser=ユーザ名
+rpcpassword=パスワード
+rpcport=18332 
+EOF
+
+bitcoind &
+```
+
+### mainnet
+
+```bash
+#!/bin/bash
+sudo apt update
+sleep 2
+sudo apt upgrade -y
+sleep 2
+sudo apt-get install -y apt-file
+sudo apt-file update
+
+expect -c "
+  set timetout -1
+  spawn sudo apt-add-repository ppa:bitcoin/bitcoin
+  expect {
+    \"ENTER\" { send \"\\n\"}
+  }
+  interact
+"
+sleep 2
+sudo apt-get update
+sudo apt-get install -y bitcoind
+sleep 2
+bitcoind &
+sleep 10
+bitcoin-cli stop
+sleep 30
+cat << EOF > ~/.bitcoin/bitcoin.conf
+mainnet=1 
+txindex=1 
+server=1  
+rest=1
+rpcuser=ユーザ名
+rpcpassword=パスワード
+rpcport=18332 
+EOF
+
+bitcoind &
+```
+
+### 実行
+
+```bash
+chmod a+x install-bitcoincore.sh
+```
+
+## bitcoin core アップデートスクリプト
+
+update-bitcoincore.sh
+
+### mainnet/ testnet 共通
+
+```bash
+#!/bin/bash
+bitcoin-cli stop
+sleep 300
+sudo apt update
+sudo apt upgrade -y
+sleep 2
+sudo apt-get install -y bitcoind
+bitcoind &
+```
+
+--
+## 詳細説明
+
+### apt でインストール
 
 ```bash
 sudo apt-add-repository ppa:bitcoin/bitcoin
@@ -11,7 +123,7 @@ sudo apt-get update
 sudo apt-get install -y bitcoind
 ```
 
-## bitcoind の一時起動と環境ファイルの作成
+### bitcoind の一時起動と環境ファイルの作成
 
 ```bash
 bitcoind &
@@ -123,3 +235,4 @@ bitcoind のhelpが出力されれば成功
 ```bash
 bitcoin-cli help
 ```
+

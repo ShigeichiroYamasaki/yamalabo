@@ -1,9 +1,64 @@
-# ptermiganのインストール
+# ptarmiganのインストール
 * ubuntu 18.14.2LTS
 * bitcoin core
 * regtest
 
-## github termigan
+## インストールスクリプト
+
+install-ptarmigan.sh
+
+### tesntnet
+
+```bash
+#!/bin/bash
+~/ptarmigan/install/ptarmcli --stop
+sudo apt install -y git autoconf pkg-config build-essential libtool python3 wget jq bc
+sleep 2
+git clone https://github.com/nayutaco/ptarmigan.git
+cd ptarmigan
+make full
+sleep 2
+cd install
+sleep 2
+~/ptarmigan/install/new_nodedir.sh ptarmigan-yamalabo
+cd ~/ptarmigan/install/ptarmigan-yamalabo
+sleep 2
+echo "export PATH=\$PATH:~/ptarmigan/install/" >> ~/.bashrc
+source ~/.bashrc
+~/ptarmigan/install/ptarmd --network=testnet &
+```
+
+### mainnet
+
+```bash
+#!/bin/bash
+~/ptarmigan/install/ptarmcli --stop
+sudo apt install -y git autoconf pkg-config build-essential libtool python3 wget jq bc
+sleep 2
+git clone https://github.com/nayutaco/ptarmigan.git
+cd ptarmigan
+make full
+sleep 2
+cd install
+sleep 2
+~/ptarmigan/install/new_nodedir.sh ptarmigan-yamalabo
+cd ~/ptarmigan/install/ptarmigan-yamalabo
+sleep 2
+echo "export PATH=\$PATH:~\/ptarmigan\/install" >> ~/.bashrc
+source ~/.bashrc
+~/ptarmigan/install/ptarmd --network=mainnet &
+```
+
+
+```bash
+chmod a+x install-ptarmigan.sh
+```
+
+```bash
+./install-ptarmigan.sh
+```
+
+## github ptarmigan
 
 [https://github.com/nayutaco/ptarmigan](https://github.com/nayutaco/ptarmigan)
 
@@ -126,6 +181,11 @@ mainnet
 
 ```
 
+## ノードへのbitcoinの送金
+
+ligntning networkのノードとペイメントチャンネルを開設するためには、ノードがbitcoinを持っている必要がある。
+
+
 ### ノードとの接続
 
 （ノード１ (192.168.0.12)からノード２（192.168.0.18）へ接続）
@@ -170,5 +230,138 @@ connected peer: 02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb68
 AMOUNT_SAT: satoshi 単位の通貨量
 
 ```bash
-../ptarmcli -c 03c6eb30c5dc4b95c6aeb7dbb4aa1f337f698613ac783e7bf7f221188c83483d06 -f 1000
+../ptarmcli -c 032d3e5885101b3af7d1fe9a739691566e820d171ba90fb13a827e548314831f06 -f 300000
+{
+ "result": {
+  "status": "Progressing"
+ }
+}
+
 ```
+
+### 確認
+
+```bash
+$ ptarmcli --getinfo
+{
+ "result": {
+  "node_id": "02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb6871",
+  "node_port": 9735,
+  "total_local_msat": 300000000,
+  "block_count": 1578573,
+  "peers": [{
+    "role": "client",
+    "status": "normal operation",
+    "node_id": "032d3e5885101b3af7d1fe9a739691566e820d171ba90fb13a827e548314831f06",
+    "channel_id": "75e2a64bec2652cf4911abc6bee1de9129ec446571e8890140dbf08f61d1ace9",
+    "short_channel_id": "1578571x128x0",
+    "funding_tx": "e9acd1618ff0db400189e8716544ec2991dee1bec6ab1149cf5226ec4ba6e275",
+    "funding_vout": 0,
+    "confirmation": 3,
+    "feerate_per_kw": 253,
+    "announcement_signatures": "not exchanged",
+    "local": {
+     "msatoshi": 300000000,
+     "commit_num": 0,
+     "num_htlc_outputs": 0
+    },
+    "remote": {
+     "msatoshi": 0,
+     "commit_num": 0,
+     "num_htlc_outputs": 0
+    }
+   }]
+ }
+}
+```
+
+## 1ブロック以上進むのを待つ
+
+```bsh
+bitcoin-cli getblockcount
+1578577
+```
+
+### 確認
+
+```bash
+{
+ "result": {
+  "node_id": "02a6321740fc22701fb96b7e79f153076d2d3524a0cd31d39442dcd4f6dccb6871",
+  "node_port": 9735,
+  "total_local_msat": 300000000,
+  "block_count": 1578643,
+  "peers": [{
+    "role": "client",
+    "status": "normal operation",
+    "node_id": "032d3e5885101b3af7d1fe9a739691566e820d171ba90fb13a827e548314831f06",
+    "channel_id": "75e2a64bec2652cf4911abc6bee1de9129ec446571e8890140dbf08f61d1ace9",
+    "short_channel_id": "1578571x128x0",
+    "funding_tx": "e9acd1618ff0db400189e8716544ec2991dee1bec6ab1149cf5226ec4ba6e275",
+    "funding_vout": 0,
+    "confirmation": 73,
+    "feerate_per_kw": 253,
+    "announcement_signatures": "exchanged",
+    "local": {
+     "msatoshi": 300000000,
+     "commit_num": 12,
+     "num_htlc_outputs": 0
+    },
+    "remote": {
+     "msatoshi": 0,
+     "commit_num": 12,
+     "num_htlc_outputs": 0
+    }
+   }]
+ }
+}
+```
+
+## invoice生成（受領者）
+
+```bash
+ptarmcli --createinvoice 1000
+{
+ "result": {
+  "hash": "16b2428653836ea06712329667a46c82be664ee879fe349ec7e4e11f6baa7551",
+  "amount_msat": 1000,
+  "bolt11": "lntb10n1pwhlt78np4q2nry96qls38q8aeddl8nu2nqakj6dfy5rxnr5u5gtwdfakued58zpp5z6ey9pjnsdh2qecjx2tx0frvs2lxvnhg08lrf8k8uns376a2w4gsdqqhwlxfp0xrmrf7ql5d3xuv9h5gqyfr7epjwx968jmuvq799fvurn9ftfye3lpwngyjszj43z7pk63vg8jffm04j8tkjfpxmpdk8kvpusqwvh9lf",
+  "note": "no payable-amount channel"
+ }
+}
+```
+
+## 送金（送金者）
+
+```bash
+ptarmcli --sendpayment lntb10n1pwhlvtxnp4q2nry96qls38q8aeddl8nu2nqakj6dfy5rxnr5u5gtwdfakued58zpp5p67rthvfmecfchs0z3v9pnsa35ewfs3xg2z8hc5s2nzwz8ur9cdsdqqdr3fcddkxdekkl4alvszyhj82pkaqkn7jz6647qmeuwea5r0k83nm98wcqalhdn7xs3pk24lf3nwxju9attvhfdqpd8nsx0aqc6lvhgpmsrxly
+```
+
+```bash
+{
+ "result": {
+  "payment_id": 0
+ }
+}
+```
+
+### 送金の確認
+
+```bash
+ ptarmcli --listpayment=0
+{
+ "result": [{
+   "payment_id": 0,
+   "payment_hash": "0ebc35dd89de709c5e0f145850ce1d8d32e4c22642847be29054c4e11f832e1b",
+   "additional_amount_msat": 0,
+   "block_count": 1578643,
+   "retry_count": 0,
+   "max_retry_count": 10,
+   "auto_remove": "false",
+   "state": "failed",
+   "invoice": "lntb10n1pwhlvtxnp4q2nry96qls38q8aeddl8nu2nqakj6dfy5rxnr5u5gtwdfakued58zpp5p67rthvfmecfchs0z3v9pnsa35ewfs3xg2z8hc5s2nzwz8ur9cdsdqqdr3fcddkxdekkl4alvszyhj82pkaqkn7jz6647qmeuwea5r0k83nm98wcqalhdn7xs3pk24lf3nwxju9attvhfdqpd8nsx0aqc6lvhgpmsrxly"
+  }]
+}
+
+```
+
