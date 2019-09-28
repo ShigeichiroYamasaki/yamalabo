@@ -80,7 +80,7 @@ server=1
 rest=1
 rpcuser=ユーザ名
 rpcpassword=パスワード
-rpcport=18332 
+rpcport=8332 
 EOF
 
 bitcoind &
