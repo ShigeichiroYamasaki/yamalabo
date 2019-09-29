@@ -186,6 +186,16 @@ sudo apt  install expect -y
 sudo apt  install ruby -y
 ```
 
+### そのほかコンパイラなど
+
+```bash
+sudo apt install -y build-essential 
+sudo apt install -y curl
+sudo apt install -y clang
+sudo apt install -y cmake
+sudo apt install -y golang
+```
+
 ### sudoerの設定
 
 パスワード入力なしでsudo が実行できるようにする
