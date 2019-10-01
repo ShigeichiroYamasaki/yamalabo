@@ -8,7 +8,6 @@
 
 *  custodial client
 *  validator node
-*  
 
 
 ## Libra Coreのクローンとビルド
