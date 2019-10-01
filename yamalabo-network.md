@@ -15,14 +15,13 @@
 
 ### bitcoin testnet (Raspberry pi 3)
 
-* 60台
+* 60台(あるだけ)
 * Lightninge network (ptarmigan) ノードにする
 
 ### bitcoin testnet + webアプリ (ベアボーン 256Gb)
 
 * 3台
 * Lightninge network (ptarmigan) ノードにする
-
 
 ### bitcoin mainnet (ベアボーン 512G)
 
@@ -31,7 +30,7 @@
 
 ### Ethereum testnet (ベアボーン 512G)
 
-* 4台
+* 3台
 
 ### Libra testnet (ベアボーン 512G)
 
