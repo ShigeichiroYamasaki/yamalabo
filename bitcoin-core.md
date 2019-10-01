@@ -113,8 +113,63 @@ sudo apt-get install -y bitcoind
 bitcoind &
 ```
 
+
+
+## 自動起動設定
+
+cron を使って設定
+
+* ベアボーンではユーザは yamalabo
+* raspberry pi ではユーザは ubuntu
+*
+
+### ベアボーン
+
+```bash
+crontab -u yamalabo -e
+
+# 1 nano エディタを選ぶ
+```
+
+### raspberry pi
+
+```bash
+crontab -u ubuntu -e
+
+# 1 nano エディタを選ぶ
+```
+
+### crontab の編集
+
+以下を最後に追加
+
+```
+# ...
+
+@reboot /usr/bin/bitcoind -deamon
+```
+
+^(コントロール)o ^(コントロール)x でnanoエディタを保存終了
+
+### 再起動で確認
+
+```bash
+sudo reboot
+```
+
+再起動後
+
+bitcoind のhelpが出力されれば成功
+
+```bash
+bitcoin-cli help
+```
+
+
+
+
 --
-## 詳細説明
+## スクリプトの処理内容の説明
 
 ### apt でインストール
 
@@ -188,55 +243,3 @@ bitcoin-cli を使って停止させる
 ```bash
 bitcoin-cli stop
 ```
-
-
-## 自動起動設定
-
-cron を使って設定
-
-* ベアボーンではユーザは yamalabo
-* raspberry pi ではユーザは ubuntu
-*
-
-### ベアボーン
-
-```bash
-crontab -u yamalabo -e
-
-# 1 nano エディタを選ぶ
-```
-
-### raspberry pi
-
-```bash
-crontab -u ubuntu -e
-
-# 1 nano エディタを選ぶ
-```
-
-### crontab の編集
-
-以下を最後に追加
-
-```
-# ...
-
-@reboot /usr/bin/bitcoind -deamon
-```
-
-^(コントロール)o ^(コントロール)x でnanoエディタを保存終了
-
-### 再起動で確認
-
-```bash
-sudo reboot
-```
-
-再起動後
-
-bitcoind のhelpが出力されれば成功
-
-```bash
-bitcoin-cli help
-```
-
