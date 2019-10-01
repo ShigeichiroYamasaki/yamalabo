@@ -2,11 +2,13 @@
 
 ## インストールスクリプト
 
-install-bitcoincore.sh
+
 
 ★ユーザ名／パスワードの指定
 
 ### testnet
+
+install-bitcoincore-testnet.sh
 
 ```bash
 #!/bin/bash
@@ -47,6 +49,8 @@ bitcoind &
 ```
 
 ### mainnet
+
+install-bitcoincore-mainnet.sh
 
 ```bash
 #!/bin/bash

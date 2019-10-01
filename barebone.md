@@ -48,7 +48,7 @@ diskutil list
 ```bash
 
 # USBメモリのアンマウント
-diskutil umoountdisk /dev/disk(n)
+diskutil umountdisk /dev/disk(n)
 ```
 
 
