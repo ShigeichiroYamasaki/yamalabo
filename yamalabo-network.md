@@ -26,13 +26,13 @@
     
 ## IPアドレス新規申請対象
 
-* Etherum: A.X.Y.1~11      (10台)
-* Libra: A.X.Y.12~22      (10台)
-* IPFS: A.X.Y.23~33        (10台)
-* web : A.X.Y.34~37         (4台)
-* bitcoin mainnet (Lightning network): A.X.Y.66~106     (40台)
-* bitcoin regtest (Elements): A.X.Y.107~126      (19台)
-* bitcoin testnet (Lightning network): A.X.Y.130~254   (124台)
+* Etherum: A.X.Y.1~20      (20台)
+* Libra: A.X.Y.21~40      (20台)
+* IPFS: A.X.Y.41~50        (10台)
+* web : A.X.Y.51~54         (4台)
+* bitcoin mainnet (Lightning network): A.X.Y.66~115     (50台)
+* bitcoin regtest (Elements): A.X.Y.116~126      (11台)
+* bitcoin testnet (Lightning network): A.X.Y.130~254   (125台)
 
 ## 稼働させるサービス
 
