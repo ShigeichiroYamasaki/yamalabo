@@ -4,17 +4,17 @@
 
 
 ```
----------+-------------------- 157.X.Z.0/24
+---------+-------------------- A.X.Z.0/24
          |
          62
-+----+---+------------------- 157.X.Y.0/26 (Libra,Etherum,web,IPFS)
++----+---+------------------- A.X.Y.0/26 (Libra,Etherum,web,IPFS)
 60   61    
 |    |    
 |   129
-|    +----------------------- 157.X.Y.128/25 (bitcoin testnet,lightning network)
+|    +----------------------- A.X.Y.128/25 (bitcoin testnet,lightning network)
 |
 65
-+---------------------------- 157.X.Y.64/26 (bitcoin mainnet,lightning network)
++---------------------------- A.X.Y.64/26 (bitcoin mainnet,lightning network)
 
 ```
 
@@ -26,13 +26,13 @@
     
 ## IPアドレス新規申請対象
 
-* Etherum: 157.X.Y.1~11      (10台)
-* Libra:157.13.Y.12~22      (10台)
-* IPFS: 157.X.Y.23~33        (10台)
-* web : 157.X.Y.34~37         (3台)
-* bitcoin mainnet (Lightning network): 157.X.Y.66~106     (40台)
-* bitcoin regtest (Elements): 157.X.Y.107~126      (19台)
-* bitcoin testnet (Lightning network): 157.X.Y.130~254   (124台)
+* Etherum: A.X.Y.1~11      (10台)
+* Libra: A.X.Y.12~22      (10台)
+* IPFS: A.X.Y.23~33        (10台)
+* web : A.X.Y.34~37         (4台)
+* bitcoin mainnet (Lightning network): A.X.Y.66~106     (40台)
+* bitcoin regtest (Elements): A.X.Y.107~126      (19台)
+* bitcoin testnet (Lightning network): A.X.Y.130~254   (124台)
 
 ## 稼働させるサービス
 
@@ -94,13 +94,13 @@
 
 * ★TCP 4001 IPFSゲートウェイ
 * ★TCP 8080 IPFSゲートウェイ
-* TCP 443
-* TCP 80
+* ★TCP 443
+* ★TCP 80
 
 ### web アプリケーションサーバ
 
-* TCP 443 (SSL, HTTP/2)
-* TCP 80 (http, http/2)
+* ★TCP 443 (SSL, HTTP/2)
+* ★TCP 80 (http, http/2)
 
 
 ## 当面の機器構成（2019/10/03現在）
@@ -172,10 +172,12 @@
 * ベアボーン：  1T  　1台
 * ベアボーン：　256Gb   3台
 * raspberry pi 3：256Gb 76台
-12*4 =48
-8*3=24
-4*1
-* (今年度追加計画）raspberry pi4：512Gb 10台 )
+    * 12*4 =48
+    * 8*3=24
+    * 4*1=4
+* (今年度追加計画）
+    * raspberry pi4 512Gb 10台) mainnet
+    * raspberry pi3 256Gb 30台) testnet
 
 
 
