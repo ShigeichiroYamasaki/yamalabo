@@ -34,15 +34,81 @@
 * bitcoin regtest (Elements): 157.X.Y.107~126      (19台)
 * bitcoin testnet (Lightning network): 157.X.Y.130~254   (124台)
 
+## 稼働させるサービス
+
+* bitcoin (bitcoin core)
+* lightning network (ptarmigan, Lnd)
+* sidechain (elements)
+* Ethereum (parity)
+* IPFS
+* Libra (testnet)
+* web (apache ssl) web wallet用
 
 
+## 利用するポート番号一覧
 
-## 当面の機器構成（2019/10/03）
+### bitcoind (mainnet)
+
+* ★TCP 8333 : ノード接続
+* TCP 8332 : RPC
+
+### bitcoind (testnet)
+
+* ★TCP 18333 : ノード接続
+* TCP 18332 : RPC
+
+### lightning network (ptarmigan mainnet)
+
+* ★TCP 6000 	: ifpaytt (If Pay Then That)
+* ★TCP 9735 	: ノード接続
+* TCP 9736 	: RPC
+
+### lightning network (Lnd mainnet)
+
+* ★TCP 9735 	: ノード接続
+* TCP 9736 	: RPC
+
+### elements
+
+* bitcoinサイドチェーン (elements)
+
+### Ethereum (mainnet)
+
+* ★TCP: 8545  ethereum (mainnet)
+* ★TCP: 30303
+* ★UDP: 30303
+
+### Ethereum (testnet)
+
+* ★UDP 50303
+* ★TCP 50303
+
+### Libra validator
+
+* ★TCP 30307
+* ★TCP 8000
+* ★TCP 443 (HTTP/2)
+* ★TCP 80 (HTTP/2)
+
+### IPFS
+
+* ★TCP 4001 IPFSゲートウェイ
+* ★TCP 8080 IPFSゲートウェイ
+* TCP 443
+* TCP 80
+
+### web アプリケーションサーバ
+
+* TCP 443 (SSL, HTTP/2)
+* TCP 80 (http, http/2)
+
+
+## 当面の機器構成（2019/10/03現在）
 
 
 ### bitcoin testnet (Raspberry pi 3)
 
-* 60台
+* 76台
 * Lightninge network (ptarmigan) ノードにする
 
 [raspberrypi testnetインストール方法](./raspberrypi.md)
@@ -100,90 +166,18 @@
 
 
 
-## ハードの準備状況
+## 機材
 
-### ベアボーン：　512Gb 21台
-### ベアボーン：  1T  　1台)
-
-ubuntu 18.04.3 LTS (B512)
-
-### ベアボーン：　256Gb   3台
-
-ubuntu 18.04.3 LTS (B256)
-
-### raspberry pi 3：256Gb 76台
-
-Ubuntu 18.04.3 LTS (R256)
-
+* ベアボーン：　512Gb 21台
+* ベアボーン：  1T  　1台
+* ベアボーン：　256Gb   3台
+* raspberry pi 3：256Gb 76台
 12*4 =48
 8*3=24
 4*1
-76
+* (今年度追加計画）raspberry pi4：512Gb 10台 )
 
 
-### (今年度計画）raspberry pi4：512Gb 10台 )
-
-
-## 稼働させるサービス
-
-* bitcoin (bitcoin core)
-* lightning network (ptarmigan, Lnd)
-* sidechain (elements)
-* Ethereum (parity)
-* IPFS
-* Libra (testnet)
-* web (apache ssl) web wallet用
-
-
-## 利用するポート番号一覧
-
-### bitcoind (mainnet)
-
-* ★TCP 8333 : ノード接続
-* TCP 8332 : RPC
-
-### bitcoind (testnet)
-
-* ★TCP 18333 : ノード接続
-* TCP 18332 : RPC
-
-### lightning network (ptarmigan mainnet)
-
-* ★TCP 6000 	: ifpaytt (If Pay Then That)
-* ★TCP 9735 	: ノード接続
-* TCP 9736 	: RPC
-
-### lightning network (Lnd mainnet)
-
-* ★TCP 9735 	: ノード接続
-* TCP 9736 	: RPC
-
-### elements
-
-* bitcoinサイドチェーン (elements)
-
-### Ethereum
-
-* ★TCP: 8545  ethereum (mainnet)
-* ethereum (tesnet)
-
-* ★UDP 30303 
-* ★TCP 30303
-
-### Libra validator
-
-* TCP 30307
-* TCP 8000
-* TCP 443, 80 (HTTP/2)
-
-### IPFS
-
-* ★TCP 4001 IPFSゲートウェイ
-* ★TCP 8080 IPFSゲートウェイ
-
-### web アプリケーションサーバ
-
-* TCP 443, 80 (http, SSL)
 
 ## OSのインストール方法
 
