@@ -144,32 +144,3 @@ sudo visudo
 yamalabo ALL=(ALL) NOPASSWD:ALL
 ```
 
-
-### bitcoin core のインストール
-
-[./bitcoin-core.md](./bitcoin-core.md)
-
-### lightning network (ptarmigan)のインストール
-
-[./ptarmigan.md](./ptarmigan.md)
-
-### lightning network (Lnd)のインストール
-
-[./Lnd.md](./Lnd.md)
-
-### サイドチェーン Elements のインストール
-
-[./elements.md](./elements.md)
-
-### etherum (parity) のインストール
-
-[./ethereum.md](./ethereum.md)
-
-### IPFS のインストール
-
-[./IPFS.md](./IPFS.md)
-
-### Libra のインストール
-
-[./libra.md](./libra.md)
-

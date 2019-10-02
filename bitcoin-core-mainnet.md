@@ -1,19 +1,18 @@
-# ラズベリーパイノードのインストール方法
+# ベアボーンノードのインストール方法
 
-* bitcoin core testnet
-* ligntning network (@tarmigan)
-
-### ubuntu 18.04.3 をインストール
+* bitcoin core mainnet
+* ligntning network (ptarmigan)
 
 
+## ubuntu 18.04.3 をインストールUSBの作成
 
-* raspberry pi
 
-[http://cdimage.ubuntu.com/releases/bionic/release/ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz](http://cdimage.ubuntu.com/releases/bionic/release/ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz)
+### インストール元 ubuntu-18.04.3-desktop-amd64.iso
 
-ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
+[https://ubuntu.com/download/desktop/thank-you?country=JP&version=18.04.3&architecture=amd64](https://ubuntu.com/download/desktop/thank-you?country=JP&version=18.04.3&architecture=amd64)
 
-★ダウンロードしたファルをホームディレクトリに移動させておく
+
+ダウンロードしたファイルはxzで圧縮されている
 
 #### xz 圧縮ファイルの解凍方法
 
@@ -31,49 +30,64 @@ brew install xz
 xz -d sudo ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
 ```
 
-## ddコマンド
+### ddコマンドでインストールUSBを作成する
 
-
-* raspberry pi (SDカード)
 
 ```bash
-sudo dd if=./ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz of=/dev/rdisk(n) bs=1m
+# USBメモリを挿す前のストレージデバイスの確認
+diskutil list
 ```
 
----
+* /dev/disk(n) のリストを確認
 
-## SDカードでubuntu を起動
+* 空のUSBを挿す
 
+```bash
+# USBメモリを挿したあとのストレージデバイスの確認
+diskutil list
+```
+
+挿したUSBの/dev/disk(n) を確認
+
+```bash
+# USBメモリのアンマウント
+diskutil umountdisk /dev/disk(n)
+```
+
+
+```bash
+cd ~
+
+# /dev/disk(n) ではなく /dev/rdisk(n) にする
+sudo dd if=./ubuntu-18.04.3-desktop-amd64.iso of=/dev/rdisk(n) bs=1m
+```
+
+## USBでubuntu をインストール
 
 省略
 
+## ubuntu インストール後のセットアップ
 
-### 事前準備
 
-```bash
-sudo apt update
-sudo apt upgrade -y
-```
-
-#### sshのインストール
+### sshのインストール
 
 ```bash
 sudo apt install ssh -y
 ```
 
-#### nano のインストール
+### nano のインストール
 
 ```bash
 sudo apt install nano -y
 ```
 
-#### expect のインストール
+### expect のインストール
 
 ```bash
 sudo apt  install expect -y
 ```
 
-#### Rubyのインストール
+### Rubyのインストール
 
 ```bash
 sudo apt  install ruby -y
@@ -107,6 +121,7 @@ sudo apt update
 ```bash
 sudo apt install -y chkrootkit
 ```
+
 ### そのほかコンパイラなど
 
 ```bash
@@ -127,49 +142,23 @@ sudo visudo
 ```
 
 ```
-...
+...(既存の設定)
 
 yamalabo ALL=(ALL) NOPASSWD:ALL
 ```
-## raspberry pi の初期設定
-
-```bash
-# ロケール設定
-sudo locale-gen ja_JP.UTF-8
-sudo dpkg-reconfigure -f noninteractive locales
-echo "LANG=ja_JP.UTF-8" | sudo tee /etc/default/locale
-sudo timedatectl set-timezone Asia/Tokyo
-```
-
-#### スワップファイルの作成
-
-```bash
-sudo fallocate -l 1g /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile 
-echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
-sudo swapon -a
-```
-
-そしてrebootする
 
 
+# bitcoin core インストール
 
----
-
-## bitcoin core インストール
-
-### インストールスクリプト
+## インストールスクリプト
 
 
 ★ユーザ名／パスワードの指定
 
-### testnet
 
->> ユーザ名、パスワードの修正が必要
+### mainnet
 
-install-bitcoincore-testnet.sh
-
+install-bitcoincore-mainnet.sh
 
 ```bash
 #!/bin/bash
@@ -197,24 +186,22 @@ sleep 10
 bitcoin-cli stop
 sleep 30
 cat << EOF > ~/.bitcoin/bitcoin.conf
-testnet=3
-txindex=1  
-server=1   
-rest=1      
+mainnet=1 
+txindex=1 
+server=1  
+rest=1
 rpcuser=ユーザ名
 rpcpassword=パスワード
-rpcport=18332 
+rpcport=8332 
 EOF
 
 bitcoind &
 ```
 
-
 ### 実行
 
 ```bash
-chmod a+x install-bitcoincore-testnet.sh
-
+chmod a+x install-bitcoincore-mainnet.sh
 ```
 
 ## bitcoin core アップデートスクリプト
@@ -222,7 +209,6 @@ chmod a+x install-bitcoincore-testnet.sh
 update-bitcoincore.sh
 
 ### mainnet/ testnet 共通
-
 
 ```bash
 #!/bin/bash
@@ -240,13 +226,14 @@ bitcoind &
 
 cron を使って設定
 
+* ベアボーンではユーザは yamalabo
 * raspberry pi ではユーザは ubuntu
 
 
-### raspberry pi
+### ベアボーン
 
 ```bash
-crontab -u ubuntu -e
+crontab -u yamalabo -e
 
 # 1 nano エディタを選ぶ
 ```
@@ -261,7 +248,7 @@ crontab -u ubuntu -e
 @reboot /usr/bin/bitcoind -deamon
 ```
 
-^(コントロール)o ^(コントロール)x でnanoエディタを保存終了
+^(コントロール) o ^(コントロール) x でnanoエディタを保存終了
 
 ### 再起動で確認
 
@@ -279,14 +266,91 @@ bitcoin-cli help
 
 
 
-# lightning network (testnet)
+--
+## スクリプトの処理内容の説明
 
-# ptarmiganのインストール
+### apt でインストール
 
-## ptarmigan インストールスクリプト
+```bash
+sudo apt-add-repository ppa:bitcoin/bitcoin
+
+# enterキーを押す
+
+sudo apt-get update
+sudo apt-get install -y bitcoind
+```
+
+### bitcoind の一時起動と環境ファイルの作成
+
+```bash
+bitcoind &
+```
+
+### bitcoind の停止
+
+bitcoin-cli を使って停止させる
+
+```bash
+bitcoin-cli stop
+```
+
+これで ~/.bitcoin の下に起動環境が作成される
+
+## 設定ファイルbitcoin.confの作成
+
+~/.bitcoin の下に bitcoin.conf を作成する
+
+```bash
+nano ~/.bitcoin/bitcoin.conf
+```
+
+### mainnetの場合
+
+```
+mainnet=1 
+txindex=1  
+server=1   
+rest=1      
+rpcuser= "ユーザ名"
+rpcpassword= "パスワード"
+rpcport=8332 
+```
+
+testnet
+
+```
+testnet=3
+txindex=1  
+server=1   
+rest=1      
+rpcuser= "ユーザ名"
+rpcpassword= "パスワード"
+rpcport=18332 
+```
+
+### bitcoind の起動確認
+
+```bash
+bitcoind &
+```
+
+### bitcoind の停止
+
+bitcoin-cli を使って停止させる
+
+```bash
+bitcoin-cli stop
+```
+
+---
+
+# lightning network 
+
+## ptarmiganのインストール
+
+### ptarmigan インストールスクリプト
 
 install-ptarmigan.sh
-
 
 ```bash
 #!/bin/bash
@@ -302,11 +366,10 @@ sleep 2
 ~/ptarmigan/install/new_nodedir.sh ptarmigan-yamalabo
 cd ~/ptarmigan/install/ptarmigan-yamalabo
 sleep 2
-echo "export PATH=\$PATH:~/ptarmigan/install/" >> ~/.bashrc
+echo "export PATH=\$PATH:~\/ptarmigan\/install" >> ~/.bashrc
 source ~/.bashrc
-~/ptarmigan/install/ptarmd --network=testnet &
+~/ptarmigan/install/ptarmd --network=mainnet &
 ```
-
 
 
 ```bash
@@ -319,15 +382,19 @@ chmod a+x install-ptarmigan.sh
 
 ## crontab の編集
 
-* raspberry pi
+* ベアボーン
 
 ```bash
-crontab -u ubuntu -e
+crontab -u yamalabo -e
 ```
 
 ```
 ...
 
-@reboot ~/ptarmigan/install/ptarmd --network=testnet
+@reboot ~/ptarmigan/install/ptarmd --network=mainnet
 ```
+
+
+
+---
 
