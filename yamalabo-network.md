@@ -2,7 +2,6 @@
 
 ## ネットワークセグメント構成
 
-
 ```
 ---------+-------------------- A.X.Z.0/24
          |
@@ -11,10 +10,10 @@
 60   61    
 |    |    
 |   129
-|    +----------------------- A.X.Y.128/25 (bitcoin testnet,lightning network)
+|    +-------------------------- A.X.Y.128/25 (bitcoin testnet,lightning network)
 |
 65
-+---------------------------- A.X.Y.64/26 (bitcoin mainnet,lightning network)
++------------------------------ A.X.Y.64/26 (bitcoin mainnet,lightning network)
 
 ```
 
@@ -24,15 +23,15 @@
 
 * A.X.Y.130 ~ 220: 8333
     
-## IPアドレス新規申請対象
+### IPアドレス新規申請対象
 
-* Etherum: A.X.Y.1~20      (20台)
-* Libra: A.X.Y.21~40      (20台)
-* IPFS: A.X.Y.41~50        (10台)
-* web : A.X.Y.51~54         (4台)
-* bitcoin mainnet (Lightning network): A.X.Y.66~115     (50台)
-* bitcoin regtest (Elements): A.X.Y.116~126      (11台)
-* bitcoin testnet (Lightning network): A.X.Y.130~254   (125台)
+* Etherum: A.X.Y.1~20     (20台)
+* Libra: A.X.Y.21~40         (20台)
+* IPFS: A.X.Y.41~50          (10台)
+* web : A.X.Y.51~54           (4台)
+* bitcoin mainnet (Lightning network): A.X.Y.66~126      (61台)
+* bitcoin regtest (Elements): A.X.Y.129~138             (10台)
+* bitcoin testnet (Lightning network): A.X.Y.139~254   (116台)
 
 ## 稼働させるサービス
 
@@ -49,28 +48,28 @@
 
 ### bitcoind (mainnet)
 
-* ★TCP 8333 : ノード接続
-* TCP 8332 : RPC
+* ★TCP: 8333 : ノード接続
+* (TCP: 8332 : 内部RPC)
 
 ### bitcoind (testnet)
 
 * ★TCP 18333 : ノード接続
-* TCP 18332 : RPC
+* (TCP 18332 : 内部RPC)
 
-### lightning network (ptarmigan mainnet)
+### lightning network (ptarmigan mainnet/testnet)
 
-* ★TCP 6000 	: ifpaytt (If Pay Then That)
-* ★TCP 9735 	: ノード接続
-* TCP 9736 	: RPC
+* ★TCP: 6000 	: ifpaytt (If Pay Then That)
+* ★TCP: 9735 	: ノード接続
+* (TCP: 9736 	: 内部RPC)
 
-### lightning network (Lnd mainnet)
+### lightning network (Lnd mainnet/testnet)
 
-* ★TCP 9735 	: ノード接続
-* TCP 9736 	: RPC
+* ★TCP: 9735: ノード接続
+* (TCP: 9736 : 内部RPC)
 
-### elements
+### bitcoinサイドチェーン　elements
 
-* bitcoinサイドチェーン (elements)
+* 特になし
 
 ### Ethereum (mainnet)
 
@@ -80,28 +79,27 @@
 
 ### Ethereum (testnet)
 
-* ★UDP 50303
-* ★TCP 50303
+* ★UDP: 50303
+* ★TCP: 50303
 
 ### Libra validator
 
-* ★TCP 30307
-* ★TCP 8000
-* ★TCP 443 (HTTP/2)
-* ★TCP 80 (HTTP/2)
+* ★TCP: 30307
+* ★TCP: 8000
+* ★TCP: 443 (HTTP/2)
+* ★TCP: 80 (HTTP/2)
 
 ### IPFS
 
-* ★TCP 4001 IPFSゲートウェイ
-* ★TCP 8080 IPFSゲートウェイ
-* ★TCP 443
-* ★TCP 80
+* ★TCP: 4001 IPFSゲートウェイ
+* ★TCP: 8080 IPFSゲートウェイ
+* ★TCP: 443
+* ★TCP: 80
 
-### web アプリケーションサーバ
+### web サーバ
 
-* ★TCP 443 (SSL, HTTP/2)
-* ★TCP 80 (http, http/2)
-
+* ★TCP: 443 (SSL, HTTP/2)
+* ★TCP: 80 (http, http/2)
 
 ## 当面の機器構成（2019/10/03現在）
 
