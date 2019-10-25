@@ -31,13 +31,20 @@ brew install xz
 xz -d sudo ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
 ```
 
+## sdカードを挿す
+
+挿したSDカードをアンマウントする
+
+```bash
+diskutil umountdisk /dev/disk(n)
+```
 ## ddコマンド
 
 
 * raspberry pi (SDカード)
 
 ```bash
-sudo dd if=./ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz of=/dev/rdisk(n) bs=1m
+sudo dd if=./ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img of=/dev/rdisk(n) bs=1m
 ```
 
 ---
@@ -48,6 +55,15 @@ sudo dd if=./ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz of=/dev/rdis
 省略
 
 
+### yamalaboユーザを作成
+
+```bash
+sudo usrradd yamalabo
+
+sudo moduser yamalabo -g sudo
+
+su yamalabo
+```
 ### 事前準備
 
 ```bash
@@ -198,12 +214,12 @@ bitcoin-cli stop
 sleep 30
 cat << EOF > ~/.bitcoin/bitcoin.conf
 testnet=3
-txindex=1  
-server=1   
-rest=1      
+txindex=1
+server=1
+rest=1
 rpcuser=ユーザ名
 rpcpassword=パスワード
-rpcport=18332 
+rpcport=18332
 EOF
 
 bitcoind &
@@ -227,7 +243,7 @@ update-bitcoincore.sh
 ```bash
 #!/bin/bash
 bitcoin-cli stop
-sleep 300
+sleep 30
 sudo apt update
 sudo apt upgrade -y
 sleep 2
@@ -235,46 +251,8 @@ sudo apt-get install -y bitcoind
 bitcoind &
 ```
 
-
-## 自動起動設定
-
-cron を使って設定
-
-* raspberry pi ではユーザは ubuntu
-
-
-### raspberry pi
-
 ```bash
-crontab -u ubuntu -e
-
-# 1 nano エディタを選ぶ
-```
-
-### crontab の編集
-
-以下を最後に追加
-
-```
-# ...
-
-@reboot /usr/bin/bitcoind -deamon
-```
-
-^(コントロール)o ^(コントロール)x でnanoエディタを保存終了
-
-### 再起動で確認
-
-```bash
-sudo reboot
-```
-
-再起動後
-
-bitcoind のhelpが出力されれば成功
-
-```bash
-bitcoin-cli help
+chmod a+x update-bitcoincore.sh
 ```
 
 
@@ -317,17 +295,47 @@ chmod a+x install-ptarmigan.sh
 ./install-ptarmigan.sh
 ```
 
-## crontab の編集
-
-* raspberry pi
+## PATHを通す
 
 ```bash
-crontab -u ubuntu -e
+nano ~.profile
 ```
+
+以下を追加する
 
 ```
 ...
+export PATH=$PATH:~/ptarmigan/install/
 
-@reboot ~/ptarmigan/install/ptarmd --network=testnet
 ```
+
+## 自動起動設定
+
+cron を使って設定
+
+* raspberry pi ではユーザは yamalabo
+
+
+### raspberry pi
+
+```bash
+crontab -u yamalabo -e
+
+# 1 nano エディタを選ぶ
+```
+
+### crontab の編集
+
+以下を最後に追加
+
+毎月、１日の０時０分にbitcoind をアップデートする
+
+```
+# ...
+0 0 1 * * /home/yamalabo/update-bitcoincore.sh &
+@reboot /usr/bin/bitcoind -deamon &
+@reboot /home/yamalabo/ptarmigan/install/ptarmd --network=testnet &
+```
+
+
 
