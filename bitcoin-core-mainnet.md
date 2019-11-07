@@ -186,13 +186,13 @@ sleep 10
 bitcoin-cli stop
 sleep 30
 cat << EOF > ~/.bitcoin/bitcoin.conf
-mainnet=1 
-txindex=1 
-server=1  
+mainnet=1
+txindex=1
+server=1
 rest=1
-rpcuser=ユーザ名
-rpcpassword=パスワード
-rpcport=8332 
+rpcuser='yamalabo'
+rpcpassword='yozoranomukou'
+rpcport=8332
 EOF
 
 bitcoind &
@@ -244,8 +244,8 @@ crontab -u yamalabo -e
 
 ```
 # ...
-
-@reboot /usr/bin/bitcoind -deamon
+15 1 * * 5 /home/yamalabo/update-bitcoincore.sh &
+@reboot /usr/bin/bitcoind &
 ```
 
 ^(コントロール) o ^(コントロール) x でnanoエディタを保存終了
@@ -350,7 +350,9 @@ bitcoin-cli stop
 
 ### ptarmigan インストールスクリプト
 
-install-ptarmigan.sh
+```bash
+nano install-ptarmigan.sh
+```
 
 ```bash
 #!/bin/bash

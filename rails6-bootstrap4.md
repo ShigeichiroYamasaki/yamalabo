@@ -6,14 +6,19 @@
 ### 必要なライブラリのインストール
 
 ```bash
+sudo apt install git
 sudo apt install autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
 sudo apt install nodejs
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-~/.rbenv/bin/rbenv init  # 出力される指示に従う
+~/.rbenv/bin/rbenv init  
+eval "$(rbenv init -)"
+echo '~/.rbenv/bin/rbenv init' >> ~/.bash_profile
 source ~/.bash_profile
+source ~/.bashrc
+
 ```
 
 ### 最新の安定版バージョンのRubyをインストールする
@@ -35,10 +40,18 @@ gem install sqlite3
 Rials 6 は、node.jsのパッケージマネージャとしてnpmではなくyarnを使うようになったので、最初にyarn をインストールする必要がある
 
 
+MacOSX
+```bash
+brew install yarn
+```
+
+ubuntu
+
 ```bash
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt install -y yarn
+
+sudo apt update && sudo apt install -y yarn
 ```
 
 ### Webpacker
@@ -55,7 +68,13 @@ Railsのプロジェクトを作成後、webpackerのインストールが必須
 
 
 ```bash
-rails new myapp
+rails new myapp --webpack=react
+```
+
+webワレット作成
+
+```bash
+rails new declining-webwallet --webpack=react
 ```
 
 ```bash
@@ -63,11 +82,6 @@ cd myapp
 bundle install
 ```
 
-### webpackerのインストール
-
-```bash
-rails  webpacker:install
-```
 
 ### 簡単なblogをscaffold で作ってみる
 
@@ -165,6 +179,13 @@ environment.plugins.append('Provide', new webpack.ProvidePlugin({
  }))
 module.exports = environment
 ```
+
+### webpackerのインストール
+
+```bash
+rails  webpacker:install
+```
+
 
 ### サーバーの起動
 

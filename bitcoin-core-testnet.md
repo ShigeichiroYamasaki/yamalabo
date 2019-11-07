@@ -84,14 +84,13 @@ bitcoind &
 
 cron を使って設定
 
-* ベアボーンではユーザは yamalabo
-* raspberry pi ではユーザは ubuntu
+* ユーザは yamalabo
 
 
 ### raspberry pi
 
 ```bash
-crontab -u ubuntu -e
+crontab -u yamalabo -e
 
 # 1 nano エディタを選ぶ
 ```
@@ -103,7 +102,7 @@ crontab -u ubuntu -e
 ```
 # ...
 
-@reboot /usr/bin/bitcoind -deamon
+@reboot /usr/bin/bitcoind &
 ```
 
 ^(コントロール)o ^(コントロール)x でnanoエディタを保存終了

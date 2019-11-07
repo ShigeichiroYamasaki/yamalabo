@@ -4,6 +4,8 @@
 
 ### bitcoin core のインストール
 
+
+
 ## testnetで稼働させる
 
 
@@ -58,11 +60,10 @@ Bitcoin.network = :testnet3
 # ユーザID
 RPCUSER = "yamalabo"        # JSON RPC のためのユーザ名
 # パスワード
-RPCPASSWORD = "yozoranomukou"  # JSON RPC のためのパスワード
+RPCPASSWORD = パスワード    # JSON RPC のためのパスワード
 HOST="localhost"          # JSON RPC のhost
 PORT=18332                # ポート番号
-# 自分のbitcoinアドレス
-MY_ADDR="tb1qct7uxdjydtlf0jtrwvgue259adzugx5yltm6qv"
+
 ```
 
 ### bitcoin RPC
@@ -93,7 +94,8 @@ def get_privkey(address,psw)
 	bitcoinRPC('walletlock',[])
 end
 
-privkey=get_privkey(MY_ADDR,'yozoranomukou')
+
+privkey=get_privkey(MY_ADDR, RPCPASSWORD)
 => #<Bitcoin::Key:0x00007fee388d1098 @key=#<OpenSSL::PKey::EC:0x00007fee388d0e68>, @pubkey_compressed=true>
 
 ```
