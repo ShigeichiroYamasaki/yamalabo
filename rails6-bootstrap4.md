@@ -5,225 +5,85 @@
 
 ### 必要なライブラリのインストール
 
+以下を全部コピペして実行すればOK
+
 ```bash
-sudo apt install git
-sudo apt install autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
-sudo apt install nodejs
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y ssh
+sudo apt install -y chkrootkit
+sudo apt install -y build-essential 
+sudo apt install -y clang
+sudo apt install -y cmake
+sudo apt install -y golang
+sudo apt install -y curl
+sudo apt install -y git
+sudo apt install -y sqlite3 libsqlite3-dev
+sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
+apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
+sudo apt install -y nodejs
+sudo apt install -y npm
+sudo npm install n -g
+sudo n stable
+sudo apt purge -y nodejs npm
+exec $SHELL -l
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-~/.rbenv/bin/rbenv init  
-eval "$(rbenv init -)"
-echo '~/.rbenv/bin/rbenv init' >> ~/.bash_profile
+
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+
 source ~/.bash_profile
 source ~/.bashrc
 
-```
+curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
 
-### 最新の安定版バージョンのRubyをインストールする
 
-```bash
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+sudo apt update
+sudo apt install -y yarn
+
+
+# 最新の安定版バージョンのRubyをインストールする
+
 rbenv install 2.6.5
 rbenv global 2.6.5
-```
 
 ### gemのインストール
 
-```bash
 gem install rails
 gem install sqlite3
 ```
 
-### yarn のインストール
+### Railsのテスト
 
-Rials 6 は、node.jsのパッケージマネージャとしてnpmではなくyarnを使うようになったので、最初にyarn をインストールする必要がある
-
-
-MacOSX
 ```bash
-brew install yarn
+rails new test1
+
+cd test1
 ```
 
-ubuntu
+#### scaffold で生成
 
 ```bash
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-
-sudo apt update && sudo apt install -y yarn
+rails g scaffold User name
 ```
 
-### Webpacker
-
-Rails6でwebpackerが標準になった
-
-Webpackerとは、モダンなフロントエンド開発を強力にサポートするWebpackをRuby on Railsで使うためのgemパッケージ
-
-Railsのプロジェクトを作成後、webpackerのインストールが必須
-
-## 典型的なRails6 + Bootstrap4 アプリ
+#### Gemfile編集
 
 
+以下を追加
 
-
-```bash
-rails new myapp --webpack=react
 ```
+gem 'bootstrap'
+gem 'jquery-rails'
 
-webワレット作成
-
-```bash
-rails new declining-webwallet --webpack=react
 ```
 
 ```bash
-cd myapp
 bundle install
 ```
-
-
-### 簡単なblogをscaffold で作ってみる
-
-
-```bash
- rails g scaffold blog title body:text
- 
- rails db:migrate
-
-```
-
-### パッケージのインストール
-
-```bash
- yarn add bootstrap bootstrap-material-design jquery popper.js
-```
- 
-### pack内のapplication.jsの記述
- 
-```bash
- nano app/javascript/packs/application.js
-```
- 
- 以下を最後に追加
- 
-``` app/javascripts/pack/application.js
- 
-import 'bootstrap-material-design'
-import '../stylesheets/application'
-```
-
-### application.scss作成
-
-```bash
-mkdir app/javascript/stylesheets
-touch app/javascript/stylesheets/application.scss
-```
-
-```bash
-nano app/javascript/stylesheets/application.scss
-```
-
-ファイルの内容
-
-```
-@import '~bootstrap-material-design/scss/bootstrap-material-design';
-```
-
-### レイアウトのapplication.erb.htmlの修正
-
-```bash
-nano app/views/layouts/application.html.erb
-```
-
-* 修正箇所（stylesheet_link_tag　→　stylesheet_pack_tag）
-*  <%= yield %> →
-    \<div class="container">
-    <%= yield %>
-    \</div>
-
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Myapp</title>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </head>
-
-  <body>
-　   <div class="container">
-    <%= yield %>
-    </div>
-  </body>
-</html>
-
-```
-
-### config/webpack/environment.js を編集する
-
-```bash
-nano config/webpack/environment.js
-```
-
-```javascript
-const { environment } = require('@rails/webpacker')
-const webpack = require('webpack')
-environment.plugins.append('Provide', new webpack.ProvidePlugin({
-    $: 'jquery',
-    jQuery: 'jquery',
-    Popper: ['popper.js', 'default']
- }))
-module.exports = environment
-```
-
-### webpackerのインストール
-
-```bash
-rails  webpacker:install
-```
-
-
-### サーバーの起動
-
-
-```bash
-rails s -b 0.0.0.0
-```
-
-### ブラウザで確認
-
-```url
-http://IPアドレス:3000/blogs
-```
-
-blogのデータを数件入れておく
-
-## Bootstrap4の利用
-
-
- app/views/blogs/index.html.erb の表を修正
-
-```bash
-nano app/views/blogs/index.html.erb 
-```
-
-
-修正前
-
-```html
-<table >
-```
-
-修正後
-
-```html
-<table class="table">
-```
-
-一覧を確認する
-
 
