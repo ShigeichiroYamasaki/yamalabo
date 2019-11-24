@@ -63,15 +63,16 @@ nano install_rails.sh
 
 ```bash
 #!/bin/bash
-sudo gem install sqlite3
-sudo gem install json-jwt
-sudo gem install jwt
-sudo gem install rails
-sudo gem install twitter
-sudo gem install devise
-sudo gem install omniauth
-sudo gem install omniauth-twitter
-sudo gem install omniauth-facebook
+gem install bundler
+gem install sqlite3
+gem install json-jwt
+gem install jwt
+gem install rails
+gem install twitter
+gem install devise
+gem install omniauth
+gem install omniauth-twitter
+gem install omniauth-facebook
 ```
 
 ### 実行
