@@ -5,58 +5,87 @@
 
 ### 必要なライブラリのインストール
 
-以下を全部コピペして実行すればOK
 
 ```bash
+nano install_rbenv.sh
+```
+
+```bash
+#!/bin/bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y ssh
-sudo apt install -y chkrootkit
 sudo apt install -y build-essential 
 sudo apt install -y clang
 sudo apt install -y cmake
-sudo apt install -y golang
-sudo apt install -y curl
+sudo apt install -y direnv
 sudo apt install -y git
-sudo apt install -y sqlite3 libsqlite3-dev
-sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
-apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
 sudo apt install -y nodejs
+sudo apt install -y ruby-dev
+sudo apt install -y curl
+curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt update
+
+sudo apt install -y yarn
 sudo apt install -y npm
 sudo npm install n -g
 sudo n stable
 sudo apt purge -y nodejs npm
 exec $SHELL -l
+sudo apt install -y sqlite3 libsqlite3-dev
+sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
 
+apt-get install -y libreadline-dev zlib1g-dev
+rm -fr ~/.rbenv
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-
 source ~/.bash_profile
 source ~/.bashrc
+exec $SHELL -l
+```
 
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
+```bash
+nano install_ruby.sh
+```
 
-
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-
-sudo apt update
-sudo apt install -y yarn
-
-
-# 最新の安定版バージョンのRubyをインストールする
-
+```bash
+#!/bin/bash
 rbenv install 2.6.5
 rbenv global 2.6.5
-
-### gemのインストール
-
-gem install rails
-gem install sqlite3
 ```
+
+```bash
+nano install_rails.sh
+```
+
+```bash
+#!/bin/bash
+sudo gem install sqlite3
+sudo gem install json-jwt
+sudo gem install jwt
+sudo gem install rails
+sudo gem install twitter
+sudo gem install devise
+sudo gem install omniauth
+sudo gem install omniauth-twitter
+sudo gem install omniauth-facebook
+```
+
+### 実行
+
+```bash
+chmod a+x install_rbenv.sh
+chmod a+x install_ruby.sh
+chmod a+x install_rails.sh
+
+./install_rbenv.sh
+./install_ruby.sh
+./install_rails.sh
+```
+
 
 ### Railsのテスト
 
