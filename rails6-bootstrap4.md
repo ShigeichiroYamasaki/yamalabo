@@ -53,8 +53,8 @@ nano install_ruby.sh
 
 ```bash
 #!/bin/bash
-rbenv install 2.6.5
-rbenv global 2.6.5
+rbenv install 2.5.1
+rbenv global 2.5.1
 ```
 
 ```bash
