@@ -129,3 +129,12 @@ bitcoin-cli help
 gem install sqlite3
 gem install rails
 ```
+
+## MacOSX
+
+```bash
+brew update
+brew upgrade
+
+brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python qt libevent qrencode
+```
