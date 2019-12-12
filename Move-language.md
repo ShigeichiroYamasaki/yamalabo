@@ -616,7 +616,7 @@ Moveプログラマーは、BorrowLoc命令を使用してローカル変数へ�
 
 ### Bytecode Interpreter
 
-![](./move/Move010.png)
+![](./mo/move010.png)
 
 
 Move bytecode命令は、Common Language Runtime [22]およびJava Virtual Machine [21]と同様のスタックベースのインタープリターによって実行されます。命令は、スタックからオペランドを消費し、結果をスタックにプッシュします。命令は、現在のプロシージャのローカル変数（仮パラメータを含む）との間で値を移動およびコピーすることもできます。
