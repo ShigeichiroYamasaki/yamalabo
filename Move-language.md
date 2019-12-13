@@ -1,4 +1,4 @@
-# Move: A Language With Programmable Resources
+# [Move: A Language With Programmable Resources](https://developers.libra.org/docs/assets/papers/libra-move-a-language-with-programmable-resources.pdf)
 
 Sam Blackshear, Evan Cheng, David L. Dill, Victor Gao, Ben Maurer, Todd Nowacki, Alistair Pott, Shaz Qadeer, Rain, Dario Russi, Stephane Sezer, Tim Zakian, Runtian Zhou*
 
