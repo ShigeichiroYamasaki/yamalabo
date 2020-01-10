@@ -156,8 +156,8 @@ mainnet=1
 txindex=1
 server=1
 rest=1
-rpcuser='yamalabo'
-rpcpassword='yozoranomukou'
+rpcuser='ユーザ名'
+rpcpassword='パスワード'
 rpcport=8332
 EOF
 
