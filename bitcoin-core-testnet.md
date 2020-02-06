@@ -71,11 +71,24 @@ update-bitcoincore.sh
 ```bash
 #!/bin/bash
 bitcoin-cli stop
-sleep 300
+sleep 30
 sudo apt update
 sudo apt upgrade -y
 sleep 2
-sudo apt-get install -y bitcoind
+
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+
+cd ~
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+ ./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
+sleep 2
+
 bitcoind &
 ```
 

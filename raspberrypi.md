@@ -28,7 +28,7 @@ brew install xz
 解凍（結構時間がかかります）
 
 ```bash
-xz -d sudo ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
+xz -d ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
 ```
 
 ## sdカードを挿す
@@ -36,6 +36,8 @@ xz -d sudo ubuntu-18.04.3-preinstalled-server-arm64+raspi3.img.xz
 挿したSDカードをアンマウントする
 
 ```bash
+diskutil list
+
 diskutil umountdisk /dev/disk(n)
 ```
 ## ddコマンド
@@ -247,7 +249,20 @@ sleep 30
 sudo apt update
 sudo apt upgrade -y
 sleep 2
-sudo apt-get install -y bitcoind
+
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+
+cd ~
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+ ./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
+sleep 2
+
 bitcoind &
 ```
 

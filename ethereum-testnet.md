@@ -5,14 +5,8 @@
 ### インストールスクリプト
 
 
-★ユーザ名／パスワードの指定
-
-### testnet
-
->> ユーザ名、パスワードの修正が必要
-
 ```
-nano install-ethereum-testnet.sh
+nano install-ethereum.sh
 ```
 
 
@@ -35,29 +29,36 @@ expect -c "
 "
 sleep 2
 sudo apt-get update
-sudo apt-get install -y bitcoind
-sleep 2
-bitcoind &
-sleep 10
-bitcoin-cli stop
-sleep 30
-cat << EOF > ~/.bitcoin/bitcoin.conf
-testnet=3
-txindex=1  
-server=1   
-rest=1      
-rpcuser=ユーザ名
-rpcpassword=パスワード
-rpcport=18332 
+sudo apt-get install git vim -y
+sudo apt-get install software-properties-common
+sudo add-apt-repository -y ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install -y ethereum
+
+mkdir ~/eth_private_net
+cd eth_private_net
+touch myGenesis.json
+
+cat << EOF > myGenesis.json
+{
+  "config": {
+    "chainId": 15
+  },
+  "nonce": "0x0000000000000042",
+  "timestamp": "0x0",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "extraData": "",
+  "gasLimit": "0x8000000",
+  "difficulty": "0x4000",
+  "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "coinbase": "0x3333333333333333333333333333333333333333",
+  "alloc": {}
+}
 EOF
 
-bitcoind &
+geth --datadir ~/eth_private_net init ~/eth_private_net/myGenesis.json
+
+geth --networkid "15" --nodiscover --datadir "~/eth_private_net" console 2>> ~/eth_private_net/geth_err.log
 ```
 
 
-### 実行
-
-```bash
-chmod a+x install-bitcoincore-testnet.sh
-
-```
