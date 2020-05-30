@@ -18,28 +18,36 @@ install-bitcoincore-testnet.sh
 ```bash
 #!/bin/bash
 sudo apt update
-sleep 2
 sudo apt upgrade -y
-sleep 2
-sudo apt-get install -y apt-file
+sudo apt install ssh -y
+sudo apt  install expect -y
+sudo apt  install ruby -y
+sudo apt install -y apt-transport-https  ca-certificates  curl  software-properties-common
+sudo apt install -y chkrootkit
+sudo apt install -y build-essential 
+sudo apt install -y clang
+sudo apt install -y cmake
+sudo apt install -y golang
+sudo apt install -y apt-file
 sudo apt-file update
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+sudo apt install -y libtool
+sudo apt install -y autoconf
+sudo apt install -y git
+sudo apt autoremove -y
 
-expect -c "
-  set timetout -1
-  spawn sudo apt-add-repository ppa:bitcoin/bitcoin
-  expect {
-    \"ENTER\" { send \"\\n\"}
-  }
-  interact
-"
-sleep 2
-sudo apt-get update
-sudo apt-get install -y bitcoind
-sleep 2
-bitcoind &
-sleep 10
-bitcoin-cli stop
+cd ~
+git init
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
 sleep 30
+
 cat << EOF > ~/.bitcoin/bitcoin.conf
 testnet=3
 txindex=1  
@@ -50,7 +58,7 @@ rpcpassword=パスワード
 rpcport=18332 
 EOF
 
-bitcoind &
+/use/local/bin/bitcoind &
 ```
 
 
@@ -71,12 +79,23 @@ update-bitcoincore.sh
 ```bash
 #!/bin/bash
 bitcoin-cli stop
-sleep 300
+sleep 30
 sudo apt update
 sudo apt upgrade -y
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+
+cd ~
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
 sleep 2
-sudo apt-get install -y bitcoind
-bitcoind &
+
+/use/local/bin/bitcoind &
 ```
 
 
@@ -102,7 +121,7 @@ crontab -u yamalabo -e
 ```
 # ...
 
-@reboot /usr/bin/bitcoind &
+@reboot /usr/local/bin/bitcoind &
 ```
 
 ^(コントロール)o ^(コントロール)x でnanoエディタを保存終了

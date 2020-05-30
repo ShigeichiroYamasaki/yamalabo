@@ -68,10 +68,6 @@ sudo dd if=./ubuntu-18.04.3-desktop-amd64.iso of=/dev/rdisk(n) bs=1m
 
 ## ubuntu インストール後のセットアップ
 
-
-
-
-
 ### sudoerの設定
 
 パスワード入力なしでsudo が実行できるようにする
@@ -83,8 +79,6 @@ sudo visudo
 ```
 
 ```
-...(既存の設定)
-
 yamalabo ALL=(ALL) NOPASSWD:ALL
 ```
 
@@ -119,35 +113,31 @@ sudo apt install -y \
      software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
-sudo add-apt-repository \
-     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-     $(lsb_release -cs) \
-     stable"
-sudo apt update
-
 sudo apt install -y chkrootkit
 sudo apt install -y build-essential 
 sudo apt install -y clang
 sudo apt install -y cmake
 sudo apt install -y golang
-
-
 sudo apt-get install -y apt-file
 sudo apt-file update
 
-expect -c "
-  set timetout -1
-  spawn sudo apt-add-repository ppa:bitcoin/bitcoin
-  expect {
-    \"ENTER\" { send \"\\n\"}
-  }
-  interact
-"
-sleep 2
-sudo apt-get update
-sudo apt-get install -y bitcoind
-sleep 2
-bitcoind &
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+sudo apt install -y libtool
+sudo apt install -y autoconf
+sudo apt install -y git
+sudo apt autoremove -y
+
+cd ~
+git init
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
+
 sleep 10
 bitcoin-cli stop
 sleep 30
@@ -156,11 +146,12 @@ mainnet=1
 txindex=1
 server=1
 rest=1
-rpcuser='yamalabo'
-rpcpassword='yozoranomukou'
+rpcuser='ユーザ名'
+rpcpassword='パスワード'
 rpcport=8332
 EOF
 
+sleep 10
 bitcoind &
 ```
 
@@ -179,22 +170,29 @@ update-bitcoincore.sh
 ```bash
 #!/bin/bash
 bitcoin-cli stop
-sleep 300
+sleep 30
 sudo apt update
 sudo apt upgrade -y
+sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
+sudo apt install -y  libevent-dev
+
+cd ~
+rm -fr bitcoin
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+./autogen.sh
+ ./configure --enable-upnp-default --disable-wallet
+make -j2 
+sudo make install
 sleep 2
-sudo apt-get install -y bitcoind
-bitcoind &
+
+/usr/local/bin/bitcoind &
 ```
 
 
 ## 自動起動設定
 
 cron を使って設定
-
-* ベアボーンではユーザは yamalabo
-* raspberry pi ではユーザは ubuntu
-
 
 ### ベアボーン
 
@@ -211,7 +209,7 @@ crontab -u yamalabo -e
 ```
 # ...
 15 1 * * 5 /home/yamalabo/update-bitcoincore.sh &
-@reboot /usr/bin/bitcoind &
+@reboot /usr/local/bin/bitcoind &
 ```
 
 ^(コントロール) o ^(コントロール) x でnanoエディタを保存終了
@@ -230,75 +228,6 @@ bitcoind のhelpが出力されれば成功
 bitcoin-cli help
 ```
 
-
-
---
-## スクリプトの処理内容の説明
-
-### apt でインストール
-
-```bash
-sudo apt-add-repository ppa:bitcoin/bitcoin
-
-# enterキーを押す
-
-sudo apt-get update
-sudo apt-get install -y bitcoind
-```
-
-### bitcoind の一時起動と環境ファイルの作成
-
-```bash
-bitcoind &
-```
-
-### bitcoind の停止
-
-bitcoin-cli を使って停止させる
-
-```bash
-bitcoin-cli stop
-```
-
-これで ~/.bitcoin の下に起動環境が作成される
-
-## 設定ファイルbitcoin.confの作成
-
-~/.bitcoin の下に bitcoin.conf を作成する
-
-```bash
-nano ~/.bitcoin/bitcoin.conf
-```
-
-### mainnetの場合
-
-```
-mainnet=1 
-txindex=1  
-server=1   
-rest=1      
-rpcuser= "ユーザ名"
-rpcpassword= "パスワード"
-rpcport=8332 
-```
-
-testnet
-
-```
-testnet=3
-txindex=1  
-server=1   
-rest=1      
-rpcuser= "ユーザ名"
-rpcpassword= "パスワード"
-rpcport=18332 
-```
-
-### bitcoind の起動確認
-
-```bash
-bitcoind &
-```
 
 ### bitcoind の停止
 
