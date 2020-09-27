@@ -175,7 +175,7 @@ testnetのアカウントへのコインの作成と追加は、Faucetを介し�
 Libraをミントしてアリスのアカウントに追加するには、次のコマンドを入力します。
 
 ```bash
-libra% account mint 0 110
+libra% account mint 0 110 LBR
 ```
 
 0はアリスのアカウントのインデックスです。
@@ -198,7 +198,7 @@ Mint request submitted
 LibraをミントしてBobのアカウントに追加するには、次のコマンドを入力します。
 
 ```bash
-libra% account mint 1 52
+libra% account mint 1 52 LBR
 ```
 
 1はボブのアカウントのインデックスです。
