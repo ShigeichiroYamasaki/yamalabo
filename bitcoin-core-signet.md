@@ -40,18 +40,33 @@ cd src
 mkdir signet
 echo "signet=1
 daemon=1" > signet/bitcoin.conf
+sudo make install
+cd ~
+
+cat << EOF > ~/.bitcoin/bitcoin.conf
+signet=1
+txindex=1  
+server=1   
+rest=1      
+rpcuser=yamasaki
+rpcpassword=kindai
+rpcport=38332 
+EOF
+
+/use/local/bin/bitcoind &
+
 ```
 
 ## bitcoind の起動
 
 ```bash
-./bitcoind -datadir=signet
+bitcoind -datadir=signet
 ```
 
 ## 確認
 
 ```bash
-./bitcoin-cli -datadir=signet getblockcount
+bitcoin-cli -datadir=signet getblockcount
 ```
 
 

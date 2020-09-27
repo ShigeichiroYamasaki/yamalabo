@@ -284,7 +284,7 @@ To query for transaction status, run: query txn_acc_seq 0 0 <fetch_events=true|f
 ブロック転送コマンド：transferbコマンドの代わりに、transferコマンドを使用できます（以下を参照）。transferbトランザクションがブロックチェーンにコミットされた後にのみ、トランザクションを送信してクライアントプロンプトに戻ります。以下に例を示します。
 
 ```bash
-libra% transferb 0 1 10
+libra% transferb 0 1 10 LBR
 ```
 
 送信から実行および保存までのトランザクションのライフサイクルの理解については、トランザクションの寿命を参照してください。
@@ -350,7 +350,7 @@ rm Cargo.lock
 * testnetで接続したバリデータノードが利用できない場合、以下に示すように「サーバーが利用できません」というメッセージが表示されます。
 
 ```bash
-libra% account mint 0 110
+libra% account mint 0 110 LBR
 >> Minting coins
 [ERROR] Error minting coins: Server unavailable, please retry and/or check **if** host passed to the client is running
 ```
