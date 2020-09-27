@@ -14,37 +14,28 @@
 
 ### 事前準備
 
+nano install-libra.sh
+
 ```bash
+#!/bin/bash
 sudo apt install -y build-essential 
 sudo apt install -y curl
 sudo apt install -y ssh
 sudo apt install -y clang
 sudo apt install -y cmake
-```
 
-Rust言語のインストール
+# Rust言語のインストール
 
-```bash
 curl https://sh.rustup.rs -sSf | sh
-```
 
-### Libra Coreリポジトリのクローンを作成する
-
-```bash
+# Libra Coreリポジトリのクローンを作成する
 git clone https://github.com/libra/libra.git
-```
 
-### testnetブランチをチェックアウトする
-
-```bash
+# testnetブランチをチェックアウトする
 git checkout testnet
-```
 
-### 依存関係のインストール
+# 依存関係のインストール
 
-Libra Coreをセットアップするには、次のようにlibraディレクトリに移動し、セットアップスクリプトを実行して依存関係をインストールします。
-
-```bash
 cd libra
 ./scripts/dev_setup.sh
 ```

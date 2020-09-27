@@ -2,15 +2,16 @@
 
 ## install 方法
 
+nano install-signet.sh
+
 ```bash
+#!/bin/bash
 cd ~
 sudo add-apt-repository ppa:bitcoin/bitcoin
 sudo apt-get update
 sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
 
-
 sudo apt install expect -y
-sudo apt install ruby -y
 sudo apt install -y curl
 sudo apt install -y apt-transport-https ca-certificates software-properties-common
 sudo apt install -y build-essential 
@@ -24,7 +25,6 @@ sudo apt install -y autoconf
 sudo apt install -y git
 sudo apt install -y libevent-dev
 sudo apt autoremove -y
-
 
 cd ~
 git init
