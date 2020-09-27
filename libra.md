@@ -23,6 +23,7 @@ sudo apt install -y curl
 sudo apt install -y ssh
 sudo apt install -y clang
 sudo apt install -y cmake
+sudo apt install -y git
 
 # Rust言語のインストール
 
@@ -38,24 +39,20 @@ git checkout testnet
 
 cd libra
 ./scripts/dev_setup.sh
-```
 
-セットアップスクリプトは、次のアクションを実行します。
+# セットアップスクリプトは、次のアクションを実行します。
 
-* rustupをインストールします— rustupは、Libra Coreが実装されているRustプログラミング言語のインストーラーです。
-* 必要なバージョンのrust-toolchainをインストールします。
-* CMakeをインストールします—ビルドプロセスを管理します。
-* プロトコルバッファ用のコンパイラであるprotocをインストールします。
-* Goをインストールします—プロトコルバッファを構築します。
+# * rustupをインストールします— rustupは、Libra Coreが実装されているRustプログラミング言語のインストーラーです。
+# * 必要なバージョンのrust-toolchainをインストールします。
+# * CMakeをインストールします—ビルドプロセスを管理します。
+# * プロトコルバッファ用のコンパイラであるprotocをインストールします。
+# * Goをインストールします—プロトコルバッファを構築します。
 
+# セットアップが失敗した場合は、トラブルシューティングを参照してください
+# Libra CLIクライアントをビルドしてテストネットに接続する
 
-セットアップが失敗した場合は、トラブルシューティングを参照してください
+# Libraテストネットで実行されているバリデータノードに接続するには、以下に示すようにクライアントを実行します。
 
-## Libra CLIクライアントをビルドしてテストネットに接続する
-
-Libraテストネットで実行されているバリデータノードに接続するには、以下に示すようにクライアントを実行します。
-
-```bash
 ./scripts/cli/start_cli_testnet.sh
 ```
 
