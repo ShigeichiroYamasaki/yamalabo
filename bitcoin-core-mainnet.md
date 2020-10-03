@@ -98,61 +98,18 @@ install-bitcoincore-mainnet.sh
 ```bash
 #!/bin/bash
 sudo apt update
-sleep 2
 sudo apt upgrade -y
-sleep 2
-sudo apt install ssh -y
-sudo apt  install expect -y
-sudo apt  install ruby -y
-sudo apt install -y curl
-
-sudo apt install -y \
-     apt-transport-https \
-     ca-certificates \
-     curl \
-     software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-sudo apt install -y chkrootkit
-sudo apt install -y build-essential 
-sudo apt install -y clang
-sudo apt install -y cmake
-sudo apt install -y golang
-sudo apt-get install -y apt-file
-sudo apt-file update
-
-sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
-sudo apt install -y  libevent-dev
-sudo apt install -y libtool
-sudo apt install -y autoconf
-sudo apt install -y git
-sudo apt autoremove -y
-
-cd ~
-git init
-rm -fr bitcoin
-git clone https://github.com/bitcoin/bitcoin.git
-cd bitcoin
-./autogen.sh
-./configure --enable-upnp-default --disable-wallet
-make -j2 
-sudo make install
-
-sleep 10
-bitcoin-cli stop
-sleep 30
+sudo apt install snapd
+sudo snap install bitcoin-core
 cat << EOF > ~/.bitcoin/bitcoin.conf
 mainnet=1
 txindex=1
 server=1
 rest=1
-rpcuser='ユーザ名'
-rpcpassword='パスワード'
+rpcuser="user"
+rpcpassword="password"
 rpcport=8332
 EOF
-
-sleep 10
-bitcoind &
 ```
 
 ### 実行
@@ -161,82 +118,18 @@ bitcoind &
 chmod a+x install-bitcoincore-mainnet.sh
 ```
 
-## bitcoin core アップデートスクリプト
+### デーモン起動
 
-update-bitcoincore.sh
-
-### mainnet/ testnet 共通
 
 ```bash
-#!/bin/bash
-bitcoin-cli stop
-sleep 30
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev
-sudo apt install -y  libevent-dev
-
-cd ~
-rm -fr bitcoin
-git clone https://github.com/bitcoin/bitcoin.git
-cd bitcoin
-./autogen.sh
- ./configure --enable-upnp-default --disable-wallet
-make -j2 
-sudo make install
-sleep 2
-
-/usr/local/bin/bitcoind &
+bitcoin-core.daemon -mainnet
 ```
 
-
-## 自動起動設定
-
-cron を使って設定
-
-### ベアボーン
+### クライアント接続
 
 ```bash
-crontab -u yamalabo -e
-
-# 1 nano エディタを選ぶ
+bitcoin-core.cli -mainnet help
 ```
-
-### crontab の編集
-
-以下を最後に追加
-
-```
-# ...
-15 1 * * 5 /home/yamalabo/update-bitcoincore.sh &
-@reboot /usr/local/bin/bitcoind &
-```
-
-^(コントロール) o ^(コントロール) x でnanoエディタを保存終了
-
-### 再起動で確認
-
-```bash
-sudo reboot
-```
-
-再起動後
-
-bitcoind のhelpが出力されれば成功
-
-```bash
-bitcoin-cli help
-```
-
-
-### bitcoind の停止
-
-bitcoin-cli を使って停止させる
-
-```bash
-bitcoin-cli stop
-```
-
 ---
 
 # lightning network 
@@ -276,22 +169,4 @@ chmod a+x install-ptarmigan.sh
 ```bash
 ./install-ptarmigan.sh
 ```
-
-## crontab の編集
-
-* ベアボーン
-
-```bash
-crontab -u yamalabo -e
-```
-
-```
-...
-
-@reboot ~/ptarmigan/install/ptarmd --network=mainnet
-```
-
-
-
----
 

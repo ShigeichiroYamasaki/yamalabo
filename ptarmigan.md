@@ -1,5 +1,5 @@
 # ptarmiganのインストール
-* ubuntu 18.14.2LTS
+* ubuntu 18.04.2LTS
 * bitcoin core
 * regtest
 

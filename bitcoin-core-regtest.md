@@ -1,12 +1,12 @@
-# bitcoin testnet 構築
+# bitcoin regtest 構築
+
+ubutu 18.04LTS
 
 ## bitcoin core インストール
 
-### testnet インストールスクリプト
+### インストールスクリプト
 
->> ユーザ名、パスワードの修正が必要
-
-nano install-bitcoincore-testnet.sh
+install-bitcoincore-regtest.sh
 
 
 ```bash
@@ -16,7 +16,7 @@ sudo apt upgrade -y
 sudo apt install snapd
 sudo snap install bitcoin-core
 cat << EOF > ~/.bitcoin/bitcoin.conf
-testnet=3
+regtest=1
 txindex=1
 server=1
 rest=1
@@ -38,12 +38,13 @@ chmod a+x install-bitcoincore-testnet.sh
 
 
 ```bash
-bitcoin-core.daemon -testnet
+bitcoin-core.daemon -regtest
 ```
 
 ### クライアント接続
 
 ```bash
-bitcoin-core.cli -testnet help
+bitcoin-core.cli -regtest help
 ```
+
 
