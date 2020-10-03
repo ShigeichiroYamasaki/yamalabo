@@ -15,6 +15,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install snapd
 sudo snap install bitcoin-core
+mkdir .bitcoin
 cat << EOF > ~/.bitcoin/bitcoin.conf
 regtest=1
 txindex=1
@@ -31,6 +32,8 @@ EOF
 
 ```bash
 chmod a+x install-bitcoincore-testnet.sh
+./install-bitcoincore-testnet.sh
+
 
 ```
 

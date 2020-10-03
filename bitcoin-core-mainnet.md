@@ -101,6 +101,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install snapd
 sudo snap install bitcoin-core
+mkdir .bitcoin
 cat << EOF > ~/.bitcoin/bitcoin.conf
 mainnet=1
 txindex=1
@@ -116,6 +117,8 @@ EOF
 
 ```bash
 chmod a+x install-bitcoincore-mainnet.sh
+./install-bitcoincore-mainnet.sh
+
 ```
 
 ### デーモン起動
