@@ -132,6 +132,9 @@ bitcoin-core.daemon -mainnet
 
 ```bash
 bitcoin-core.cli -mainnet help
+
+bitcoin-core.cli -testnet getblockcount
+
 ```
 ---
 

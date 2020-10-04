@@ -42,6 +42,9 @@ bitcoin-core.daemon -signet
 
 ```bash
 bitcoin-cli -datadir=signet getblockcount
+
+bitcoin-core.cli -testnet getbalance
+
 ```
 
 

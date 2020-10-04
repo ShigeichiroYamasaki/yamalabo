@@ -46,5 +46,31 @@ bitcoin-core.daemon -testnet
 
 ```bash
 bitcoin-core.cli -testnet help
+
+bitcoin-core.cli -testnet getblockcount
+
+bitcoin-core.cli -testnet getbalance
 ```
+
+### 自分のアドレス生成
+
+```bash
+bitcoin-core.cli -testnet getnewaddress ichiro
+tb1qmv2xqghzrp3esph3h3s60ltzj2n507sawxahxd
+```
+
+### ファウセットからコインを得る
+
+https://bitcoinfaucet.uo1.net/
+
+自分のアドレスを入れる
+
+２回ほどやる
+
+### 残高確認（１０分後）
+
+```
+bitcoin-core.cli -testnet getbalance
+```
+
 
