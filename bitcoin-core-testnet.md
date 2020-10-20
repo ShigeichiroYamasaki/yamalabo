@@ -1,6 +1,9 @@
 # bitcoin testnet 構築
 
 ## bitcoin core インストール
+ubuntu 18.04LTS
+
+* WSL2 の ubuntu ではうまくいかない
 
 ### testnet インストールスクリプト
 

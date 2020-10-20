@@ -1,12 +1,14 @@
 # bitcoin regtest 構築
 
-ubutu 18.04LTS
+ubutu 20.04LTS
 
 ## bitcoin core インストール
 
 ### インストールスクリプト
 
-install-bitcoincore-regtest.sh
+```bash
+nano install-bitcoincore-regtest.sh
+```
 
 
 ```bash
@@ -16,6 +18,7 @@ sudo apt upgrade -y
 sudo apt install snapd
 sudo snap install bitcoin-core
 mkdir .bitcoin
+
 cat << EOF > ~/.bitcoin/bitcoin.conf
 regtest=1
 txindex=1
@@ -31,8 +34,8 @@ EOF
 ### インストール実行
 
 ```bash
-chmod a+x install-bitcoincore-testnet.sh
-./install-bitcoincore-testnet.sh
+chmod a+x install-bitcoincore-regtest.sh
+./install-bitcoincore-regtest.sh
 
 
 ```
