@@ -99,6 +99,7 @@ rbenv global 2.7.2
 ## bitcoinrbの利用
 
 ```bash
+sudo apt-get install -y libleveldb-dev
 gem install bitcoinrb
 ```
 
