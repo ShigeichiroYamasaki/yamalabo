@@ -12,13 +12,13 @@ sudo apt upgrade -y
 sudo apt install snapd
 sudo snap install bitcoin-core
 mkdir .bitcoin
-cat << EOF > ~/.bitcoin/bitcoin.conf
+cat << EOF > ~snap/bitcoin-core/common/.bitcoin/bitcoin.conf
 signet=1
 txindex=1
 server=1
 rest=1
-rpcuser="user"
-rpcpassword="password"
+rpcuser=hoge
+rpcpassword=hoge
 rpcport=18332
 EOF
 ```
