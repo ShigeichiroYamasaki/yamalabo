@@ -70,7 +70,7 @@ chmod a+x install-bitcoincore-regtest.sh
 
 
 ```bash
-bitcoin-core.daemon -fallbackfee=0.0002 &
+bitcoin-core.daemon &
 ```
 
 ### クライアント接続
