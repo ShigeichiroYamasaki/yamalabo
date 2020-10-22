@@ -19,6 +19,7 @@ rpcpassword=hoge
 [regtest]
 rpcport=18332
 port=18333
+fallbackfee=0.0002
 
 ```
 
@@ -51,6 +52,7 @@ rpcpassword=hoge
 [regtest]
 rpcport=18332
 port=18333
+fallbackfee=0.0002
 EOF
 ```
 
