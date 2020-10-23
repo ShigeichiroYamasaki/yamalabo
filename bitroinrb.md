@@ -28,21 +28,27 @@ brew install rbenv
 cd ~
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+```
 
+ ~/.bashrc
 
-cat << EOF >> .bashrc
+```bash
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
-EOF
+```
 
-source .bashrc
 
+### 最新バージョンをインストールする
+
+```
 rbenv install -l
+```
 
-# 最新バージョンをインストールする 2.7.2 の場合
+ 2.7.2 の場合
+
+```bash
 rbenv install 2.7.2
 rbenv global 2.7.2
-
 
 gem install bitcoinrb
 ```
@@ -139,13 +145,13 @@ addr_alice=bitcoinRPC('getnewaddress', ['alice'])
 #### aliceのアドレスマイニングをする (ハッシュ値を50個作成する）
 
 ```ruby
-addr_alice=bitcoinRPC('generatetoaddress', [10, addr_alice])
+addr_alice=bitcoinRPC('generatetoaddress', [102, addr_alice])
 ```
 
-#### 10分以上後　残高が増えていることを確認する
+#### 残高が増えていることを確認する
 
 ```ruby
-addr_alice=bitcoinRPC('getbalance', [])
+balance=bitcoinRPC('getbalance', [])
 ```
 
 #### bobというラベルでアドレスを生成
@@ -157,10 +163,13 @@ addr_bob=bitcoinRPC('getnewaddress', ['bob'])
 #### 送金 alice がbobへ送金する
 
 ```ruby
-addr_bob=bitcoinRPC('sendtoaddress', ['bob'])
-
+txid=bitcoinRPC('sendtoaddress', [addr_bob, 1.0])
 ```
 
+#### トランザクションを確認
+
+```
+```
 
 ## 基本
 

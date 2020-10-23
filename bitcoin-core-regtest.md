@@ -18,7 +18,7 @@ rpcuser=hoge
 rpcpassword=hoge
 [regtest]
 rpcport=18332
-port=18333
+port=18444
 fallbackfee=0.0002
 
 ```
@@ -42,7 +42,7 @@ sudo snap install bitcoin-core
 cd ~snap/bitcoin-core/common/
 mkdir .bitcoin
 
-cat << EOF > ~snap/bitcoin-core/common/.bitcoin/bitcoin.conf
+cat << EOF > ~/snap/bitcoin-core/common/.bitcoin/bitcoin.conf
 regtest=1
 txindex=1
 server=1
@@ -51,7 +51,7 @@ rpcuser=hoge
 rpcpassword=hoge
 [regtest]
 rpcport=18332
-port=18333
+port=18444
 fallbackfee=0.0002
 EOF
 ```
@@ -98,7 +98,7 @@ bitcoin-core.cli help sendtoaddress
 #### 基本操作
 
 ```bash
-# aliceというラベルでアドレスを生成してみる
+# aliceというラベルで自分のアドレスを生成してみる
 bitcoin-core.cli getnewaddress 'alice'
 
 # ラベルからアドレスを知る
@@ -108,9 +108,9 @@ bitcoin-core.cli getaddressesbylabel alice
 # bcrt1qr2c60a7wn95unh86rf396hhaxtnx5yctyd4rdm
 
 # aliceのアドレスマイニングをする (ハッシュ値を50個作成する）
-bitcoin-core.cli generatetoaddress  50 bcrt1qr2c60a7wn95unh86rf396hhaxtnx5yctyd4rdm
+bitcoin-core.cli generatetoaddress 5 <自分のアドレス>
 
-# 10分以上後　残高が増えていることを確認する
+# 約17時間後　(100ブロック後）残高が増えていることを確認する
 bitcoin-core.cli getbalance
 
 # bobというラベルでアドレスを生成してみる
@@ -126,7 +126,7 @@ bitcoin-core.cli getnewaddress 'bob'
 
 ```bash
 # 送金
-bitcoin-core.cli sendtoaddress "bcrt1qgpslm9y8uu3pnnr54hu77dpq6mlzkkc6fuvqty" 1.5
+bitcoin-core.cli sendtoaddress <送金先アドレス> 67
 
 
 2020-10-21T10:22:46Z [default wallet] keypool added 1 keys (1 internal), size=2000 (1000 internal)
@@ -146,14 +146,14 @@ CTransaction(hash=0afd2c6c56, ver=2, vin.size=2, vout.size=2, nLockTime=0)
 2020-10-21T10:22:46Z [default wallet] AddToWallet 0afd2c6c56186da0bba23029d7ddd1d96188120dc07b232838cee884c02c75a9  
 0afd2c6c56186da0bba23029d7ddd1d96188120dc07b232838cee884c02c75a9
 
-# transaction ID
+# トランザクション ID
 # 0afd2c6c56186da0bba23029d7ddd1d96188120dc07b232838cee884c02c75a9
 ```
 
 ##### トランザクションの内容を確認する
 
 ```bash
- bitcoin-core.cli gettransaction 0afd2c6c56186da0bba23029d7ddd1d96188120dc07b232838cee884c02c75a9
+ bitcoin-core.cli gettransaction <トランザクションID>
  
 
 {
