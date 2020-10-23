@@ -54,29 +54,35 @@ rpcport=18332
 port=18444
 fallbackfee=0.0002
 EOF
+
+cd ~
+cat << EOF > ~/.bashrc
+alias bitcoin-cli="bitcoin-core.cli"
+alias bitcoind="bitcoin-core.daemon"
+alias bitcoin-qt="bitcoin-core.qt"
+EOF
+source ~/.bashrc
 ```
 
 
 ### インストール実行
 
 ```bash
-chmod a+x install-bitcoincore-regtest.sh
+chmod 766 install-bitcoincore-regtest.sh
 ./install-bitcoincore-regtest.sh
-
-
 ```
 
 ### デーモン起動
 
 
 ```bash
-bitcoin-core.daemon &
+bitcoind &
 ```
 
 ### クライアント接続
 
 ```bash
-bitcoin-core.cli help
+bitcoin-cli help
 ```
 
 ### 基本操作

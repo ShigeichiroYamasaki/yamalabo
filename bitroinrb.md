@@ -5,21 +5,46 @@
 ### ubuntu
 
 ```bash
+nano install_ruby
+```
+
+```bash
+#!/bin/bash
 sudo apt install -y git
 sudo apt install -y gcc
-
 sudo apt-get install -y libleveldb-dev
 sudo apt-get install -y rbenv
+cd ~
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rbenv install 2.7.2
+rbenv global 2.7.2
+
+gem install bitcoinrb
 ```
 
 
 ### MacOSX
 
+```
+nano install_ruby
+```
+
 ```bash
+#!/bin/bash
 brew install gcc
 brew install git
 brew install leveldb
 brew install rbenv
+cd ~
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rbenv install 2.7.2
+rbenv global 2.7.2
+
+gem install bitcoinrb
 ```
 
 ### Ruby
