@@ -4,40 +4,47 @@
 
 ### MacOSX
 
-```bash
-xcode-select --install
+#### Bitcoin core ダウンロードサイトから dmg 形式のインストーラをダウンロードする
+
+```
+https://bitcoin.org/ja/download
 ```
 
-homebrew をインストールする
+#### インストーラで bitcoin core をインストールしてアプリを起動
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+* ドラックアンドドロップでアプリフォルダーにインストール
+* アプリを起動
+
+#### 設定ファイルを編集（作成）
+
+* ファイルメニューの preferences.. 
+* 「設定ファイルを開く」ボタンをクリック
+* 設定ファイルを以下のように作成して保存
+
+```
+signet=1
+txindex=1
+daemon=1
+server=1
+rest=1
+[signet]
+rpcuser=hoge
+rpcpassword=hoge
+rpcport=38332
+port=38333
+fallbackfee=0.0002
 ```
 
-brew でインストール
+* 「OK」をクリック
 
-```bash
-brew install autoconf automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf qt5 libevent
+#### bitcoin core を一旦終了して再度起動
 
-brew install librsvg
-```
-
-```bash
-git clone https://github.com/bitcoin/bitcoin
-cd bitcoin
-
-./autogen.sh
-```
-
-ワレットなしでインストール
-
-```bash
-./configure --disable-wallet
-make
-```
-Berkeley DB 4.8
+アイコンが薄い黄緑になっていれば成功
 
 
+
+
+----
 
 ### ubuntu 
 
@@ -61,7 +68,7 @@ cd bitcoin
 ./autogen.sh
 export BDB_PREFIX='<PATH-TO>/db4'
 
-./configure --disable-wallet
+
 
 make 
 ```
@@ -72,6 +79,7 @@ txindex=1
 daemon=1
 server=1
 rest=1
+[signet]
 rpcuser=hoge
 rpcpassword=hoge
 rpcport=38332
