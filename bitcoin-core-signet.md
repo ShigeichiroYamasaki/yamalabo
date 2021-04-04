@@ -40,7 +40,8 @@ bitcoin-core.qt
 
 ## bitcoind 設定ファイルを編集（作成）
 
-* bitcoin-qt (GUI) から設定にアクセス
+### bitcoin-qt (GUI) から設定ファイル (bitcoin.conf) を編集
+
 * MacOSX :「ファイル」メニューの 「preferences」.. 
 * ubuntu: 「設定」メニューの「オプション」
 * 「設定ファイルを開く」ボタンをクリック
@@ -66,7 +67,7 @@ fallbackfee=0.0002
 
 アイコンが薄い黄緑になっていれば成功
 
-* ワレットの作成
+* bitcoin-qt で自分のワレットの作成しておく
 
 ## テスト用コインの入手
 
