@@ -75,3 +75,97 @@ fallbackfee=0.0002
 
 
 
+## Ruby からのAPIの利用
+
+### MacOSX
+
+```
+brew install leveldb 
+
+gem install bitcoinrb
+```
+
+### bitcoinrb のRPC (signet)
+
+```
+require 'bitcoin'
+require 'net/http'
+require 'json'
+RPCUSER="hoge"
+RPCPASSWORD="hoge"
+HOST="localhost"
+PORT=38332
+ 
+def bitcoinRPC(method, params)
+ 	http = Net::HTTP.new(HOST, PORT)
+ 	request = Net::HTTP::Post.new('/')
+ 	request.basic_auth(RPCUSER, RPCPASSWORD)
+ 	request.content_type = 'application/json'
+ 	request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+ 	JSON.parse(http.request(request).body)["result"]
+end
+
+# テスト
+bitcoinRPC('help', [])
+```
+
+### 鍵生成
+
+```
+# 鍵生成
+key=Bitcoin::Key.generate
+
+# 秘密鍵
+priv=key.priv_key
+# 公開鍵生成
+pub=key.pubkey
+```
+### ワレット
+
+```
+# マスターキー生成
+master=Bitcoin::Wallet::MasterKey.generate
+
+# マスターキーのニーモニックコード
+
+ master.mnemonic
+=> ["canyon", "space", "snack", "unlock", "fitness", "basic", "frequent", "license", "slab", "brisk", "can", "violin", "race", "way", "magic", "weapon", "sentence", "frequent", "shy", "valid", "toe", "reveal", "essence", "unfair"]
+
+```
+
+
+### bitcoin スクリプト
+
+```
+script="2 4 OP_ADD 6 OP_EQUAL"
+s=Bitcoin::Script.from_string(script)
+s.run
+```
+
+## 基本操作
+
+### 鍵生成　aliceというラベルでアドレス生成
+
+```
+addr_alice=bitcoinRPC('getnewaddress', ['alice'])
+```
+
+### 残高を確認
+
+```
+balance=bitcoinRPC('getbalance', [])
+```
+
+### bobというラベルでアドレスを生成
+
+```
+addr_bob=bitcoinRPC('getnewaddress', ['bob'])
+```
+
+### 送金 alice がbobへ送金する
+
+```
+txid=bitcoinRPC('sendtoaddress', [addr_bob, 0.001])
+```
+
+
