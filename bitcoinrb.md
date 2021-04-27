@@ -1,26 +1,13 @@
-# bitroinrb の使い方
+# bitcoinrb の使い方
+
+bitcoin core API をRuby から操作する rubygems
 
 ## インストール方法
 
 ### ubuntu
 
 ```bash
-nano install_ruby
-```
-
-```bash
-#!/bin/bash
-sudo apt install -y git
-sudo apt install -y gcc
-sudo apt-get install -y libleveldb-dev
-sudo apt-get install -y rbenv
-cd ~
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-rbenv install 2.7.2
-rbenv global 2.7.2
-
+sudo apt install -y libleveldb-dev
 gem install bitcoinrb
 ```
 
@@ -28,55 +15,15 @@ gem install bitcoinrb
 ### MacOSX
 
 ```
-nano install_ruby
-```
-
-```bash
-#!/bin/bash
-brew install gcc
-brew install git
-brew install leveldb
-brew install rbenv
-cd ~
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-rbenv install 2.7.2
-rbenv global 2.7.2
-
+brew install --build-from-source leveldb
 gem install bitcoinrb
 ```
 
-### Ruby
+## bitcoin core を起動する
 
-```bash
-cd ~
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-```
+bitcoind でも. bitcoin-qt でもよい
 
- ~/.bashrc
-
-```bash
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-```
-
-
-### 最新バージョンをインストールする
-
-```
-rbenv install -l
-```
-
- 2.7.2 の場合
-
-```bash
-rbenv install 2.7.2
-rbenv global 2.7.2
-
-gem install bitcoinrb
-```
+接続するネットワークを意識する（signet, testnet, mainnetなど）
 
 ## irbで確認
 
@@ -84,11 +31,67 @@ gem install bitcoinrb
 irb
 ```
 
+## RPC （http 経由でbitcoin core を利用する）****
+
 ```ruby
 require 'bitcoin'
+Bitcoin.chain_params = :signet
 
-Bitcoin.chain_params = :regtest
+require 'net/http'
+require 'json'
+RPCUSER="hoge"
+RPCPASSWORD="hoge"
+HOST="localhost"
+PORT=18332
+ 
+def bitcoinRPC(method, params)
+ 	http = Net::HTTP.new(HOST, PORT)
+ 	request = Net::HTTP::Post.new('/')
+ 	request.basic_auth(RPCUSER, RPCPASSWORD)
+ 	request.content_type = 'application/json'
+ 	request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+ 	JSON.parse(http.request(request).body)["result"]
+end
+
+# テスト
+bitcoinRPC('help', [])
+
 ```
+
+### bitcoin core RPC への基本操作
+
+#### 鍵生成　aliceというラベルでアドレス生成
+
+```ruby
+addr_alice=bitcoinRPC('getnewaddress', ['alice'])
+```
+
+#### aliceのアドレスマイニングをする (ハッシュ値を50個作成する）
+
+```ruby
+addr_alice=bitcoinRPC('generatetoaddress', [102, addr_alice])
+```
+
+#### 残高が増えていることを確認する
+
+```ruby
+balance=bitcoinRPC('getbalance', [])
+```
+
+#### bobというラベルでアドレスを生成
+
+```ruby
+addr_bob=bitcoinRPC('getnewaddress', ['bob'])
+```
+
+#### 送金 alice がbobへ送金する
+
+```ruby
+txid=bitcoinRPC('sendtoaddress', [addr_bob, 1.0])
+```
+
+#### トランザクションを確認
+
 
 ### 鍵
 
@@ -134,64 +137,6 @@ lock_script=""
 unlock_script=""
 ```
 
-## RPC （http 経由でbitcoin core を利用する）
-
-```ruby
-require 'bitcoin'
-require 'net/http'
-require 'json'
-RPCUSER="hoge"
-RPCPASSWORD="hoge"
-HOST="localhost"
-PORT=18332
- 
-def bitcoinRPC(method, params)
- 	http = Net::HTTP.new(HOST, PORT)
- 	request = Net::HTTP::Post.new('/')
- 	request.basic_auth(RPCUSER, RPCPASSWORD)
- 	request.content_type = 'application/json'
- 	request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
- 	JSON.parse(http.request(request).body)["result"]
-end
-
-# テスト
-bitcoinRPC('help', [])
-
-```
-
-### 基本操作
-
-#### 鍵生成　aliceというラベルでアドレス生成
-
-```ruby
-addr_alice=bitcoinRPC('getnewaddress', ['alice'])
-```
-
-#### aliceのアドレスマイニングをする (ハッシュ値を50個作成する）
-
-```ruby
-addr_alice=bitcoinRPC('generatetoaddress', [102, addr_alice])
-```
-
-#### 残高が増えていることを確認する
-
-```ruby
-balance=bitcoinRPC('getbalance', [])
-```
-
-#### bobというラベルでアドレスを生成
-
-```ruby
-addr_bob=bitcoinRPC('getnewaddress', ['bob'])
-```
-
-#### 送金 alice がbobへ送金する
-
-```ruby
-txid=bitcoinRPC('sendtoaddress', [addr_bob, 1.0])
-```
-
-#### トランザクションを確認
 
 ```
 ```

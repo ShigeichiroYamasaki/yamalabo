@@ -13,10 +13,12 @@ https://bitcoin.org/ja/download
 #### インストーラで bitcoin core をインストールしてアプリを起動
 
 * ドラックアンドドロップでアプリフォルダーにインストール
+* 「システム環境設定」の「セキュリティとプライバシー」で，ロックのアイコンをクリックしてパスワード入力
+*  bitcoin coreに対して「ダウンロードしたアプリケーションの実行許可」を与える
 
 #### アプリ起動
 
-アプリケーションフォルダのアプリで起動
+「アプリケーションフォルダ」の bitcoin core アプリ起動
 
 ### ubuntu 20.04LTS
 
@@ -39,6 +41,12 @@ bitcoin-core.qt
 
 
 ## bitcoind 設定ファイルを編集（作成）
+
+snap でインストールしたときの設定ファイル
+
+```
+ ~/snap/bitcoin-core/common/.bitcoin/bitcoin.conf
+```
 
 ### bitcoin-qt (GUI) から設定ファイル (bitcoin.conf) を編集
 
@@ -72,7 +80,6 @@ fallbackfee=0.0002
 ## テスト用コインの入手
 
 [https://signet.bc-2.jp/](https://signet.bc-2.jp/)
-
 
 
 ## Ruby からのAPIの利用
