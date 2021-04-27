@@ -1,6 +1,4 @@
-# Bitcoin core Signet ノードの構築
-
-## install 方法
+# Bitcoin core 基本操作
 
 ### MacOSX
 
@@ -82,3 +80,4 @@ fallbackfee=0.0002
 [https://signet.bc-2.jp/](https://signet.bc-2.jp/)
 
 
+> 
