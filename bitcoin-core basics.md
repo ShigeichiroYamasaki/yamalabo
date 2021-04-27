@@ -95,5 +95,11 @@ bitcoin-core.cli  rpcwallet= yamalabo2 dumpprivkey tb1q4f8mhhdxmwlscxqg623fjun58
 
 ### テスト用のビットコインの入手方法
 
+[ https://signet.bc-2.jp/]( https://signet.bc-2.jp/)
 
 ### 自分のワレットのビットコインの残高の確認
+
+```
+bitcoin-core.cli  -rpcwallet=yamalabo2 getbalance
+```
+

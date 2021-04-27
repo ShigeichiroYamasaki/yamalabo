@@ -42,7 +42,7 @@ require 'json'
 RPCUSER="hoge"
 RPCPASSWORD="hoge"
 HOST="localhost"
-PORT=18332
+PORT=38332
  
 def bitcoinRPC(method, params)
  	http = Net::HTTP.new(HOST, PORT)
