@@ -1,83 +1,99 @@
 # Bitcoin core 基本操作
 
-### MacOSX
+signet ubuntu を想定
 
-#### Bitcoin core ダウンロードサイトから dmg 形式のインストーラをダウンロードする
+## bitcoind を起動
 
-```
-https://bitcoin.org/ja/download
-```
-
-#### インストーラで bitcoin core をインストールしてアプリを起動
-
-* ドラックアンドドロップでアプリフォルダーにインストール
-* 「システム環境設定」の「セキュリティとプライバシー」で，ロックのアイコンをクリックしてパスワード入力
-*  bitcoin coreに対して「ダウンロードしたアプリケーションの実行許可」を与える
-
-#### アプリ起動
-
-「アプリケーションフォルダ」の bitcoin core アプリ起動
-
-### ubuntu 20.04LTS
-
-#### snap でインストールする
-
-```bash
-sudo snap install bitcoin-core
-```
-
-#### bitcoin-qt アプリを起動
+ubuntu snap 
 
 ```
-bitcoin-core.qt
+bitcoin-core.daemon &
 ```
 
-#### snap で bitcoin core をインストールしたときのコマンドインターフェース
+## ビットコインネットワークの情報確認
 
-* bitcoin-core.daemon : デーモン起動 (bitcoind)
-* bitcoin-core.cli : クライアント (bitcoin-cli)
-
-
-## bitcoind 設定ファイルを編集（作成）
-
-snap でインストールしたときの設定ファイル
+自分のノードのバージョン，プロトコルバージョン，接続ノード数，IPアドレスとポート番号などの情報を表示します。
 
 ```
- ~/snap/bitcoin-core/common/.bitcoin/bitcoin.conf
+bitcoin-core.cli getnetworkinfo
 ```
 
-### bitcoin-qt (GUI) から設定ファイル (bitcoin.conf) を編集
+### 接続中のノードの情報一覧
 
-* MacOSX :「ファイル」メニューの 「preferences」.. 
-* ubuntu: 「設定」メニューの「オプション」
-* 「設定ファイルを開く」ボタンをクリック
-* 設定ファイルを以下のように作成して保存
+接続中のノードのバージョン，IPアドレス，プロトコルのバージョン，ノードの状態などに関する情報を表示します。
 
 ```
-signet=1
-txindex=1
-daemon=1
-server=1
-rest=1
-[signet]
-rpcuser=hoge
-rpcpassword=hoge
-rpcport=38332
-port=38333
-fallbackfee=0.0002
+bitcoin-core.cli  getpeerinfo
 ```
 
-* 「OK」をクリック
+## ワレット
 
-## bitcoin core を一旦終了して再度起動
+### ワレットの作成
 
-アイコンが薄い黄緑になっていれば成功
+```
+bitcoin-core.cli  createwallet <ワレット名>
+```
 
-* bitcoin-qt で自分のワレットの作成しておく
+```
+bitcoin-core.cli  createwallet yamalabo1
+bitcoin-core.cli  createwallet yamalabo2
+```
 
-## テスト用コインの入手
+### ワレットの一覧
 
-[https://signet.bc-2.jp/](https://signet.bc-2.jp/)
+```
+bitcoin-core.cli  listwallets
+```
+
+### ワレットのロード
+
+```
+bitcoin-core.cli loadwallet <ワレット名>
+```
+
+```
+bitcoin-core.cli loadwallet yamalabo2
+```
+
+### ビットコインアドレスの生成
+
+自分のアドレスを生成して，メモしてください
+
+```
+bitcoin-core.cli  -rpcwallet=<ワレット名> getnewaddress
+```
+
+```
+bitcoin-core.cli  -rpcwallet=yamalabo2 getnewaddress
+```
+
+ここでは以下のようなアドレスが返ってきたとします
+
+ tb1q4f8mhhdxmwlscxqg623fjun580wtyldut5a6y3
 
 
-> 
+
+### ビットコインアドレスに対応する公開鍵を確認する
+
+```
+bitcoin-core.cli  -rpcwallet=<ワレット名> getaddressinfo <ビットコインアドレス>
+```
+
+```
+bitcoin-core.cli  -rpcwallet=yamalabo2 getaddressinfo tb1q4f8mhhdxmwlscxqg623fjun580wtyldut5a6y3
+```
+
+### ビットコインアドレスに対応する秘密鍵を確認する
+
+```
+bitcoin-core.cli  rpcwallet=<ワレット名> dumpprivkey <ビットコインアドレス>
+```
+
+```
+bitcoin-core.cli  rpcwallet= yamalabo2 dumpprivkey tb1q4f8mhhdxmwlscxqg623fjun580wtyldut5a6y3
+```
+
+### テスト用のビットコインの入手方法
+
+
+### 自分のワレットのビットコインの残高の確認
