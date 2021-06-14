@@ -166,21 +166,11 @@ nano app/views/users/index.html.erb
 nano app/views/layouts/application.html.erb
 ```
 
-head タグの中に stylesheet_link_tag と javascript_pack_tag を追加
+
 body　タグ部分に以下のように div タグを追加(<%= yield %>　をdiv で囲む)
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>App</title>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </head>
-  
-...
+  ...
 
   <body>
     <div class="container">
@@ -190,6 +180,14 @@ body　タグ部分に以下のように div タグを追加(<%= yield %>　をd
   
 ...
 ```
+
+### サーバー再起動
+
+
+```bash
+rails s -b 0.0.0.0
+```
+
 
 ###  ブラウザをリロードかけてレイアウトの変化を確認
 
