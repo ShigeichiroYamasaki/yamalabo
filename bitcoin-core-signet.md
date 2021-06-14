@@ -4,11 +4,8 @@
 
 ### MacOSX
 
-#### Bitcoin core ダウンロードサイトから dmg 形式のインストーラをダウンロードする
+[Bitcoin core ダウンロードサイト](https://bitcoin.org/ja/download)から dmg 形式のインストーラをダウンロードする
 
-```
-https://bitcoin.org/ja/download
-```
 
 #### インストーラで bitcoin core をインストールしてアプリを起動
 
@@ -28,7 +25,7 @@ https://bitcoin.org/ja/download
 sudo snap install bitcoin-core
 ```
 
-#### bitcoin-qt アプリを起動
+## bitcoin-qt アプリを起動
 
 ```
 bitcoin-core.qt

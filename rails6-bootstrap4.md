@@ -1,151 +1,24 @@
 # rails 6 でbootstrap4を利用する
 
 
-## 事前準備
+## Rubyのインストール
 
-### 必要なライブラリのインストール
+[ruby](./ruby.md)
 
-#### ubuntu
 
-```bash
-nano install_rbenv.sh
-```
 
-```bash
-#!/bin/bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y build-essential 
-sudo apt install -y clang
-sudo apt install -y cmake
-sudo apt install -y direnv
-sudo apt install -y git
-sudo apt install -y nodejs
-sudo apt install -y ruby-dev
-sudo apt install -y curl
-sudo apt install -y imagemagick
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update
-
-sudo apt install -y yarn
-sudo apt install -y npm
-sudo npm install n -g
-sudo n stable
-sudo apt purge -y nodejs npm
-exec $SHELL -l
-sudo apt install -y sqlite3 libsqlite3-dev
-sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
-
-apt-get install -y libreadline-dev zlib1g-dev
-rm -fr ~/.rbenv
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-source ~/.bash_profile
-source ~/.bashrc
-exec $SHELL -l
-```
-
-```bash
-nano install_ruby.sh
-```
-
-```bash
-#!/bin/bash
-rbenv install 2.5.1
-rbenv global 2.5.1
-```
+### Railsインストールスクリプトの作成
 
 ```bash
 nano install_rails.sh
 ```
 
-----
-
-#### MacOSX
-
-```bash
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
-
-##### 確認
-
-```bash
-brew doctor
-```
-
-* エラーや警告メッセージがでたら、その指示にしたがう
-* 警告などが出なくなるまで brew doctor を繰り返す
-
-```
-Your system is ready to brew.
-```
-
-が出ればOK
-
-
-##### インストールスクリプトの作成
-
-```bash
-emacs install_rbenv.sh
-```
-
 ```bash
 #!/bin/bash
-brew update
-brew upgrade
 
-brew install direnv
-brew install git
-brew install nodejs
-brew install ruby-dev
-brew install curl
-brew install imagemagick
-brew install yarn
-brew install npm
-brew install sqlite3 
-brew install readline
-brew install zlib
-sudo npm install n -g
-sudo n stable
+yarn install
+yarn upgrade
 
-rm -fr ~/.rbenv
-
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
-
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-source ~/.bash_profile
-source ~/.bashrc
-exec $SHELL -l
-```
-
-```bash
-nano install_ruby.sh
-```
-
-```bash
-#!/bin/bash
-rbenv install 2.5.1
-rbenv global 2.5.1
-```
-
-```bash
-nano install_rails.sh
-```
-
-
-
-
-### rubygems 
-
-```bash
-#!/bin/bash
 gem install bundler
 gem install sqlite3
 gem install json-jwt
@@ -161,13 +34,15 @@ gem install omniauth-facebook
 ### 実行
 
 ```bash
-chmod a+x install_rbenv.sh
-chmod a+x install_ruby.sh
-chmod a+x install_rails.sh
+chmod u+x install_rails.sh
 
-./install_rbenv.sh
-./install_ruby.sh
 ./install_rails.sh
+```
+
+シェルの再起動
+
+```bash
+exec $SHELL -l
 ```
 
 
@@ -185,10 +60,26 @@ cd test1
 rails g scaffold User name
 ```
 
+#### webpackerのインストール
+
+```bash
+rails webpacker:install
+```
+
 #### Gemfile編集
 
+```bash
+nano Gemfile
+```
 
-以下を追加
+```
+ruby '3.0.1'
+...
+
+```
+
+の下に以下を追加
+
 
 ```
 gem 'bootstrap'
@@ -199,4 +90,112 @@ gem 'jquery-rails'
 ```bash
 bundle install
 ```
+
+### DB のマイグレーション
+
+```bash
+rails db:migrate
+```
+
+### サーバーの起動
+
+```bash
+rails s -b 0.0.0.0
+```
+
+
+### ブラウザから確認
+
+http://localhost:3000/users
+
+確認後，control-c でサーバを停止
+
+
+### CSSを編集
+
+```bash
+nano app/assets/stylesheets/application.css
+```
+
+最後に以下を追加
+
+```css
+@import "bootstrap"; 
+```
+
+### css のファイル名を.css から .scssに変更
+
+```bash
+mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss
+```
+
+### application.js を修正
+
+```bash
+nano app/javascript/packs/application.js
+```
+
+以下を追加する
+
+```javascript
+//=require bootstrap
+```
+
+### html を修正
+
+```bash
+nano app/views/users/index.html.erb
+```
+
+試しにファイルの一番上に以下を記述してみる
+
+```html
+<a class="btn btn-primary" href="#" role="button">Link</a>
+<button class="btn btn-primary" type="submit">Button</button>
+<input class="btn btn-primary" type="button" value="Input">
+<input class="btn btn-primary" type="submit" value="Submit">
+<input class="btn btn-primary" type="reset" value="Reset">
+```
+
+
+## Rails bootstrap の使い方
+
+### レイアウトの修正
+
+```bash
+nano app/views/layouts/application.html.erb
+```
+
+head タグの中に stylesheet_link_tag と javascript_pack_tag を追加
+body　タグ部分に以下のように div タグを追加(<%= yield %>　をdiv で囲む)
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>App</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+  
+...
+
+  <body>
+    <div class="container">
+    <%= yield %>
+    </div>
+  </body>
+  
+...
+```
+
+###  ブラウザをリロードかけてレイアウトの変化を確認
+
+
+
+
+
+
 
