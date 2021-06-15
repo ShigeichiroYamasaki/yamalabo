@@ -42,8 +42,6 @@ nano install_rbenv.sh
 
 ```bash
 #!/bin/bash
-
-#!/bin/bash
 brew update
 brew upgrade
 
@@ -83,6 +81,14 @@ brew install rbenv
 chmod u+x install_rbenv.sh
 ./install_rbenv.sh
 ```
+
+
+シェルの再起動
+
+```
+exec $SHELL -l
+```
+
 
 #### rbenv を使ったRubyのインストール
 
