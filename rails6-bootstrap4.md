@@ -1,4 +1,4 @@
-# rails 6 で bootstrap5を利用する
+# rails 6 で bootstrap6 を利用する
 
 
 ## Rubyのインストール
