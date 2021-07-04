@@ -39,11 +39,15 @@ bitcoin-core.qt
 
 ## bitcoind 設定ファイルを編集（作成）
 
-snap でインストールしたときの設定ファイル
+設定ファイル (bitcoin.conf) を編集
 
-```
- ~/snap/bitcoin-core/common/.bitcoin/bitcoin.conf
-```
+* ubuntu で通常インストールしたときの bitcoin.conf のデフォルトの場所
+    * ~/.bitcoin/bitcoin.conf
+* ubuntu でsnap でインストールした場bitcoin.conf のデフォルトの場所
+    * ~/snap/bitcoin-core/common/.bitcoin/bitcoin.conf
+* MacOSX でパッケージインストールしたときのbitcoin.conf のデフォルトの場所
+    * ~/Library/Application Support/Bitcoin/bitcoin.conf
+
 
 ### bitcoin-qt (GUI) から設定ファイル (bitcoin.conf) を編集
 

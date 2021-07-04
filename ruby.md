@@ -154,6 +154,8 @@ echo 'eval "$(~/.rbenv/bin/rbenv init -)"' >> ~/.bash_profile
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 source ~/.bashrc
+sudo apt install rbenv
+
 ```
 
 #### rbenvのインストールスクリプトのパーミッションの変更と実行
