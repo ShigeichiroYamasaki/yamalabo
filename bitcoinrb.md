@@ -8,7 +8,7 @@ bitcoin core API をRuby から操作する rubygems
 
 ```bash
 sudo apt install -y libleveldb-dev
-gem install bitcoinrb
+sudo gem install bitcoinrb
 ```
 
 
@@ -21,7 +21,7 @@ gem install bitcoinrb
 
 ## bitcoin core を起動する
 
-bitcoind でも. bitcoin-qt でもよい
+bitcoind でも. bitcoin-qt でもsnap のbitocoin-core でもよい
 
 接続するネットワークを意識する（signet, testnet, mainnetなど）
 

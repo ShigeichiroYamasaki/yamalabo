@@ -89,31 +89,9 @@ chmod u+x install_rbenv.sh
 exec $SHELL -l
 ```
 
-
-#### rbenv を使ったRubyのインストール
-
-```bash
-rbenv install 3.0.1
-rbenv global 3.0.1
-```
-
-シェルの再起動
-
-```
-exec $SHELL -l
-```
-
-
 ## ubuntu
 
-
-インストールスクリプトファイル
-
-### rbenv のインストール
-
-```bash
-nano install_rbenv.sh
-```
+#### rbenv を使ったRubyのインストール
 
 ```bash
 #!/bin/bash
@@ -144,7 +122,6 @@ exec $SHELL -l
 sudo apt install -y sqlite3 libsqlite3-dev
 sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
 
-apt-get install -y libreadline-dev zlib1g-dev
 rm -fr ~/.rbenv
 
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
@@ -153,26 +130,21 @@ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
 echo 'eval "$(~/.rbenv/bin/rbenv init -)"' >> ~/.bash_profile
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-source ~/.bashrc
-sudo apt install rbenv
 
 ```
-
-#### rbenvのインストールスクリプトのパーミッションの変更と実行
 
 ```bash
 chmod u+x install_rbenv.sh
 ./install_rbenv.sh
-```
 
+source ~/.bashrc
+```
 シェルの再起動
 
 ```
 exec $SHELL -l
 ```
 
-
-#### rbenv を使ったRubyのインストール
 
 ```bash
 rbenv install 3.0.1
@@ -181,6 +153,11 @@ rbenv global 3.0.1
 
 
 
+
+
+```bash
+sudo apt install ruby ruby-dev
+```
 
 ## バージョンの確認
 
