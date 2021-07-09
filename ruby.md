@@ -126,6 +126,7 @@ sudo apt purge -y nodejs npm
 exec $SHELL -l
 sudo apt install -y sqlite3 libsqlite3-dev
 sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
+sudo apt install rbenv
 
 rm -fr ~/.rbenv
 
