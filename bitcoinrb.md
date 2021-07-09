@@ -66,10 +66,12 @@ bitcoinRPC('help', [])
 addr_alice=bitcoinRPC('getnewaddress', ['alice'])
 ```
 
-#### aliceのアドレスマイニングをする (ハッシュ値を50個作成する）
+#### signet faucet からaliceに signet のビットコインを送る
 
-```ruby
-addr_alice=bitcoinRPC('generatetoaddress', [102, addr_alice])
+0.1 btc
+
+```URL
+https://signet.bc-2.jp/
 ```
 
 #### 残高が増えていることを確認する
@@ -87,7 +89,7 @@ addr_bob=bitcoinRPC('getnewaddress', ['bob'])
 #### 送金 alice がbobへ送金する
 
 ```ruby
-txid=bitcoinRPC('sendtoaddress', [addr_bob, 1.0])
+txid=bitcoinRPC('sendtoaddress', [addr_bob, 0.001])
 ```
 
 #### トランザクションを確認
@@ -125,33 +127,19 @@ master=Bitcoin::Wallet::MasterKey.generate
 script="2 4 OP_ADD 6 OP_EQUAL"
 s=Bitcoin::Script.from_string(script)
 s.run
-
+=> true
 ```
 
-### スクリプトの基本
-
-* lock_script を unlock_scriptで解除する
-
-```ruby
-lock_script=""
-unlock_script=""
-```
-
-
-```
-```
 
 ## 基本
 
 ```ruby
-require 'bitcoin'
-Bitcoin.chain_params = :regtest
 
-# code:TX
+# トランザクションのインスタンス生成
 
 tx = Bitcoin::Tx.new
 
-# code:TxIn
+# input の作成
 
 tx_in = Bitcoin::TxIn.new
 out_point = Bitcoin::OutPoint.from_txid("txid", "index")
