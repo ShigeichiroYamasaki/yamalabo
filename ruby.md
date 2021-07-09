@@ -111,22 +111,18 @@ sudo apt install -y nodejs
 sudo apt install -y ruby-dev
 sudo apt install -y curl
 sudo apt install -y imagemagick
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update
-
+sudo apt install -y rbenv
 sudo apt install -y yarn
 sudo apt install -y npm
 sudo npm install n -g
+sudo apt install -y sqlite3 libsqlite3-dev
+sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
 yarn install
 yarn upgrade
 sudo n stable
 sudo apt purge -y nodejs npm
 exec $SHELL -l
-sudo apt install -y sqlite3 libsqlite3-dev
-sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
-sudo apt install -y rbenv
+
 
 rm -fr ~/.rbenv
 
@@ -158,16 +154,4 @@ rbenv global 3.0.1
 ```
 
 
-
-
-
-```bash
-sudo apt install ruby ruby-dev
-```
-
-## バージョンの確認
-
-```
-ruby -v
-```
 
