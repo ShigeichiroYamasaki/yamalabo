@@ -92,6 +92,11 @@ exec $SHELL -l
 ## ubuntu
 
 #### rbenv を使ったRubyのインストール
+rbenvと関連ライブラリのインストールスクリプトの作成
+
+```bash
+nano install_rbenv.sh
+```
 
 ```bash
 #!/bin/bash

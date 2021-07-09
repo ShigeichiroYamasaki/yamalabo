@@ -68,7 +68,7 @@ addr_alice=bitcoinRPC('getnewaddress', ['alice'])
 
 #### signet faucet からaliceに signet のビットコインを送る
 
-0.1 btc
+1日，１回送金可能で，最大　0.1 btc
 
 ```URL
 https://signet.bc-2.jp/
@@ -131,33 +131,35 @@ s.run
 ```
 
 
-## 基本
+## トランザクション処理の基本
 
 ```ruby
 
 # トランザクションのインスタンス生成
-
 tx = Bitcoin::Tx.new
 
-# input の作成
+# code:TxIn
 
+txid="50dc0800c8421355e4bb719320f0216e5ac5ff21ed93bf06bf5ec2ec3a859fb5"
+index=1
 tx_in = Bitcoin::TxIn.new
-out_point = Bitcoin::OutPoint.from_txid("txid", "index")
+out_point = Bitcoin::OutPoint.from_txid(txid, index)
 script_sig = Bitcoin::Script.new
-script_witness = ScriptWitness.new
-sequence = SEQUENCE_FINAL
+script_witness = Bitcoin::ScriptWitness.new
+#sequence = SEQUENCE_FINAL
 
 # code:TxOut
 
+address=Bitcoin::Message::Addr.new("tb1qe4a84paaqac4cegytwrp0gdarxa8wvvewqnqx6")
 tx_out = Bitcoin::TxOut.new
- 	value = "value satoshi"
- 	script_pubkey = Bitcoin::Script.parse_from_addr("address")
+value = 0.001
+script_pubkey = Bitcoin::Script.parse_from_addr(address)
 
 # code:署名の準備
 # if BitcoinCore secret_key(52byte)
 
-secret_key = "secret_key"
-core_key = Bitcoin::Key.from_wif("secret_key")
+secret_key = priv
+core_key = Bitcoin::Key.from_wif(secret_key)
  
 key = Bitcoin::Key.new(priv_key: "core_key.priv_key", key_type: Bitcoin::Key::TYPES[:p2pkh] or [:p2wpkh_p2sh])
 
@@ -195,14 +197,15 @@ tx.in[0].script_sig = Bitcoin::Script.new << sig << key.pubkey.htb
 # code:P2WPKH
 
  require 'bitcoin'
- Bitcoin.chain_params = :testnet
+ Bitcoin.chain_params = :signet
  
  tx = Bitcoin::Tx.new
  
- tx_in = Bitcoin::TxIn.new(out_point: out_point)
-  out_point = Bitcoin::OutPoint.from_txid("txid", "index")
  
- tx_out = Bitcoin::TxOut.new(value: value, script_pubkey: script_pubkey)
+out_point = Bitcoin::OutPoint.from_txid(txid, index)
+tx_in = Bitcoin::TxIn.new(out_point: out_point)
+ 
+tx_out = Bitcoin::TxOut.new(value: value, script_pubkey: script_pubkey)
   amount = "amount(satoshi)"
   value = amount - "fee"
   script_pubkey = Bitcoin::Script.parse_from_addr("address")
