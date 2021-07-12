@@ -56,15 +56,21 @@ end
 # テスト
 bitcoinRPC('help', [])
 
+# helpメッセージが出てくれば成功
 ```
 
 ### bitcoin core RPC への基本操作
 
 #### 鍵生成　aliceというラベルでアドレス生成
+```ruby
+wallet=bitcoinRPC('loadwallet', ['alice'])
+```
+
 
 ```ruby
 addr_alice=bitcoinRPC('getnewaddress', ['alice'])
 ```
+
 
 #### signet faucet からaliceに signet のビットコインを送る
 
