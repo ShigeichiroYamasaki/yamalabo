@@ -47,9 +47,9 @@ bitcoin-core.cli getaddressinfo tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu
 "pubkey": "03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528",
 ```
 
-##　Alice がオープニングトランザクションを作成する
+## Alice がオープニングトランザクションを作成する
 
-###　Alice が自分のUTXOと残高を確認する
+### Alice が自分のUTXOと残高を確認する
 
 ```bash
 bitcoin-core.cli listunspent
@@ -70,7 +70,7 @@ bitcoin-core.cli listunspent
 ]
 ```
 
-###　Alice も自分の公開鍵を確認する
+### Alice も自分の公開鍵を確認する
 
 ```bash
 bitcoin-core.cli getaddressinfo tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0
@@ -98,13 +98,13 @@ bitcoin-core.cli getaddressinfo tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0
 ```
 
 *  BobとAliceの2-2 Multisig トランザクション( P2WSH)を作成する
-*  そのために，Bob と Alice の2-2　マルチシグアドレスを作成する（Bob, Aliceの順番-> 公開鍵の順番）
+*  そのために，Bob と Alice の2-2 マルチシグアドレスを作成する（Bob, Aliceの順番-> 公開鍵の順番）
 *  署名のために descriptor: を保管しておく
 *  署名のためにredeemScriptを保管しておく
 *  Bobの公開鍵：03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528
 *  Aliceの公開鍵：03760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e3347
 
-### Bob と　Alice　の2-2 Multisig アドレスを生成する
+### Bob と Alice の2-2 Multisig アドレスを生成する
 
 ```bash
 bitcoin-core.cli createmultisig 2 '["03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528","03760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e3347"]' bech32
@@ -130,7 +130,7 @@ bitcoin-core.cli createmultisig 2 '["03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf
 "redeemScript": "522103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5282103760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e334752ae"
 ```
 
-###　Aliceの bitcoin coreワレットにマルチシグ情報を登録する
+### Aliceの bitcoin coreワレットにマルチシグ情報を登録する
 
 ```bash
 bitcoin-core.cli importmulti '[{"desc":"wsh(multi(2,03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528,03760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e3347))#g8tynknc","timestamp": "now", "watchonly": true}]'
@@ -142,7 +142,7 @@ bitcoin-core.cli importmulti '[{"desc":"wsh(multi(2,03d66199f0dd6bbd161cd4a854cd
 ]
 ```
 
-###　Bobの bitcoin coreワレットにもマルチシグ情報を登録する
+### Bobの bitcoin coreワレットにもマルチシグ情報を登録する
 
 ```bash
 bitcoin-core.cli importmulti '[{"desc":"wsh(multi(2,03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528,03760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e3347))#g8tynknc","timestamp": "now", "watchonly": true}]'
@@ -155,7 +155,7 @@ bitcoin-core.cli importmulti '[{"desc":"wsh(multi(2,03d66199f0dd6bbd161cd4a854cd
 ```
 
 
-###　オープニングトランザクションを作成する（P2WSHとお釣りのP2WPKH）
+### オープニングトランザクションを作成する（P2WSHとお釣りのP2WPKH）
 
 * 送金先P2WSH アドレス(Bob,Alice)：
 
@@ -176,7 +176,7 @@ tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0
 
 ```
 
-* input(UTXO)　のJSON形式: 
+* input(UTXO) のJSON形式: 
 
 ```bash
 '[{"txid":"c0627fb7964d6134a2aef1f37b60866913122643aea86674305a06406d51bba5","vout":1}]' 
@@ -364,7 +364,7 @@ bitcoin-core.cli decoderawtransaction 02000000000101a5bb516d40065a307466a8ae4326
 }
 ```
 
-使用するP2WSH のoutput は，"txid": "14ae127ea86891d4ee1756e36610b66b3dad908b82bdf3504d2bab90bbbaa485"　の"vout":　0 
+使用するP2WSH のoutput は，"txid": "14ae127ea86891d4ee1756e36610b66b3dad908b82bdf3504d2bab90bbbaa485" の"vout": 0 
 
 
 ## Aliceが払い戻しトランザクションを作成する
@@ -382,12 +382,12 @@ bitcoin-core.cli getblockcount
 
 * 払い戻しのブロック高 : 61880+1000=62880
 * 送金先アドレス(Alice)："tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0"
-* input(UTXO)　のJSON形式: 
+* input(UTXO) のJSON形式: 
 
 ```bash
 '[{"txid":"14ae127ea86891d4ee1756e36610b66b3dad908b82bdf3504d2bab90bbbaa485","vout":0}]' 
 ```
-* output のJSON形式：(Alice のビットコインアドレス　tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0，送金金額は 0.01 btc から手数料 0.0002 引いた値）
+* output のJSON形式：(Alice のビットコインアドレス tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0，送金金額は 0.01 btc から手数料 0.0002 引いた値）
 
 ```bash
 '[{"tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0":0.0098}]'
@@ -497,7 +497,7 @@ bitcoin-core.cli decoderawtransaction 020000000185a4babb90ab2b4d50f3bd828b90ad3d
 
 実行の結果「"error": "CHECK(MULTI)SIG failing with non-zero signature (possibly need more signatures)"」というメッセージが出るが，これは署名がまだ完全でないという意味で，失敗ではない。
 
-出力の　  "hex": 　部分は　 Aliceの署名だけがついたトランザクションになっている。
+出力の   "hex":  部分は  Aliceの署名だけがついたトランザクションになっている。
 
 ```bash
 bitcoin-core.cli signrawtransactionwithwallet 020000000185a4babb90ab2b4d50f3bd828b90ad3d6bb61066e35617eed49168a87e12ae140000000000feffffff0120f40e0000000000160014ea9e8244bd85408c66348a7280571ff420a96200a0f50000 '[{"txid":"14ae127ea86891d4ee1756e36610b66b3dad908b82bdf3504d2bab90bbbaa485","vout":0,"scriptPubKey":"0020d11304c37ef4ac56821c3dc6d4760d7a91fd7182a0d5feaeb702299a3c910c4a","redeemScript":"522103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5282103760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e334752ae","witnessScript":"3044022002e07e2af0fb2606c04d78204bf701a4a9dced4b9b263a4a9b0ee253b44435d102204664694838676b52edb3bbe89d0e14afeb0cdab9b978fbb8ef61448146531f0001","amount": 0.01000000}]'
@@ -702,9 +702,9 @@ bitcoin-core.cli sendrawtransaction 02000000000101a5bb516d40065a307466a8ae432612
 ただし，タイムロックは不要
 
 * Aliceのアドレス：tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0
-* Bobのアドレス：tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu　
+* Bobのアドレス：tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu 
 
-### コミットメントトランザクション１のoutputは，0.01000000　をAliceとBobで分割する
+### コミットメントトランザクション１のoutputは，0.01000000 をAliceとBobで分割する
 
 AliceがBobに 0.001 送金する場合：Aliceが 0.0088, Bobが0.001, fee が 0.0002
 
