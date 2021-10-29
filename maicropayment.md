@@ -13,7 +13,7 @@
 * Bobのアドレス：tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu
 
 
-##　Bobが自分の公開鍵を確認する
+## Bobが自分の公開鍵を確認する
 
 ```bash
 bitcoin-core.cli getaddressinfo tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu
