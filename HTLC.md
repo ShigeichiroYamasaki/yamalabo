@@ -111,7 +111,25 @@ bitcoin-core.cli getrawtransaction 243f497b5452d0810522cdc53d36b9f1f99bbe4ff07c5
 
 ```ruby
 require 'bitcoin'
+require 'net/http'
+require 'json'
 Bitcoin.chain_params = :signet
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
+
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
+
+# AliceとBobのアドレス
 
 addrAlice="tb1q92v4dxsz47zxs5rdu42q7nl4xsdlncmvswxr5f"
 addrBob="tb1qy0e6mr95dwcsk4uf4365vjnfl58nc9duzdkhe4"
@@ -127,6 +145,9 @@ keyBob=Bitcoin::Key.new(priv_key: privBob)
 # 公開鍵 (bitcoin core の getaddressinfo で得る）
 pubkeyAlice= "02f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff7"
 pubkeyBob= "03353ec9fc21ebf6235250c0eace51b5f3d8fc44d7fdfbf1d49c099cbbba48d359"
+
+keyAlice.pubkey=pubkeyAlice
+keyBob.pubkey=pubkeyBob
 
 # 使用するUTXOを持つトランザクション
 
@@ -154,7 +175,9 @@ prev_script_pubkey.to_h
 secret='htlctest'
 ```
 
-### redeem script
+### script処理のテスト
+
+OP_HASH160の検証
 
 ```ruby
 # <Sの OP_HASH160 ハッシュ値>
@@ -168,8 +191,10 @@ ts.run
 => true
 ```
 
-```
 
+### redeem script
+
+```
 # <ロックするブロック数>`：
 locktime = 6*24*10
 
@@ -224,7 +249,8 @@ script_pubkey.to_h
 
 `script_pubkey.to_h` の addresses　の内容がP2WSHアドレス
 
-```ruby p2wshaddr=script_pubkey.addresses[0]
+```ruby
+ p2wshaddr=script_pubkey.addresses[0]
 
 => "tb1qn9yrukjw4x78g0q8s2pjyfhy4k33748c7p67mx2u0fwjfmdnqsvsmhsv4f"
 ```
@@ -284,56 +310,54 @@ tx.to_hex
 
 ### Alice がトランザクションへのデジタル署名
 
-```bash
-bitcoin-core.cli signrawtransactionwithwallet 010000000117880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f240100000000ffffffff0240420f000000000022002099483e5a4ea9bc743c0782832226e4ada31f54f8f075ed995c7a5d24edb30419704c8900000000001600142a99569a02af8468506de5540f4ff5341bf9e36c00000000
-{
-  "hex": "0100000000010117880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f240100000000ffffffff0240420f000000000022002099483e5a4ea9bc743c0782832226e4ada31f54f8f075ed995c7a5d24edb30419704c8900000000001600142a99569a02af8468506de5540f4ff5341bf9e36c02473044022025894832af31d2f1f97f6e2be47af4fc01fa47f57b59d12c69e21cd30236a0c4022069fb99d7a881dd49466de7faaffb7a9be2467c3aab8967bcaf67fee0d8aef9a8012102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff700000000",
-  "complete": true
-}
-
+```ruby
+signed_tx=bitcoinRPC('signrawtransactionwithwallet',[tx.to_hex])
 ```
 
 ## AliceによるHTLCロックトランザクションのブロードキャスト
 
-```bash
-bitcoin-core.cli sendrawtransaction 0100000000010117880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f240100000000ffffffff0240420f000000000022002099483e5a4ea9bc743c0782832226e4ada31f54f8f075ed995c7a5d24edb30419704c8900000000001600142a99569a02af8468506de5540f4ff5341bf9e36c02473044022025894832af31d2f1f97f6e2be47af4fc01fa47f57b59d12c69e21cd30236a0c4022069fb99d7a881dd49466de7faaffb7a9be2467c3aab8967bcaf67fee0d8aef9a8012102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff700000000
-
-
-94c26200cbed99967bf8899245bb9d812f21d54ccedea3d234e6770126712a9c
+```ruby
+result=bitcoinRPC('sendrawtransaction',[signed_tx['hex']])
 ```
 
 ### HTLCロックトランザクションのトランザクションID
 
-94c26200cbed99967bf8899245bb9d812f21d54ccedea3d234e6770126712a9c
+```ruby
+htlc_lock_tx="94c26200cbed99967bf8899245bb9d812f21d54ccedea3d234e6770126712a9c"
+```
 
 
-===================== 2021/11/22 ===============
+# Bob によるHTCLアンロックトランザクションの作成
+
+redeem script の基本構造
+
+```
+<Bobの署名> 
+<S> 
+OP_1
+------------連接--------------
+OP_IF
+    OP_HASH160 <Sのハッシュ値> OP_EQUALVERIFY 
+    <Bobの公開鍵>
+OP_ELSE
+    <ロックするブロック数> OP_CSV 
+    OP_DROP  
+    <Aliceの公開鍵>
+OP_ENDIF
+OP_CHECKSIG
+```
 
 
-# bitcoinrb での実装
-
-## address
-
-addrAlice="tb1qm5gqhe7e46jhyy2ca00x66slmrlljwa3m476sr"
-addrBob="tb1qm5gqhe7e46jhyy2ca00x66slmrlljwa3m476sr"
-
-
-## AliceとBobの鍵
+## 秘密情報 `<s>` を知ったとき
 
 ```ruby
-require 'bitcoin'
-
-privAlice='cNz434p392FXbmm2ZH2p9eaVDg5YfvANuFM1hHqf8bmRUZ3SSSAp'
-privBob='cUpy2Z19AC22MnGLNBfrNMZqrbz7v7rtL9UByzMoxqGC4v9SKtFf'
-
-keyAlice=Bitcoin::Key.new(priv_key: privAlice)
-keyBob=Bitcoin::Key.new(priv_key: privBob)
+secret='htlctest'
 ```
 
 ## UTXO (P2WSH)
 
 ```ruby
-txid='27a0ed782436dc23cf9be696e1c4f6b708ed1321ac41c491ec213596cc95105b'
+htlc_lock_tx
 vout=0
 amount=0.01000000
 value=0.01
@@ -352,38 +376,39 @@ script_pubkey = Bitcoin::Script.parse_from_addr(addrBob)
 
 ```ruby
 tx = Bitcoin::Tx.new
-tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(txid, vout))
+tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(htlc_lock_tx, vout))
 tx.out << Bitcoin::TxOut.new(value: val_in, script_pubkey: script_pubkey)
 ```
 
 ## 署名対象のsighashを計算
 
+### sighash_for_inputメソッドの引数
 
 sighash_for_input(input_index, output_script, hash_type: SIGHASH_TYPE[:all], sig_version: :base, amount: nil, skip_separator_index: 0) ⇒ Object
 
 ```ruby
-prevouts = [Bitcoin::TxOut.new(value: val_out, script_pubkey: script_pubkey)]
-sighash = tx.sighash_for_input(0, script_pubkey, hash_type: SIGHASH_TYPE[:all], sig_version: :base,  amount: val_in)
+sighash = tx.sighash_for_input(0, script_pubkey, hash_type: Bitcoin::SIGHASH_TYPE[:all], sig_version: :base,  amount: val_in)
 ```
 
 ## 署名を作成
 
 ```ruby
-sig = keyBob.sign(sighash)
+sign = keyBob.sign(sighash)
 ```
 
 ## インプットに署名をセット
 
 ```ruby
-tx.in[0].script_witness.stack << sig
+tx.in[0].script_witness.stack << sign
 ```
 
 ## Txペイロード
 
 ```ruby
 tx.to_hex
-010000000001015b1095cc963521ec91c441ac2113ed08b7f6c4e196e69bcf23dc362478eda0270000000000ffffffff0140420f0000000000160014dd100be7d9aea5721158ebde6d6a1fd8fff93bb10146304402200d1f1d93ee3f7f68119d17becb4b3e2d5ba9dbc98fff743e745c0b478d2d36310220365a354e16f4a7144a29841141e7e26de0fffbf6ea99e7b9aaad4e0299c72d9700000000
 
+010000000001015b1095cc963521ec91c441ac2113ed08b7f6c4e196e69bcf23dc362478eda0270000000000ffffffff0140420f0000000000160014dd100be7d9aea5721158ebde6d6a1fd8fff93bb10146304402200d1f1d93ee3f7f68119d17becb4b3e2d5ba9dbc98fff743e745c0b478d2d36310220365a354e16f4a7144a29841141e7e26de0fffbf6ea99e7b9aaad4e0299c72d9700000000
+```
 
 bitcoin-core.cli decoderawtransaction 010000000001015b1095cc963521ec91c441ac2113ed08b7f6c4e196e69bcf23dc362478eda0270000000000ffffffff0140420f0000000000160014dd100be7d9aea5721158ebde6d6a1fd8fff93bb10146304402200d1f1d93ee3f7f68119d17becb4b3e2d5ba9dbc98fff743e745c0b478d2d36310220365a354e16f4a7144a29841141e7e26de0fffbf6ea99e7b9aaad4e0299c72d9700000000
 {
@@ -429,7 +454,6 @@ bitcoin-core.cli decoderawtransaction 010000000001015b1095cc963521ec91c441ac2113
 ================================================================
 
 
-## Bob によるHTCLアンロックトランザクションの作成
 
 HTLCロックトランザクションがブロックに入った時間経過後，トランザクションIDでHTCLロックトランザクションを検索する
 
