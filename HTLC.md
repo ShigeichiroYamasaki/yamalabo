@@ -407,6 +407,45 @@ htcl_lockTx_txid
 
 ## Bob によるHTCLアンロックトランザクションの作成
 
+### Bob側のマシンの環境セットアップ
+
+```ruby
+require 'bitcoin'
+require 'net/http'
+require 'json'
+
+Bitcoin.chain_params = :signet
+
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
+
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
+
+# AliceとBobのアドレス
+addrAlice="tb1q92v4dxsz47zxs5rdu42q7nl4xsdlncmvswxr5f"
+addrBob="tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu"
+
+# 秘密鍵（WIF形式）
+privAlice='cVkvmDQ2TvRg1L1eLCfoAhYZpWAiaJyesyF2owMA9kUJj6mczJQP'
+privBob='cUpy2Z19AC22MnGLNBfrNMZqrbz7v7rtL9UByzMoxqGC4v9SKtFf'
+
+# 鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyAlice=Bitcoin::Key.from_wif(privAlice)
+keyBob=Bitcoin::Key.from_wif(privBob)
+
+```
+
+
 ### アンロックのためにBobが知っている（べき）情報
 
 * Aliceの公開鍵
@@ -422,6 +461,7 @@ htcl_lockTx_txid
 
 
 ```ruby
+
 # Aliceの公開鍵
 pubkeyAlice = keyAlice.pubkey
 # Bobの公開鍵
@@ -484,6 +524,7 @@ OP_ENDIF
 OP_CHECKSIG
 ```
 
+
 ### HTLCをアンロックする未署名トランザクションの作成
 
 ```ruby
@@ -511,33 +552,46 @@ sighash = tx.sighash_for_input(0, scriptPubKey_p2wsh, sig_version: :witness_v0, 
 ### Bobの秘密鍵でHTLCロックトランザクションをアンロックするための署名を作成する
 
 ```ruby
+rs="63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e35788423033643636313939663064643662626431363163643461383534636432333861346462656266326430636631313333313830373937653132373064616333653532386702a005b2754230326635316165613035383632343866393532386239366431336664313535643036633339346662366463356437393035363835333762653638633735656166663768ac"
+
 # SHIGHASH_TYPE ALL
 signature = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
 ```
 
 ### script 処理のテスト
 
-```Ruby
-unlock_script = "#{signature.bth} #{secret} #{Bitcoin::Script.from_string("OP_1").to_payload}"
-script = Bitcoin::Script.from_string((unlock_script + " " + redeem_script_text).bth)
+このsignature で P2WSHがアンロックできることを確認する
+
+```ruby
+# P2WSH のscriptPubKeyの確認
+scriptPubKey_p2wsh.to_hex
+=> "00205ce9fba086d4473abbb3ec6e30711c004a8a763d2bf82327c385889bc36ec1fd"
+
+unlock_script =""
+unlock_script << signature.bth
+unlock_script << " "
+unlock_script << secret.bth
+unlock_script << " "
+unlock_script << Bitcoin::Script.from_string("OP_1").to_payload.bth
+script = Bitcoin::Script.from_string(unlock_script + " " + redeem_script_text.bth)
 script.run
 
-=> true
 ```
 
 ### witness scriptの追加
+
 
 ```ruby
 # witness に "" プッシュする
 tx.in[0].script_witness.stack << ""
 # witness に Bob のsighash 署名をプッシュする
-tx.in[0].script_witness.stack << signature.bth
+tx.in[0].script_witness.stack << signature
 # 秘密情報をプッシュ
 tx.in[0].script_witness.stack <<  secret
 # OP_1をプッシュ
-tx.in[0].script_witness.stack <<  Bitcoin::Script.from_string("OP_1").to_payload.bth
+tx.in[0].script_witness.stack <<  Bitcoin::Script.from_string("OP_1").to_payload
 # redeem scriptをプッシュ
-tx.in[0].script_witness.stack <<  redeem_script.to_payload.bth
+tx.in[0].script_witness.stack <<  Bitcoin::Script.from_string(redeem_script_text).to_payload
 ```
 
 ### 完成したトランザクションの確認
