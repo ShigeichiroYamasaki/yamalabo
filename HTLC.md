@@ -114,8 +114,13 @@ OpenSSL内で利用される暗号学的に利用される多倍長整数クラ�
 ハッシュ値などのデータはOpenSSL::BNクラスのオブジェクトになります。
 
 ```ruby
+# 10進数
 2**18
 => 262144
+
+# 16進数に変換
+(2**18).to_s(16)
+=> "40000"
 
 # 整数とBNクラスに変換
 (2**18).to_bn
@@ -132,30 +137,37 @@ OpenSSL内で利用される暗号学的に利用される多倍長整数クラ�
 
 ### 16進数文字列と文字列や整数の pack unpack
 
-* 16進数文字列を16進数に変換する（上位ニブル（4ビットのこと）が先）
+* packメソッドは配列クラスのメソッドで，テンプレート文字列にしたがってバイナリ表現を文字列に変換する
+* unpack メソットは文字列クラスのメソッドで，テンプレート文字列に従ってアンパックした配列に変換する
+* テンプレート文字列の '*' は任意の長さを意味する
 
 ```ruby
+# 16進数の配列を（上位ニブル（4ビットのこと）が先）の16進数表現に変換(テンプレート文字列 H)
+ ["400000"].pack("H*")
+=> "\x00\x00\x04"
+
+# 16進数文字列を16進数に変換する（上位ニブル（4ビットのこと）が先）(テンプレート文字列 H)
 "\x00\x00\x04".unpack("H*")
 => ["000004"]
-
-# 16進文字列を取り出す
-"\x00\x00\x04".unpack("H*")[0]
-=> "000004"
 ```
 
-* 16進数を（上位ニブル（4ビットのこと）が先）の16進数表現に変換
-
 ```ruby
- ["000004"].pack("H*")
-=> "\x00\x00\x04"
-```
-
-整数を16進数リトルエンディアンにする
-
-```ruby
+# 10進数の整数を多倍長整数にして16進数リトルエンディアン表現にする
 1440.to_bn.to_s(2).reverse.unpack("H*")[0]
 => "a005"
 ```
+
+```ruby
+# 8ビット符号なし整数に変換　(テンプレート文字列 C)
+[1, 255].pack("C*") 
+=> "\x01\xFF"
+
+# 8ビット符号なし整数に変換　(テンプレート文字列 C)
+"\x01\xFE".unpack("C*")
+=> [1, 254]
+```
+
+
 
 ### 便利な bitcoinrb のメソッド
 
@@ -192,6 +204,7 @@ bitcoinrb では Stringクラスに16進数から16進数文字列で表現さ�
 require 'bitcoin'
 require 'net/http'
 require 'json'
+include Bitcoin::Opcodes
 
 Bitcoin.chain_params = :signet
 
@@ -238,6 +251,8 @@ utxoScriptPubKey = utxos[0]["scriptPubKey"]
 
 ```ruby
 secret='HTLC_test'
+secret_hash=Bitcoin.sha256(secret)
+
 ```
 
 #### script処理のテスト(OP_SHA256の検証)
@@ -248,8 +263,7 @@ secret='HTLC_test'
 secret_hash=Bitcoin.sha256(secret)
 
 # scriptのテスト
-test_script="#{secret} OP_SHA256 #{secret_hash} OP_EQUAL"
-ts=Bitcoin::Script.from_string(test_script)
+ts=Bitcoin::Script.new << secret.bth << OP_SHA256 << secret_hash << OP_EQUAL
 ts.run
 
 # => true
@@ -260,28 +274,19 @@ ts.run
 ```ruby
 # <ロックするブロック数> 10日間のブロック数（リトルエンディアン）
 locktime = (6*24*10).to_bn.to_s(2).reverse.bth
-
 # => "a005"
 
-# テキスト形式の redeem script
-redeem_script_text ="OP_IF OP_SHA256 #{secret_hash} OP_EQUALVERIFY #{keyBob.pubkey.htb} OP_ELSE #{locktime} OP_CSV OP_DROP #{keyAlice.pubkey.htb} OP_ENDIF OP_CHECKSIG"
-
-# redeem scriptオブジェクト
-redeem_script = Bitcoin::Script.from_string(redeem_script_text)
-
-```
-
-redeem scriptの内容を確認する
-
-```ruby
 # redeem script
+redeem_script = Bitcoin::Script.new << OP_IF << OP_SHA256 << secret_hash << OP_EQUALVERIFY << keyBob.pubkey.htb << OP_ELSE << locktime << OP_CSV << OP_DROP << keyAlice.pubkey.htb << OP_ENDIF << OP_CHECKSIG
+
+# redeem scriptの内容の確認
 redeem_script.to_h
 
 => 
 {:asm=>
-  "OP_IF OP_SHA256 996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357 OP_EQUALVERIFY 03d66199f0dd6bbd161cd4a854cd238a4dbebf2d f1133180797e1270dac3e528 OP_ELSE 892350561 OP_CSV OP_DROP 02f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff7 OP_ENDIF OP_CHECKSIG",
+  "OP_IF OP_SHA256 996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357 OP_EQUALVERIFY 03d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528 OP_ELSE 1440 OP_CSV OP_DROP 02f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff7 OP_ENDIF OP_CHECKSIG",
  :hex=>
-  "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357881403d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528670461303035b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac",
+  "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac",
  :type=>"nonstandard"}
  
 # 秘密情報 Sのハッシュ値(16進数形式)
@@ -307,11 +312,11 @@ scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_script.to_sha256}")
 scriptPubKey_p2wsh.to_h
 
 => 
-{:asm=>"0 1233d07332196a01f6560cc0efad760a6d165d52184067786b4bfe6b9427101b",
- :hex=>"00201233d07332196a01f6560cc0efad760a6d165d52184067786b4bfe6b9427101b",
+{:asm=>"0 1f607171e9d99056ca0c574ae258cc48e397066130d844754d2954afa6603d9c",
+ :hex=>"00201f607171e9d99056ca0c574ae258cc48e397066130d844754d2954afa6603d9c",
  :type=>"witness_v0_scripthash",
  :req_sigs=>1,
- :addresses=>["tb1qzgeaquejr94qrajkpnqwlttkpfk3vh2jrpqxw7rtf0lxh9p8zqdsnnl9yu"]}
+ :addresses=>["tb1qras8zu0fmxg9djsv2a9wykxvfr3ewpnpxrvyga2d9922lfnq8kwqanhe8n"]}
 ```
 
 ### P2WSH アドレスの生成
@@ -319,7 +324,7 @@ scriptPubKey_p2wsh.to_h
 ```ruby
 p2wshaddr = scriptPubKey_p2wsh.to_addr
 
-=> "tb1q89mpua8zsezjhqlytcqnvhuktmzvkcfltnljy63ng899rrnye8kq46mnys"
+=> "tb1qras8zu0fmxg9djsv2a9wykxvfr3ewpnpxrvyga2d9922lfnq8kwqanhe8n"
 ```
 
 ## AliceがHTLCロックトランザクションを作成
@@ -397,7 +402,7 @@ signature = keyAlice.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
 
 signature.bth
 
-=>  "30440220264968c8cdc38e3c08a4f66cf816216d8328a93cdbf97d11120d867acce815c3022020b3d2b448c918c2a7014e5e55ed9758820584d9cf04609e359ee728a8b6108801"
+=> "304402203e7545159094f33ad439771d50e6564c8a4098223fc570e86c0612f04fbfa1fd02203b81e0e4614032c27b7e3a1fdc4a904a2f716800255bce40a074597b4e51ccb401"
 ```
 
 #### witness script の追加
@@ -419,33 +424,33 @@ tx.in[0].script_witness.stack <<  keyAlice.pubkey.htb
 #### 完成したHTLCロックトランザクション
 
 ```ruby
-bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
+bitcoinRPC('decoderawtransaction',[tx.to_hex])
 
 => 
-{"txid"=>"292e2badf9f8c6a453db38d3a38ecc039b56b5a78d3dddd7a8963f67446a5604",
- "hash"=>"5b1fea95d2095bc6b07812da1120fc8d1fb5325b5502b9e4491fac991f2bcf2b",
+{"txid"=>"521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270",
+ "hash"=>"30cfcbfa315484dbd9a370eb29dac2438d632600bfcb8b749a78dfa4381ebccd",
  "version"=>1,
  "size"=>234,
  "vsize"=>153,
  "weight"=>609,
  "locktime"=>0,
  "vin"=>
-  [{"txid"=>"69375a825235482d6e7794503d54009bd585e857f605447cf9da546e9439493a",
+  [{"txid"=>"292e2badf9f8c6a453db38d3a38ecc039b56b5a78d3dddd7a8963f67446a5604",
     "vout"=>1,
     "scriptSig"=>{"asm"=>"", "hex"=>""},
     "txinwitness"=>
-     ["30440220264968c8cdc38e3c08a4f66cf816216d8328a93cdbf97d11120d867acce815c3022020b3d2b448c918c2a7014e5e55ed9758820584d9cf04609e359ee728a8b6108801",
+     ["304402203e7545159094f33ad439771d50e6564c8a4098223fc570e86c0612f04fbfa1fd02203b81e0e4614032c27b7e3a1fdc4a904a2f716800255bce40a074597b4e51ccb401",
       "02f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff7"],
     "sequence"=>4294967295}],
  "vout"=>
   [{"value"=>0.01,
     "n"=>0,
     "scriptPubKey"=>
-     {"asm"=>"0 39761e74e286452b83e45e01365f965ec4cb613f5cff226a3341ca518e64c9ec",
-      "hex"=>"002039761e74e286452b83e45e01365f965ec4cb613f5cff226a3341ca518e64c9ec",
-      "address"=>"tb1q89mpua8zsezjhqlytcqnvhuktmzvkcfltnljy63ng899rrnye8kq46mnys",
+     {"asm"=>"0 1f607171e9d99056ca0c574ae258cc48e397066130d844754d2954afa6603d9c",
+      "hex"=>"00201f607171e9d99056ca0c574ae258cc48e397066130d844754d2954afa6603d9c",
+      "address"=>"tb1qras8zu0fmxg9djsv2a9wykxvfr3ewpnpxrvyga2d9922lfnq8kwqanhe8n",
       "type"=>"witness_v0_scripthash"}},
-   {"value"=>0.0796,
+   {"value"=>0.0694,
     "n"=>1,
     "scriptPubKey"=>
      {"asm"=>"0 2a99569a02af8468506de5540f4ff5341bf9e36c",
@@ -458,12 +463,12 @@ bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
 #### AliceによるHTLCロックトランザクションのブロードキャスト
 
 ```ruby
-htcl_lockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_payload.bth])
+htcl_lockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_hex])
 
 
 htcl_lockTx_txid
 
-=> "292e2badf9f8c6a453db38d3a38ecc039b56b5a78d3dddd7a8963f67446a5604"
+=> "521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270"
 ```
 
 ---------------------------------
@@ -476,6 +481,7 @@ htcl_lockTx_txid
 require 'bitcoin'
 require 'net/http'
 require 'json'
+include Bitcoin::Opcodes
 
 Bitcoin.chain_params = :signet
 
@@ -524,37 +530,23 @@ keyBob=Bitcoin::Key.from_wif(privBob)
 
 
 ```ruby
-
-# Aliceの公開鍵
-pubkeyAlice = keyAlice.pubkey
-# Bobの公開鍵
-pubkeyBob = keyBob.pubkey
 # 秘密情報
 secret='HTLC_test'
-
-# redeem script
-    # <ロックするブロック数> 10日間（リトルエンディアン）
-locktime = (6*24*10).to_bn.to_s(2).reverse.bth
-    # 秘密情報のハッシュ値
+# 秘密情報のハッシュ値
 secret_hash=Bitcoin.sha256(secret)
-
-# テキスト形式の redeem script
-redeem_script_text ="OP_IF OP_SHA256 #{secret_hash} OP_EQUALVERIFY #{keyBob.pubkey.htb} OP_ELSE #{locktime} OP_CSV OP_DROP #{keyAlice.pubkey.htb} OP_ENDIF OP_CHECKSIG"
-
-# redeem scriptオブジェクト
-redeem_script = Bitcoin::Script.from_string(redeem_script_text)
+# <ロックするブロック数> 10日間（リトルエンディアン）
+locktime = (6*24*10).to_bn.to_s(2).reverse.bth
+# redeem script
+redeem_script = Bitcoin::Script.new << OP_IF << OP_SHA256 << secret_hash << OP_EQUALVERIFY << keyBob.pubkey.htb << OP_ELSE << locktime << OP_CSV << OP_DROP << keyAlice.pubkey.htb << OP_ENDIF << OP_CHECKSIG
 
 # HTLCロックトランザクションの トランザクションID
-htcl_lockTx_txid = "292e2badf9f8c6a453db38d3a38ecc039b56b5a78d3dddd7a8963f67446a5604"
+htcl_lockTx_txid = "521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270"
 # HTLCロックトランザクション
 htlc_tx = bitcoinRPC('decoderawtransaction',[ bitcoinRPC('getrawtransaction',[htcl_lockTx_txid])])
-
 # HTLCロックトランザクションの scriptPubKey
 scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_script.to_sha256}")
 # HTLCロックトランザクションのP2WSHアドレス
 p2wshaddr = scriptPubKey_p2wsh.to_addr
-
- 
 # アンロックの対象となるUTXO のvout
 htcl_lockTx_vout=0
 # アンロックの対象となるUTXO へのデポジット金額
@@ -567,46 +559,6 @@ reward = deposit-fee
 deposit_satoshi = (deposit * 100000000).to_i
 reward_satoshi = (reward* 100000000).to_i
 ```
-
-### redeem script と unlocking script の基本構造（再掲）
-
-```
-<Bobの署名> 
-<S> 
-OP_1
-
-        (unlocking script)
-------------連接--------------
-        (redeem script)
-        
-OP_IF
-    OP_SHA256 <Sのハッシュ値> OP_EQUALVERIFY 
-    <Bobの公開鍵>
-OP_ELSE
-    <ロックするブロック数> OP_CSV 
-    OP_DROP  
-    <Aliceの公開鍵>
-OP_ENDIF
-OP_CHECKSIG
-```
-
-### script 処理のテスト
-
-このsignature で P2WSHがアンロックできることを確認する
-
-```ruby
-unlock_script =""
-unlock_script << signature.bth
-unlock_script << " "
-unlock_script << secret.bth
-unlock_script << " "
-unlock_script << ["1"].pack("h")
-script = Bitcoin::Script.from_string(unlock_script + " " + redeem_script_text.bth)
-script.run
-
-=> true
-```
-
 
 ### HTLCをアンロックする未署名トランザクションの作成
 
@@ -623,57 +575,50 @@ tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Scri
 
 ```ruby
 # sighashを作成
-sighash = tx.sighash_for_input(0, scriptPubKey_p2wsh, sig_version: :witness_v0, amount: deposit_satoshi)
+sighash = tx.sighash_for_input(0, scriptPubKey_p2wsh, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
 ```
 
 ### Bobの秘密鍵でHTLCロックトランザクションをアンロックするための署名を作成する
 
 ```ruby
 # SHIGHASH_TYPE ALL
-signature = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+sigBob = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
 ```
 
 
 ### witness scriptの追加
 
-
 ```ruby
-tx.in[0].script_witness.stack <<  ""
-# witness に Bob のsighash 署名をプッシュする
-tx.in[0].script_witness.stack << signature
-# 秘密情報をプッシュ
-tx.in[0].script_witness.stack <<  secret
-# OP_1をプッシュ
-tx.in[0].script_witness.stack << ["1"].pack("h")
-# witness スタックにredeem scriptをプッシュ
-tx.in[0].script_witness.stack <<  redeem_script.to_payload
-
-
+tx.in[0].script_witness.stack << ""
+tx.in[0].script_witness.stack << sigBob
+tx.in[0].script_witness.stack << secret
+tx.in[0].script_witness.stack << [1].pack("C")
+tx.in[0].script_witness.stack << redeem_script.to_payload
 ```
 
 ### 完成したトランザクションの確認
 
 ```ruby
-bitcoinRPC('decoderawtransaction',[tx.to_hex])
+bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
 
 => 
-{"txid"=>"95acc7881c6383a430fd756785c25348f0cc29717115f6659432e33b6fced0b3",
- "hash"=>"d5420e2c0a140decaec4a5dd331ef0bf69449d04acc4075caf2a6e1321044a18",
+{"txid"=>"87843211117d6b54eebffb1e5ef696a17c1d2fe1d25ea10b13e311b503d58a66",
+ "hash"=>"bdefad7bb646f0c95d56d6b01377e22c51eacbc6f8a73a089cc9bfd8d81f9e8f",
  "version"=>1,
- "size"=>285,
+ "size"=>283,
  "vsize"=>133,
- "weight"=>531,
+ "weight"=>529,
  "locktime"=>0,
  "vin"=>
-  [{"txid"=>"292e2badf9f8c6a453db38d3a38ecc039b56b5a78d3dddd7a8963f67446a5604",
+  [{"txid"=>"521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270",
     "vout"=>0,
     "scriptSig"=>{"asm"=>"", "hex"=>""},
     "txinwitness"=>
      ["",
-      "304402200996d76835734144e105d52bf9f664b016c8f6dfab18cc652a0f21854f77fd93022042beafc324dffc2722b9347e57ac5f296ef5384a3b5c13e2c52aa1792952e18d01",
+      "304402207fb3523ce4d57836c273a7e7b89e1cb28b9c46ca97cceafb9074db8a1b78a22c02206dbb7aeb1b29de3a78d2913211782d9f7f3b8cad3bf3687deddbaa19a91e17a701",
       "48544c435f74657374",
-      "01",
-      "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357881403d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e528670461303035b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac"],
+      "51",
+      "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac"],
     "sequence"=>4294967295}],
  "vout"=>
   [{"value"=>0.0098,
@@ -689,11 +634,11 @@ bitcoinRPC('decoderawtransaction',[tx.to_hex])
 ## HTLC アンロックトランザクションのブロードキャスト
 
 ```ruby
-tx.to_hex
+tx.to_payload.bth
 => "010000000001013a4939946e54daf97c4405f657e885d59b00543d5094776e2d483552825a37690000000000ffffffff0120f40e00000000001600142b37f56b65623749da29b159ec26dd6f97f4a208050047304402205e50d93966841e9235620ec663c24181a57a5ae1a74e45c7ee2939f2767aa3ca022067e4bb3c8cdbd52c09469c9bee58609c14c1a7b134b1268cd421c0925bbc259d010948544c435f746573740101b463a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e3578842303364363631393966306464366262643136316364346138353463643233386134646265626632643063663131333331383037393765313237306461633365353238670461303035b2754230326635316165613035383632343866393532386239366431336664313535643036633339346662366463356437393035363835333762653638633735656166663768ac00000000"
 
 
-htcl_unlockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_hex])
+htcl_unlockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_payload.bth])
 
 
 htcl_unlockTx_txid
