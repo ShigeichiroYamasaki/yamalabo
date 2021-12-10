@@ -33,7 +33,7 @@ OP_CHECKSIG
 ```
 <Bobの署名> 
 <S> 
-OP_1
+true
 ```
 
 ### unlocking script と redeem scriptの連接結果 (witness)
@@ -41,7 +41,7 @@ OP_1
 ```
 <Bobの署名> 
 <S> 
-OP_1
+true
 ------------連接--------------
 OP_IF
     OP_SHA256 <Sのハッシュ値> OP_EQUALVERIFY 
@@ -54,8 +54,8 @@ OP_ENDIF
 OP_CHECKSIG
 ```
 
-1. スタックに， `<Bobの署名>` ，`<S>`，`OP_1`　が順に積まれます
-2. `OP_1`(true) が適用され，`OP_IF` 側の処理が実行されます
+1. スタックに， `<Bobの署名>` ，`<S>`，true　が順に積まれます
+2. true が適用され，`OP_IF` 側の処理が実行されます
 3. `<S>` の`OP_SHA256` の結果と `<Sのハッシュ値>` が`OP_EQUALVERIFY` で比較されます
 4. 等しければ，Bobの公開鍵による Bobの署名が検証され，成功すればロックが解除されます
 
@@ -466,8 +466,6 @@ bitcoinRPC('decoderawtransaction',[tx.to_hex])
 
 ```ruby
 htcl_lockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_hex])
-
-
 htcl_lockTx_txid
 
 => "521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270"
@@ -602,32 +600,44 @@ tx.in[0].script_witness.stack << redeem_script.to_payload
 bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
 
 => 
-{"txid"=>"87843211117d6b54eebffb1e5ef696a17c1d2fe1d25ea10b13e311b503d58a66",
- "hash"=>"bdefad7bb646f0c95d56d6b01377e22c51eacbc6f8a73a089cc9bfd8d81f9e8f",
- "version"=>1,
- "size"=>283,
- "vsize"=>133,
- "weight"=>529,
- "locktime"=>0,
- "vin"=>
-  [{"txid"=>"521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270",
-    "vout"=>0,
-    "scriptSig"=>{"asm"=>"", "hex"=>""},
-    "txinwitness"=>
-     ["",
-      "304402207fb3523ce4d57836c273a7e7b89e1cb28b9c46ca97cceafb9074db8a1b78a22c02206dbb7aeb1b29de3a78d2913211782d9f7f3b8cad3bf3687deddbaa19a91e17a701",
-      "48544c435f74657374",
-      "51",
-      "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac"],
-    "sequence"=>4294967295}],
- "vout"=>
-  [{"value"=>0.0098,
-    "n"=>0,
-    "scriptPubKey"=>
-     {"asm"=>"0 2b37f56b65623749da29b159ec26dd6f97f4a208",
-      "hex"=>"00142b37f56b65623749da29b159ec26dd6f97f4a208",
-      "address"=>"tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu",
-      "type"=>"witness_v0_keyhash"}}]}
+{
+  "txid": "87843211117d6b54eebffb1e5ef696a17c1d2fe1d25ea10b13e311b503d58a66",
+  "hash": "dc480816a87c441ec82efc2c674f8c2d55609bae87f06a000f7dfca7d6c49379",
+  "version": 1,
+  "size": 282,
+  "vsize": 132,
+  "weight": 528,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "521682bd3a3a485c7825d0652bac0b9c9faec5695f0c969b9c4e8ecfc8597270",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "",
+        "hex": ""
+      },
+      "txinwitness": [
+        "304402201f79915fcb5bbe7f3a3e695fe9fe15b12306279f6ef8d5e6aa7144ed8edceaa702205504a13316ee367f87fca6380772a59598473bd243a6bee2afb1052d947ee03801",
+        "48544c435f74657374",
+        "01",
+        "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac"
+      ],
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.00980000,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "0 2b37f56b65623749da29b159ec26dd6f97f4a208",
+        "hex": "00142b37f56b65623749da29b159ec26dd6f97f4a208",
+        "address": "tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu",
+        "type": "witness_v0_keyhash"
+      }
+    }
+  ]
+}
 
 ```
 
