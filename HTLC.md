@@ -556,8 +556,8 @@ fee=0.0002
 # 報酬金額
 reward = deposit-fee
 # satoshi 変換
-deposit_satoshi = (deposit * 100000000).to_i
-reward_satoshi = (reward* 100000000).to_i
+deposit_satoshi = (deposit * (10**8)).to_i
+reward_satoshi = (reward* (10**8)).to_i
 ```
 
 ### HTLCをアンロックする未署名トランザクションの作成
@@ -575,7 +575,7 @@ tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Scri
 
 ```ruby
 # sighashを作成
-sighash = tx.sighash_for_input(0, scriptPubKey_p2wsh, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
+sighash = tx.sighash_for_input(0, redeem_script, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
 ```
 
 ### Bobの秘密鍵でHTLCロックトランザクションをアンロックするための署名を作成する
@@ -585,11 +585,9 @@ sighash = tx.sighash_for_input(0, scriptPubKey_p2wsh, sig_version: :witness_v0, 
 sigBob = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
 ```
 
-
 ### witness scriptの追加
 
 ```ruby
-tx.in[0].script_witness.stack << ""
 tx.in[0].script_witness.stack << sigBob
 tx.in[0].script_witness.stack << secret
 tx.in[0].script_witness.stack << [1].pack("C")
@@ -635,12 +633,11 @@ bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
 
 ```ruby
 tx.to_payload.bth
-=> "010000000001013a4939946e54daf97c4405f657e885d59b00543d5094776e2d483552825a37690000000000ffffffff0120f40e00000000001600142b37f56b65623749da29b159ec26dd6f97f4a208050047304402205e50d93966841e9235620ec663c24181a57a5ae1a74e45c7ee2939f2767aa3ca022067e4bb3c8cdbd52c09469c9bee58609c14c1a7b134b1268cd421c0925bbc259d010948544c435f746573740101b463a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e3578842303364363631393966306464366262643136316364346138353463643233386134646265626632643063663131333331383037393765313237306461633365353238670461303035b2754230326635316165613035383632343866393532386239366431336664313535643036633339346662366463356437393035363835333762653638633735656166663768ac00000000"
-
+=> "01000000000101707259c8cf8e4e9c9b960c5f69c5ae9f9c0bac2b65d025785c483a3abd8216520000000000ffffffff0120f40e00000000001600142b37f56b65623749da29b159ec26dd6f97f4a2080447304402201f79915fcb5bbe7f3a3e695fe9fe15b12306279f6ef8d5e6aa7144ed8edceaa702205504a13316ee367f87fca6380772a59598473bd243a6bee2afb1052d947ee038010948544c435f7465737401017063a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac00000000"
 
 htcl_unlockTx_txid = bitcoinRPC('sendrawtransaction',[tx.to_payload.bth])
-
-
 htcl_unlockTx_txid
+
+=> "87843211117d6b54eebffb1e5ef696a17c1d2fe1d25ea10b13e311b503d58a66"
 ```
 
