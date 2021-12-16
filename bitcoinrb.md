@@ -65,162 +65,83 @@ def bitcoinRPC(method, params)
 end
 ```
 
-### アドレス
+## Bitcoinの送金
 
-```ruby
-# AliceとBobのアドレスの生成
-addrAlice =  bitcoinRPC('getnewaddress', [])
-addrBob =  bitcoinRPC('getnewaddress', [])
-  
-# 秘密鍵（WIF形式）
-privAlice = bitcoinRPC('dumpprivkey', [addrAlice])
-privBob = bitcoinRPC('dumpprivkey', [addrBob])
-
-# 鍵オブジェクト(WIF形式の秘密鍵から生成）
-keyAlice=Bitcoin::Key.from_wif(privAlice)
-keyBob=Bitcoin::Key.from_wif(privBob)
-```
-
-### UTXOの確認
-
-```ruby
-# AliceのUTXOと残高を確認（とりあえず最初の Alice宛のUTXOを利用することにする）
-utxos = bitcoinRPC('listunspent',[])
-utxoAmount = utxos[0]["amount"]
-utxoVout = utxos[0]["vout"]
-utxoTxid = utxos[0]["txid"]
-utxoScriptPubKey = utxos[0]["scriptPubKey"]
-
-# 送金可能なUTXO
-spendable_utxos = utxos.select{|t|t["spendable"]==true}
-
-# 送金可能なUTXOの金額の合計
-balance = spendable_utxos.reduce(0){|s,t|s+=t["amount"]}
-# bitcoin core APIによる送金可能金額の確認
-bitcoinRPC('getbalance', [])
-
-```
-
-
-# bitcoin core の基本操作の bitcoinrb による実装
-
-## 送金のために使用するUTXOを集める（指定金額以上のUTXO）
-
-```ruby
-# 送金金額によって送金で消費するUTXOの選定する
-def consuming_utxos(amount)
-  utxos=bitcoinRPC('listunspent', [])
-  spendable_utxos = utxos.select{|t|t["spendable"]==true}
-  sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
-  r=[]
-  begin
-      r<< sorted_utxos.shift
-      balance = r.reduce(0){|s,t|s+=t["amount"]}
-  end until balance >= amount
-  return r
-end
-
-# test
-amount = 0.02
-utxos = consuming_utxos(amount)
-# 送金金額の総和の確認
-utxos.reduce(0){|s,t|s+=t["amount"]}
-
-amount_satoshi = (amount*(10**8)).to_i
-```
-
-### 未署名トランザクションの作成 (P2WPKH)
-
-```ruby
-tx = Bitcoin::Tx.new
-utxos.each{|utxo|
-    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(utxo["txid"], utxo["vout"],))
-}
-tx.out << Bitcoin::TxOut.new(value: amount_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(addrBob))
-
-# トランザクションの構造の確認
-bitcoinRPC('decoderawtransaction', [tx.to_hex])
-```
-
-### トランザクションのハッシュ値の計算とトランザクションへの署名
-
-```ruby
-utxos.each.with_index{|utxo,index|
-    script_pubkey = Bitcoin::Script.parse_from_payload(utxo["scriptPubKey"].htb)
-    satoshi = (utxo["amount"]*(10**8)).to_i
-    sighash = tx.sighash_for_input(index, script_pubkey, sig_version: :witness_v0, amount: satoshi)
-    sig = keyAlice.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
-    # witness scriptの追加
-    tx.in[index].script_witness.stack << sig
-}
-```
-
-### トランザクションへの署名
-
-```ruby
-# トランザクションの構造の確認
-bitcoinRPC('decoderawtransaction', [tx.to_hex])
-```
-
-### トランザクションの送金
-
-```ruby
-txid = bitcoinRPC('sendrawtransaction', [tx.to_hex])
-```
-
-### P2WPKH による送金
 
 ```ruby
 # 送金先アドレスと送金金額を指定して送金
 
-def send(addr, amount)
-    utxos = consuming_utxos(amount)
-    
+def send_bitcoin(addr, amount, fee)
+    balance = bitcoinRPC('getbalance', [])
+    if balance < (amount+fee) then
+        puts "error (Not enough funds)"
+    else
+        # 送金金額＋手数料をぎりぎり上回るUTXOリスト
+        utxos = consuming_utxos(amount+fee)
+        # inputの資金
+        fund = utxos.map{|utxo|utxo["amount"]}.sum
+        # おつり
+        change = fund-amount-fee 
+        # おつり用アドレス
+        addrChange =  bitcoinRPC('getnewaddress', [])
+        # トランザクションの作成
+        tx = Bitcoin::Tx.new
+        # input
+        utxos.each{|utxo|tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(utxo["txid"], utxo["vout"],))}
+        # 送金用output
+        tx.out << Bitcoin::TxOut.new(value:  (amount*(10**8)).to_i, script_pubkey: Bitcoin::Script.parse_from_addr(addr))
+        # おつり用output
+        tx.out << Bitcoin::TxOut.new(value:  (change*(10**8)).to_i, script_pubkey: Bitcoin::Script.parse_from_addr(addrChange))
+        # 各inputへの署名
+        utxos.each.with_index{|utxo,index|
+            # UTXOのscriptPubKey をオブジェクト化する
+            script_pubkey = Bitcoin::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+            # scriptPubKey の送金先アドレス
+            addr = script_pubkey.to_addr
+            # 送金先アドレスの秘密鍵（署名鍵）
+            priv = bitcoinRPC('dumpprivkey', [addr])
+            # 署名鍵オブジェクト
+            key = Bitcoin::Key.from_wif(priv)
+            # UTXOの金額
+            satoshi = (utxo["amount"]*(10**8)).to_i
+            case script_pubkey.type
+            # P2WPKH
+            when "witness_v0_keyhash"
+                # トランザクションのハッシュ値を計算
+                sighash = tx.sighash_for_input(index, script_pubkey, sig_version: :witness_v0, amount: satoshi)
+                # トランザクションへの署名＋署名タイプ情報を付加
+                sig = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+                # witness scriptの追加
+                tx.in[index].script_witness.stack << sig
+                # 公開鍵の追加
+                tx.in[index].script_witness.stack << key.pubkey.htb
+            end
+        }
+        return bitcoinRPC('sendrawtransaction', [tx.to_hex])
+    end
 end
+
+# 送金金額によって送金で消費するUTXOの選定する
+def consuming_utxos(amount)
+  unspent = bitcoinRPC('listunspent', [])
+  # 消費可能状態のUTXOの選定
+  spendable_utxos = unspent.select{|t|t["spendable"]==true}
+  # UTXOを金額の昇順にソートする
+  sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
+  # amoutを上回るぎりぎりのUTXOのリスト
+  utxos=[]
+  begin
+      utxos << sorted_utxos.shift
+      balance = utxos.reduce(0){|s,t|s+=t["amount"]}
+  end until balance >= amount
+  return utxos
+end
+
+
+# テスト
+addr = "tb1qcfxtwcyflcj36fajurk5wvjwfuggyzzv2qduxd"
+amount = 0.01
+fee = 0.0002
+txid = send_bitcoin(addr, amount, fee)
 ```
 
-### bitcoin スクリプト
-
-```ruby
-include Bitcoin::Opcodes
-
-script="2 4 OP_ADD 6 OP_EQUAL"
-s=Bitcoin::Script.from_string(script)
-s.run
-=> true
-
-# こちらの記述方法の方が安全
-s=Bitcoin::Script.new << 2 << 4 << OP_ADD << 6 << OP_EQUAL
-s.run
-=> true
-```
-
-
-----
-
-
-
-### 暗号鍵の生成
-
-```ruby
-# 鍵ペア生成
-key=Bitcoin::Key.generate
-
-# 秘密鍵
-priv=key.priv_key
-# 公開鍵
-pub=key.pubkey
-```
-
-### ワレット(bitcoin coreのワレット機能を利用せずに作成）
-
-```ruby
-# マスターキー生成
-master=Bitcoin::Wallet::MasterKey.generate
-
-# マスターキーのニーモニックコード
-master.mnemonic
-=> ["canyon", "space", "snack", "unlock", "fitness", "basic", "frequent", "license", "slab", "brisk", "can", "violin", "race", "way", "magic", "weapon", "sentence", "frequent", "shy", "valid", "toe", "reveal", "essence", "unfair"]
-
-master.derive(47, harden=true).derive(0, harden=true).derive(0, harden=true)
-```
