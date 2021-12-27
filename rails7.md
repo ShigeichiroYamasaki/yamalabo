@@ -1,64 +1,9 @@
 # rails7 のインストールと devise認証
 
 
-## Rubyのインストール(ubuntu)
+## Rubyのインストール
 
-```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y gcc
-sudo apt install -y clang
-sudo apt install -y make
-sudo apt install -y libssl-dev zlib1g-dev
-sudo apt install -y git
-sudo apt install -y nodejs
-sudo apt install -y cmdtest
-sudo apt install -y sqlite3
-sudo apt install -y libsqlite3-dev
-sudo apt install -y build-essential
-sudo apt install -y npm
-sudo npm install --global yarn
-
-rm -fr ~/.rbenv
-git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init - bash)"' >> ~/.bashrc
-source ~/.bashrc
-git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-rbenv install 3.0.3
-rbenv global 3.0.3
-```
-
-## Rubyのインストール(MacOSX)
-
-```bash
-brew update
-brew upgrade -y
-brew install gcc
-brew install make
-brew install libsigsegv
-brew install zlib-ng
-brew install git
-brew install nodejs
-brew install node
- brew install readline 
-
-brew install doctest
-brew install sqlite3
-brew install sqlite-utils
-npm install --global yarn
-
-
-rm -fr ~/.rbenv
-git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zprofile
-source ~/.zprofile
-git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-rbenv install 3.0.3
-rbenv global 3.0.3
-```
+[Rubyのインストール](./ruby.md)
 
 ★ Ruby 3.1.0 と Rails 7 の組み合わせにはまだ問題があります。
 

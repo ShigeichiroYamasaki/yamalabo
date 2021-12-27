@@ -1,4 +1,6 @@
-# Ruby インストール／アップデート方法
+# Ruby インストール方法
+
+2021/12/27
 
 ## MacOSXの事前準備
 
@@ -32,79 +34,103 @@ Your system is ready to brew.
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 ```
 
-### MacOSXでのRubyのインストール
-
-rbenvと関連ライブラリのインストールスクリプトの作成
+## Rubyのインストール(ubuntu)
 
 ```bash
-nano install_rbenv.sh
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y gcc
+sudo apt install -y clang
+sudo apt install -y make
+sudo apt install -y libssl-dev zlib1g-dev
+sudo apt install -y git
+sudo apt install -y nodejs
+sudo apt install -y cmdtest
+sudo apt install -y sqlite3
+sudo apt install -y libsqlite3-dev
+sudo apt install -y build-essential
+sudo apt install -y npm
+sudo npm install --global yarn
+
+rm -fr ~/.rbenv
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init - bash)"' >> ~/.bashrc
+source ~/.bashrc
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rbenv install 3.0.3
+rbenv global 3.0.3
+```
+
+## Rubyのインストール(MacOSX)
+
+```bash
+nano install_ruby.sh
 ```
 
 ```bash
-#!/bin/bash
+#!/bin/zsh
+
 brew update
 brew upgrade
 
-brew install clang
-brew install git
-brew install leveldb
-brew install direnv
-brew install git
-brew install nodejs
+brew install llvm
+brew install make
 brew install curl
-brew install imagemagick
-brew install yarn
-brew install npm
-brew install sqlite3 
-brew install readline
+brew install direnv
+brew install libsigsegv
 brew install zlib
-brew install rbenv
+brew install zlib-ng
+brew install git
+brew install imagemagick
+brew install nodejs
+brew install node
+brew install npm
+brew install readline 
+brew install doctest
+brew install sqlite3
+brew install sqlite-utils
+brew install leveldb
+brew install yarn
+npm install --global yarn
 
-# rm -fr ~/.rbenv
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rm -fr ~/.rbenv
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-echo 'eval "$(rbenv init -)"' >> ~/.zshrc
-git -C ~/.rbenv/plugins/ruby-build pull
+source ~/.zshrc
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 
+rbenv install 3.0.3
+rbenv global 3.0.3
 ```
 
 #### rbenvのインストールスクリプトのパーミッションの変更と実行
 
 ```bash
-chmod u+x install_rbenv.sh
-./install_rbenv.sh
-```
-
-
-シェルの再起動
-
-```
-source ~/.zshrc
-source ~/.zprofile
-exec $SHELL -l
-```
-
-
-```bash
-rbenv install 3.0.2
-rbenv global 3.0.2
+chmod u+x install_ruby.sh
+./install_ruby.sh
 ```
 
 
 ## ubuntu
 
 #### rbenv を使ったRubyのインストール
+
 rbenvと関連ライブラリのインストールスクリプトの作成
 
 ```bash
-nano install_rbenv.sh
+nano install_ruby.sh
 ```
 
 ```bash
 #!/bin/bash
+
 sudo apt update
 sudo apt upgrade -y
+
 sudo apt install -y build-essential 
 sudo apt install -y clang
 sudo apt install -y cmake
@@ -125,30 +151,19 @@ sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
 # rm -fr ~/.rbenv
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
-echo 'eval "$(~/.rbenv/bin/rbenv init -)"' >> ~/.bash_profile
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 git -C ~/.rbenv/plugins/ruby-build pull
+
+rbenv install 3.0.3
+rbenv global 3.0.3
 ```
 
 ```bash
-chmod u+x install_rbenv.sh
-./install_rbenv.sh
-
-source ~/.bashrc
-```
-シェルの再起動
-
-```
-exec $SHELL -l
+chmod u+x install_ruby.sh
+./install_ruby.sh
 ```
 
-
-```bash
-rbenv install 3.0.2
-rbenv global 3.0.2
-```
 
 
 
