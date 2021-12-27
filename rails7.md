@@ -41,7 +41,7 @@ chmod u+x install_rails.sh
 ./install_rails.sh
 ```
 
-### Railsのテスト
+### Railsの起動テスト
 
 ```bash
 rails new test1
@@ -53,8 +53,29 @@ bundle install
 #### scaffold で生成
 
 ```bash
-rails g scaffold User name
+rails g scaffold person name
 ```
+
+### DB のマイグレーション
+
+```bash
+rails db:migrate
+```
+
+
+### サーバーの起動
+
+```bash
+rails s -b 0.0.0.0
+```
+
+### ブラウザから確認
+
+http://localhost:3000/people
+
+確認後，control-c でサーバを停止
+
+## bootstrap のテスト
 
 #### Gemfile編集
 
@@ -62,6 +83,7 @@ rails g scaffold User name
 nano Gemfile
 ```
 
+以下を追加
 
 ```ruby
 gem 'bootstrap-sass', '~> 3.3.6'
@@ -72,94 +94,44 @@ gem 'sass-rails', '>= 3.2'
 bundle install
 ```
 
-### DB のマイグレーション
-
-```bash
-rails db:migrate
-```
-
-### サーバーの起動
-
-```bash
-rails s -b 0.0.0.0
-```
-
-
-### ブラウザから確認
-
-http://localhost:3000/users
-
-確認後，control-c でサーバを停止
-
-
-### CSSを編集
-
-```bash
-nano app/assets/stylesheets/application.css
-```
-
-最後に以下を追加
-
-```css
-@import "bootstrap"; 
-```
-
 ### css のファイル名を.css から .scssに変更
 
 ```bash
 mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss
 ```
 
+
+### SCSSを編集
+
+```bash
+nano app/assets/stylesheets/application.scss
+```
+
+最後に以下を追加
+
+```
+@import "bootstrap-sprockets";
+@import "bootstrap"; 
+```
+
+以下は削除
+
+```bash
+*= require_self
+*= require_tree .
+```
+
 ### application.js を修正
 
 ```bash
-nano app/javascript/packs/application.js
+app/assets/javascripts/application.js
 ```
 
 以下を追加する
 
 ```javascript
-//=require bootstrap
-```
-
-### html を修正
-
-```bash
-nano app/views/users/index.html.erb
-```
-
-試しにファイルの一番上に以下を記述してみる
-
-```html
-<a class="btn btn-primary" href="#" role="button">Link</a>
-<button class="btn btn-primary" type="submit">Button</button>
-<input class="btn btn-primary" type="button" value="Input">
-<input class="btn btn-primary" type="submit" value="Submit">
-<input class="btn btn-primary" type="reset" value="Reset">
-```
-
-
-## Rails bootstrap の使い方
-
-### レイアウトの修正
-
-```bash
-nano app/views/layouts/application.html.erb
-```
-
-
-body　タグ部分に以下のように div タグを追加(<%= yield %>　をdiv で囲む)
-
-```html
-  ...
-
-  <body>
-    <div class="container">
-    <%= yield %>
-    </div>
-  </body>
-  
-...
+//= require jquery
+//= require bootstrap-sprockets
 ```
 
 ### サーバー再起動
@@ -169,12 +141,51 @@ body　タグ部分に以下のように div タグを追加(<%= yield %>　をd
 rails s -b 0.0.0.0
 ```
 
+確認後，ctr-c で停止
 
-###  ブラウザをリロードかけてレイアウトの変化を確認
+## deviseによるユーザ管理のテスト
+
+```bash
+nano Gemfile
+```
+
+以下を追加
+
+```ruby
+gem 'devise'
+```
+
+```bash
+bundle install
+```
+
+### devise のジェネレーター
+
+```bash
+rails g devise:install
+```
+
+### deviseの Userモデルの作成
+
+```bash
+rails g devise User
+
+rails db:migrate
+```
+
+### サーバ起動テスト
 
 
+```bash
+rails s -b 0.0.0.0
+```
 
+接続確認
 
+```
+http://<ホストIP>:3000/users/sign_up
+```
 
+## メール認証機能の追加
 
-
+[https://pikawaka.com/rails/devise](https://pikawaka.com/rails/devise)
