@@ -1,11 +1,66 @@
-# rails 6 で bootstrap6 を利用する
+# rails7 のインストールと devise認証
 
 
-## Rubyのインストール
+## Rubyのインストール(ubuntu)
 
-[ruby](./ruby.md)
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y gcc
+sudo apt install -y clang
+sudo apt install -y make
+sudo apt install -y libssl-dev zlib1g-dev
+sudo apt install -y git
+sudo apt install -y nodejs
+sudo apt install -y cmdtest
+sudo apt install -y sqlite3
+sudo apt install -y libsqlite3-dev
+sudo apt install -y build-essential
+sudo apt install -y npm
+sudo npm install --global yarn
+
+rm -fr ~/.rbenv
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(rbenv init - bash)"' >> ~/.bashrc
+source ~/.bashrc
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rbenv install 3.0.3
+rbenv global 3.0.3
+```
+
+## Rubyのインストール(MacOSX)
+
+```bash
+brew update
+brew upgrade -y
+brew install gcc
+brew install make
+brew install libsigsegv
+brew install zlib-ng
+brew install git
+brew install nodejs
+brew install node
+ brew install readline 
+
+brew install doctest
+brew install sqlite3
+brew install sqlite-utils
+npm install --global yarn
 
 
+rm -fr ~/.rbenv
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zprofile
+source ~/.zprofile
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+rbenv install 3.0.3
+rbenv global 3.0.3
+```
+
+★ Ruby 3.1.0 と Rails 7 の組み合わせにはまだ問題があります。
 
 ### Railsインストールスクリプトの作成
 
@@ -16,19 +71,21 @@ nano install_rails.sh
 ```bash
 #!/bin/bash
 
-yarn install
-yarn upgrade
-
 gem install bundler
 gem install sqlite3
 gem install json-jwt
 gem install jwt
-gem install rails
-gem install twitter
+gem install nokogiri
 gem install devise
-gem install omniauth
-gem install omniauth-twitter
-gem install omniauth-facebook
+gem install bootstrap
+
+gem install rails
+gem install jquery-rails
+gem install bootstrap-sass
+gem install sass-rails
+
+
+
 ```
 
 ### 実行
@@ -39,19 +96,13 @@ chmod u+x install_rails.sh
 ./install_rails.sh
 ```
 
-シェルの再起動
-
-```bash
-exec $SHELL -l
-```
-
-
 ### Railsのテスト
 
 ```bash
 rails new test1
 
 cd test1
+bundle install
 ```
 
 #### scaffold で生成
@@ -60,31 +111,16 @@ cd test1
 rails g scaffold User name
 ```
 
-#### webpackerのインストール
-
-```bash
-rails webpacker:install
-```
-
 #### Gemfile編集
 
 ```bash
 nano Gemfile
 ```
 
-```
-ruby '3.0.1'
-...
 
-```
-
-の下に以下を追加
-
-
-```
-gem 'bootstrap'
-gem 'jquery-rails'
-
+```ruby
+gem 'bootstrap-sass', '~> 3.3.6'
+gem 'sass-rails', '>= 3.2'
 ```
 
 ```bash

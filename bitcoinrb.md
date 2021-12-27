@@ -121,14 +121,14 @@ def send_bitcoin(addr, amount, fee)
     end
 end
 
-# 送金金額によって送金で消費するUTXOの選定する
+# 送金で消費するUTXOを選定する
 def consuming_utxos(amount)
   unspent = bitcoinRPC('listunspent', [])
   # 消費可能状態のUTXOの選定
   spendable_utxos = unspent.select{|t|t["spendable"]==true}
-  # UTXOを金額の昇順にソートする
+  # UTXOを金額で昇順にソートする
   sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
-  # amoutを上回るぎりぎりのUTXOのリスト
+  # 少額のUTXOから集めて，指定金額を上回るぎりぎりのUTXOのリストを作成する
   utxos=[]
   begin
       utxos << sorted_utxos.shift
@@ -138,10 +138,12 @@ def consuming_utxos(amount)
 end
 
 
-# テスト
+# 送金のテスト
+    # 引数は，送金先アドレス，送金金額，手数料
 addr = "tb1qcfxtwcyflcj36fajurk5wvjwfuggyzzv2qduxd"
 amount = 0.01
 fee = 0.0002
+    # 送金の実行。実行結果はトランザクションID
 txid = send_bitcoin(addr, amount, fee)
 ```
 
