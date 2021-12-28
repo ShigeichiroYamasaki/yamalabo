@@ -28,9 +28,8 @@ gem install rails
 gem install jquery-rails
 gem install bootstrap-sass
 gem install sass-rails
-
-
-
+gem install devise-i18n
+gem install devise-i18n-views
 ```
 
 ### 実行
@@ -183,9 +182,7 @@ rails s -b 0.0.0.0
 接続確認
 
 ```
-http://<ホストIP>:3000/users/sign_up
+http://<ホストIP>:3000/users/sign_in
 ```
 
-## メール認証機能の追加
-
-[https://pikawaka.com/rails/devise](https://pikawaka.com/rails/devise)
+「NoMethodError」や「Routing Error」が出ている場合は、Rails（Puma）を再起動させてからアクセスする
