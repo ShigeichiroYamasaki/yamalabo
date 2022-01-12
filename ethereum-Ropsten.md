@@ -1,6 +1,17 @@
-# Ethereum testnet 構築
+# Ethereum Ropsten 構築
 
-## ethereum
+## MetaMask を Chrome ブラウザの拡張機能にインストール
+
+### アカウント作成
+
+ワレットを作成する
+
+### Ropsten ネットワークに接続
+
+### Ropstenネットワークの
+
+
+## ethereum (geth)
 
 ### インストールスクリプト
 
@@ -26,7 +37,7 @@ sudo apt-get install -y ethereum
 ```
 
 
-## プライベートネットワークへの接続
+## Ropstenネットワークへの接続
 
 ### Genesisファイルを作成する
 
