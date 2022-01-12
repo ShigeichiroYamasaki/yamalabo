@@ -1,14 +1,13 @@
 # Ethereum Ropsten 構築
 
-## MetaMask を Chrome ブラウザの拡張機能にインストール
+## MetaMask を Chrome ブラウザの拡張機能にインストールしアカウントとワレットを作成
 
-### アカウント作成
+[MetaMask(メタマスク)とは？Chromeへのインストール方法や初期設定、使い方を完全解説(2021最新版)](https://nft-now.jp/what-is-metamask/)
 
-ワレットを作成する
 
-### Ropsten ネットワークに接続
+### MetaMask でRopsten ネットワークに接続
 
-### Ropstenネットワークの
+### Ropstenネットワークの Faucet でテスト用 Etherを入手する
 
 
 ## ethereum (geth)

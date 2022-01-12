@@ -1,4 +1,4 @@
-# Ethereum testnet 構築
+# Ethereum プライベートネットワーク 構築
 
 ## ethereum
 
@@ -125,6 +125,32 @@ To exit, press ctrl-d or type exit
 }
 
 ```
+
+## 基本操作
+
+
+* eth：ブロックチェーンの操作
+* net：p2pネットワークステータス
+* admin：ノードの管理
+* miner：マイニング
+* txpool：トランザクションメモリプール
+* web3：単位変換など
+
+### 一般的なコマンド：
+
+* personal.newAccount(パスワード)：アカウントを作成
+* personal.unlockAccount()：アカウントのロックを解除
+* eth.accounts：システムのアカウントを列挙
+* eth.getBalance() ：アカウントの残高
+* eth.blockNumber：ブロックの総数
+* eth.getTransaction() ：トランザクションを取得
+* eth.getBlock()：ブロックを取得
+* miner.start()：マイニングを開始
+* miner.stop()：マイニングを停止
+* web3.fromWei()：WeiをEtherに変換
+* web3.toWei()：EtherをWeiに変換
+* txpool.status：トランザクションプールのステータス。
+* admin.addPeer()：他のノードに接続
 
 ## アカウント (EOA) の作成
 
