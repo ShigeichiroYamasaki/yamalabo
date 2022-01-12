@@ -99,8 +99,9 @@ To exit, press ctrl-d or type exit
 
 ブロック番号 0 のブロック情報を表示
 
-```json
+```
 > eth.getBlock(0)
+
 {
   difficulty: 16384,
   extraData: "0x",
