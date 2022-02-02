@@ -197,7 +197,7 @@ Compiling your contracts...
 
 contracts/Greeter.sol
 
-```json
+```
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 // remove constractor
@@ -210,7 +210,7 @@ contract Greeter {
 
 test/greeter.js
 
-```json
+```
 const Greeter = artifacts.require("Greeter");
 contract("Greeter", function (/* accounts */) {
   it("should assert true", async function () {
@@ -279,7 +279,7 @@ Compiling your contracts...
 
 contracts/Greeter.sol
 
-```json
+```
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -298,7 +298,7 @@ contract Greeter {
 
 test/greeter.js
 
-```json
+```
 const Greeter = artifacts.require("Greeter");
 contract("Greeter", function (/* accounts */) {
   it("should assert true", async function () {
@@ -382,7 +382,7 @@ Compiling your contracts...
 
 contracts/Greeter.sol
 
-```json
+```
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -416,7 +416,7 @@ contract Greeter {
 
 test/greeter.js
 
-```json
+```
 const Greeter = artifacts.require("Greeter");
 
 contract("Greeter: update greeting", (accounts) => {
@@ -483,7 +483,7 @@ npm i openzeppelin-solidity
 
 contracts/Greeter.sol
 
-```json
+```
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
