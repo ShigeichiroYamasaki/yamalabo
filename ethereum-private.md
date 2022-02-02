@@ -16,15 +16,21 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install -y apt-file
 sudo apt-file update
-
-sudo apt-get update
-sudo apt-get install git vim -y
-sudo apt-get install software-properties-common
+sudo apt update
+sudo apt install -y git vim
+sudo apt install -y libsnappy-dev wget curl build-essential cmake gcc sqlite3
+sudo apt install software-properties-common
 sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt-get update
-sudo apt-get install -y ethereum
+sudo apt update
+sudo apt install -y ethereum
+
+npm install -g solc
 ```
 
+```bash
+chmod a+x install-ethereum.sh
+./install-ethereum.sh
+```
 
 ## プライベートネットワークへの接続
 
@@ -127,7 +133,7 @@ To exit, press ctrl-d or type exit
 
 ```
 
-## 基本操作
+## geth 基本操作
 
 
 * eth：ブロックチェーンの操作
@@ -413,7 +419,7 @@ geth上のプロンプトでコンパイル結果を変数に格納する
 16進数のバイナリは先頭に '0x' を追加する
 
 ```json
-> var bin ="0x608060405234801561001057600080fd5b50610150806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806360fe47b11461003b5780636d4ce63c14610057575b600080fd5b610055600480360381019061005091906100c3565b610075565b005b61005f61007f565b60405161006c91906100ff565b60405180910390f35b8060008190555050565b60008054905090565b600080fd5b6000819050919050565b6100a08161008d565b81146100ab57600080fd5b50565b6000813590506100bd81610097565b92915050565b6000602082840312156100d9576100d8610088565b5b60006100e7848285016100ae565b91505092915050565b6100f98161008d565b82525050565b600060208201905061011460008301846100f0565b9291505056fea2646970667358221220e81c002fe6366e43e58ea57d3733ae74f9adde8185f4f2a4717525676161aa2164736f6c634300080b0033"
+> var bin ="0x"+"608060405234801561001057600080fd5b50610150806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806360fe47b11461003b5780636d4ce63c14610057575b600080fd5b610055600480360381019061005091906100c3565b610075565b005b61005f61007f565b60405161006c91906100ff565b60405180910390f35b8060008190555050565b60008054905090565b600080fd5b6000819050919050565b6100a08161008d565b81146100ab57600080fd5b50565b6000813590506100bd81610097565b92915050565b6000602082840312156100d9576100d8610088565b5b60006100e7848285016100ae565b91505092915050565b6100f98161008d565b82525050565b600060208201905061011460008301846100f0565b9291505056fea2646970667358221220e81c002fe6366e43e58ea57d3733ae74f9adde8185f4f2a4717525676161aa2164736f6c634300080b0033"
 ```
 
 Contract JSON ABI
@@ -506,7 +512,7 @@ Contractの定義
 }]
 ```
 
-## スマートコントラクトへのアクセス方法
+### スマートコントラクトへのアクセス方法
 
 ```
 eth.contract(ABI).at(コントラクトアドレス);
@@ -527,9 +533,9 @@ true
 
 ```
 
-## Faucet
+## スマートコントラクトの例２（Faucet）
 
-```
+```bash
 nano Faucet.sol
 ```
 
@@ -595,13 +601,13 @@ Contract JSON ABI
 EOAアカウントをアンロック
 
 ```
-> personal.unlockAccount(eth.accounts[0])
+> personal.unlockAccount(eth.accounts[1])
 Passphrase: 
 true
 ```
 
 ```
-> var myContract2 = contract2.new({ from: eth.accounts[0], data: bin2})
+> var myContract2 = contract2.new({ from: eth.accounts[1], data: bin2})
 ```
 
 ```
@@ -636,10 +642,11 @@ var cnt2 = eth.contract(myContract2.abi).at(myContract2.address);
 ```
 
 ```
-> personal.unlockAccount(eth.accounts[0])
+> personal.unlockAccount(eth.accounts[1])
 Passphrase: 
 true
 
-> cnt2.set.sendTransaction(1,{from:eth.accounts[1]})
+> cnt2.methods.withdraw(1,{from:eth.accounts[1]})
+
  "0xde3a75f63ddf0fd25b75d35651fefa07a8e5be0771960ade37c771761bf43859"
 ```

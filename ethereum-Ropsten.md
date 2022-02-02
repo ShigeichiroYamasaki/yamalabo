@@ -1,4 +1,108 @@
-# Ethereum Ropsten 構築
+# Ethereum Ropsten ノード　構築
+
+
+## ethereum (geth)
+
+### インストールスクリプト
+
+新規マシンにインストール
+
+```
+nano install-ethereum.sh
+```
+
+```bash
+#!/bin/bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install git -y
+sudo apt install -y libsnappy-dev wget curl build-essential cmake gcc sqlite3
+sudo apt install software-properties-common
+sudo add-apt-repository -y ppa:ethereum/ethereum
+sudo apt update
+sudo apt install -y ethereum
+```
+
+```bash
+chmod a+x install-ethereum.sh
+./install-ethereum.sh
+```
+
+## Ropstenネットワークへの接続(高速モードで同期）
+
+```
+cd ~
+mkdir Ethereum
+cd Ethereum
+mkdir ropsten
+geth --ropsten --syncmode "snap" --datadir "./ropsten" console 2>> ./ropsten/geth_err.log
+```
+
+## geth 基本操作
+
+* eth：ブロックチェーンの操作
+* net：p2pネットワークステータス
+* admin：ノードの管理
+* miner：マイニング
+* txpool：トランザクションメモリプール
+* web3：単位変換など
+
+### 一般的なコマンド：
+
+* personal.newAccount(パスワード)：アカウントを作成
+* personal.unlockAccount()：アカウントのロックを解除
+* eth.accounts：システムのアカウントを列挙
+* eth.coinbase : コインベースのアカウントの確認
+* miner.setEtherbase(eth.accounts[index]) : コインベースアカウントの変更
+* eth.getBalance() ：アカウントの残高
+* eth.blockNumber：ブロックの総数
+* eth.getTransaction() ：トランザクションを取得
+* eth.getBlock()：ブロックを取得
+* eth.sendTransaction({from: eth.accounts[source_index], to: eth.accounts[destination_index], value: web3.toWei(amount, "ether")}) : 送金
+* eth.getTransactionReceipt("transaction_address") : トランザクションの実行結果（レシート）の確認
+* eth.mining : マイニング中か確認
+* miner.start()：マイニングを開始
+* miner.stop()：マイニングを停止
+* miner.hashrate : マイニングHashrateの確認
+* web3.fromWei()：WeiをEtherに変換
+* web3.toWei()：EtherをWeiに変換
+* admin.addPeer()：他のノードに接続
+* net.listening : 疎通確認
+* net.peerCount : 接続されているノード数
+* admin.nodeInfo : ノードの情報
+* admin.peers : 接続されているノード情報
+
+
+## Gethの操作
+
+```
+> eth.blockNumber
+111871
+```
+
+## EOAの作成
+
+簡単のためパスワードを名前にしておく
+
+```
+> var alice=personal.newAccount("alice")
+"0xf5e1a80090966c6c8a9b6b6c19e3e74a35da44b6"
+> var bob=personal.newAccount("bob")
+"0xe9da4c344c57b179590f7eb78eca44816cc1536e"
+```
+
+### 所持金の確認
+
+```
+> eth.getBalance(eth.accounts[0])
+0
+> eth.getBalance(alice)
+0
+> eth.getBalance(eth.accounts[1])
+0
+> eth.getBalance(bob)
+0
+```
 
 ## MetaMask を Chrome ブラウザの拡張機能にインストールしアカウントとワレットを作成
 
@@ -10,325 +114,44 @@
 ### Ropstenネットワークの Faucet でテスト用 Etherを入手する
 
 
-## ethereum (geth)
-
-### インストールスクリプト
-
+### アカウントの所持金の確認
 
 ```
-nano install-ethereum.sh
-```
+> eth.getBalance(alice)
+300000000000000000
 
-
-```bash
-#!/bin/bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y apt-file
-sudo apt-file update
-
-sudo apt-get update
-sudo apt-get install git vim -y
-sudo apt-get install software-properties-common
-sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt-get update
-sudo apt-get install -y ethereum
-```
-
-
-## Ropstenネットワークへの接続
-
-### Genesisファイルを作成する
-
-```bash
-mkdir ~/eth_private_net
-cd eth_private_net/
-```
+> eth.getBalance(bob)
+400000000000000000
 
 ```
-nano myGenesis.json
-```
 
-```json
-{
-  "config": {
-    "chainId": 15,
-    "homesteadBlock": 0,
-    "eip150Block": 0,
-    "eip155Block": 0,
-    "eip158Block": 0,
-    "byzantiumBlock": 0,
-    "constantinopleBlock": 0,
-    "petersburgBlock": 0,
-    "istanbulBlock": 0,
-    "berlinBlock": 0
-  },
-  "nonce": "0x0000000000000042",
-  "timestamp": "0x0",
-  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "extraData": "",
-  "gasLimit": "0x8000000",
-  "difficulty": "0x4000",
-  "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "coinbase": "0x3333333333333333333333333333333333333333",
-  "alloc": {}
-}
-```
-
-### genesisブロックの初期化
-
-```bash
-geth --datadir ~/eth_private_net init ~/eth_private_net/myGenesis.json
-```
-
-### gethの起動
-
-ネットワークIDを15とする
-
-```bash
-geth --networkid "15" --nodiscover --datadir "~/eth_private_net" console 2>> ~/eth_private_net/geth_err.log
-```
-
-この結果以下のようなプロンプトが返ってくる
+# 接続先
 
 ```
-Welcome to the Geth JavaScript console!
-
-instance: Geth/v1.10.15-stable-8be800ff/linux-amd64/go1.17.5
-coinbase: 0x1341eb5292c14bc092ad5f565bf690aecdeeb9e2
-at block: 0 (Thu Jan 01 1970 09:00:00 GMT+0900 (JST))
- datadir: /home/yamasaki/eth_private_net
- modules: admin:1.0 debug:1.0 eth:1.0 ethash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
-
 To exit, press ctrl-d or type exit
-> 
+> admin.peers
+[{
+    caps: ["eth/66"],
+    enode: "enode://f60710578e6e364ea003cd6a0d6f0aecf23fc592c45fc761d1f4a01872cebc8adee220260dde64634b39d440bcf78b383e59a80fe05506a0959aa210b5136e1b@34.81.33.87:30303",
+    enr: "enr:-Je4QHSLBLi6ZvDDTCX4dLo4VwAxDSbEFh_9JQkm2xMV3SnFS_U5G6rUYxklNaSKq7eA_ejKzgwPo3XD1z2eH7n4IPAHg2V0aMfGhHEZtrOAgmlkgnY0gmlwhCJRIVeJc2VjcDI1NmsxoQP2BxBXjm42TqADzWoNbwrs8j_FksRfx2HR9KAYcs68ioN0Y3CCdl-DdWRwgnZf",
+    id: "393db698665fe2466892b6262cf67707da5ff33c4b54fe020aa3eab2a6612ba5",
+    name: "erigon/v2021.12.3-beta-47c3b9df/linux-amd64/go1.17.5",
+    network: {
+      inbound: false,
+      localAddress: "192.168.0.254:49842",
+      remoteAddress: "34.81.33.87:30303",
+      static: false,
+      trusted: false
+    },
+    protocols: {
+      eth: {
+        difficulty: 39372544544231100,
+        head: "0x4974392269413df7a0c469775267942f2076a0c5eed4cae44f2f68a5844ecea6",
+        version: 66
+      }
+    }
+}]
 ```
-
-
-### Gethの操作
-
-ブロック番号 0 のブロック情報を表示
-
-```json
-> eth.getBlock(0)
-{
-  difficulty: 16384,
-  extraData: "0x",
-  gasLimit: 134217728,
-  gasUsed: 0,
-  hash: "0x7b2e8be699df0d329cc74a99271ff7720e2875cd2c4dd0b419ec60d1fe7e0432",
-  logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  miner: "0x3333333333333333333333333333333333333333",
-  mixHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-  nonce: "0x0000000000000042",
-  number: 0,
-  parentHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-  receiptsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  sha3Uncles: "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
-  size: 507,
-  stateRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  timestamp: 0,
-  totalDifficulty: 16384,
-  transactions: [],
-  transactionsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  uncles: []
-}
-
-```
-
-## アカウント (EOA) の作成
-
-### 確認
-
-```
-> eth.accounts
-[]
-```
-
-### EOAの作成
-
-パスワードを入力して作成する
-
-```
-personal.newAccount("passwd")
-```
-
-```
-> personal.newAccount("alice")
-"0xc980370ab1ecd29f7501edd2c03ff1791917bfde"
-> personal.newAccount("bob")
-"0x0d24994bac5aee7bb8f4ceaede35ef7b7ca82085"
-```
-
-### etherbase
-
-採掘を行う際にその報酬を紐づけるEOAのアドレス
-
-```
-> eth.coinbase
-"0x1341eb5292c14bc092ad5f565bf690aecdeeb9e2"
-```
-
-## etherの採掘
-
-```
-> miner.start()
-null
-
-> eth.blockNumber
-10357
-```
-
-### ブロックの確認
-
-1000番のブロック
-
-parentHash: （直前のブロックのハッシュ値）を確認する
-
-```
-> eth.getBlock(1000)
-{
-  difficulty: 212811,
-  extraData: "0xd883010a0f846765746888676f312e31372e35856c696e7578",
-  gasLimit: 50523715,
-  gasUsed: 0,
-  hash: "0x613ed17a392ef0ae6054c84e625f7406922597c96cfe94db5e837939d78826d4",
-  logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  miner: "0x1341eb5292c14bc092ad5f565bf690aecdeeb9e2",
-  mixHash: "0x034795aea43f2cb7dbfb95eb1b1c5a3bdf5b8dfdbcb1f5106305197b60382147",
-  nonce: "0x3661a4f61bc67715",
-  number: 1000,
-  parentHash: "0x7f76d51999d2cb12a81ec0e9430dca77e95a4d40c90fc326a5b90a8575611ec5",
-  receiptsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  sha3Uncles: "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
-  size: 539,
-  stateRoot: "0xb4da00bf06a5eb3638c092ade03e15aa29787a1e51d88540f660b5792a4ed912",
-  timestamp: 1641571274,
-  totalDifficulty: 168654309,
-  transactions: [],
-  transactionsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  uncles: []
-}
-```
-
-999番のブロック
-
-hash: が，1000番のブロックの parentHash: と一致することを確認する
-
-```
-> eth.getBlock(999)
-{
-  difficulty: 212708,
-  extraData: "0xd883010a0f846765746888676f312e31372e35856c696e7578",
-  gasLimit: 50573101,
-  gasUsed: 0,
-  hash: "0x7f76d51999d2cb12a81ec0e9430dca77e95a4d40c90fc326a5b90a8575611ec5",
-  logsBloom: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-  miner: "0x1341eb5292c14bc092ad5f565bf690aecdeeb9e2",
-  mixHash: "0x8b85fb0909c7d0ab9346929307822bb25aeec8e97cbcfd16ef0bf6ca2a7f506e",
-  nonce: "0x2cf7130d9ade908e",
-  number: 999,
-  parentHash: "0x3c3652aeca25458287890ce275c64cc3d8217b547c45837488d99707d7051de5",
-  receiptsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  sha3Uncles: "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
-  size: 539,
-  stateRoot: "0x375ddcb16d84a6de5b558b3f7a362ce85713ba34816df6a2902dd08134704233",
-  timestamp: 1641571273,
-  totalDifficulty: 168441498,
-  transactions: [],
-  transactionsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
-  uncles: []
-}
-```
-
-### マイナーの所持金
-
-```
-> eth.getBalance(eth.accounts[0])
-2.0824e+22
-```
-
-Wei -> ether 変換
-
-```
-> web3.fromWei(eth.getBalance(eth.accounts[0]),"ether")
-20856
-> 
-```
-
-
-## etherの送金
-
-EOAの確認
-
-```
-> eth.accounts
-
-["0x2ede3e42f1353f0d08796e6c2565577ef61e4bdd", "0x7de4840627b962591fd28695a96c038cb0bff3eb"]
-```
-
-### アカウントの所持金の確認
-
-```
-> eth.getBalance(eth.accounts[0])
-524000000000000000000
-> eth.getBalance(eth.accounts[1])
-0
-> 
-```
-
-### アカウントのアンロック
-
-アカウントのパスワードでアンロックする
-
-```
-personal.unlockAccount(eth.accounts[0])
-Unlock account 0xc980370ab1ecd29f7501edd2c03ff1791917bfde
-Passphrase: 
-true
-```
-
-### 送金トランザクションの作成
-
-```
-> eth.sendTransaction({from: eth.accounts[0], to: eth.accounts[1], value: web3.toWei(1, "ether")})
-"0x5a674eba5dd9e8d178840abcb49ad13d60dfbd5c8e1ca69baae646c6d90421c4"
-```
-
-### 送金トランザクションの確認
-
-
-```
-> eth.getTransaction('0x5a674eba5dd9e8d178840abcb49ad13d60dfbd5c8e1ca69baae646c6d90421c4')
-{
-  blockHash: "0x027ab30301d5f04cdb6b1e3f7200c0c4a9c6acf2bb5fa4d36db9bb74533025e7",
-  blockNumber: 10669,
-  from: "0xc980370ab1ecd29f7501edd2c03ff1791917bfde",
-  gas: 21000,
-  gasPrice: 1000000000,
-  hash: "0x5a674eba5dd9e8d178840abcb49ad13d60dfbd5c8e1ca69baae646c6d90421c4",
-  input: "0x",
-  nonce: 0,
-  r: "0x6dae13b76bb47d0cc98892e87629a646d45d61e835b10b76ecbd67223e21013f",
-  s: "0x554c212d0fbb77c9f9c267d094a000e40f5b52d2ef376a731502b8100ef02d45",
-  to: "0x0d24994bac5aee7bb8f4ceaede35ef7b7ca82085",
-  transactionIndex: 0,
-  type: "0x0",
-  v: "0x42",
-  value: 1000000000000000000
-}
-```
-
-### アカウントの所持金の確認
-
-```
-> eth.getBalance(eth.accounts[0])
-523000000000000000000
-> eth.getBalance(eth.accounts[1])
-1000000000000000000
-> 
-```
-
 
 # スマートコントラクト
 
