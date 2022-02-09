@@ -1,12 +1,21 @@
-# Truffle を使ったスマートコントラクト開発
+# Truffle を使ったSolidity スマートコントラクト開発
+
+
+スマートコントラクトのテスト駆動開発とデプロイ
 
 ## 書籍
 
-Solidity と Ethereumによる実践スマートコントラクト開発
+「Solidity と Ethereumによる実践スマートコントラクト開発」の内容です
+
+## 事前条件
+
+* EthereumのテストネットであるRopstenのノードを起動
+* aliceとbobのEOAアカウントを作成
+* aliceとbobのアカウントには、ファウセットから資金を送金済
 
 ## 環境
 
-Ubuntu 20.04
+Ubuntu 20.04 /MacOSX
 nvm : 0.39.0
 node : 16.13.2
 npm : 8.1.2
@@ -17,7 +26,7 @@ Web3.js v1.5.3
 
 ## インストール
 
-### nvm (ubuntu)
+### nvm (ubuntu)のインストール
 
 ```
 sudo apt install curl 
@@ -26,7 +35,7 @@ curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 source ~/.profile
 ```
 
-### nvm (macOSX)
+### nvm (macOSX)のインストール
 
 ```
 brew install nvm
@@ -35,7 +44,7 @@ echo 'source $(brew --prefix nvm)/nvm.sh' >> ~/.zprofile
 source .zprofile
 ```
 
-### Truffle
+### Truffleのインストール
 
 ```
 nvm install 16.13.2 # DO NOT USE >=17.0.0
@@ -43,24 +52,51 @@ nvm use 16.13.2
 npm i -g truffle  # DO NOT USE sudo
 ```
 
-## truffle によるテンプレートの生成
+
+
+#### 作業ディレクトリの作成
+
 
 ```
 mkdir greeter
 cd greeter
 ```
 
-テンプレートの生成
+## Truffle によるテンプレートの生成
 
 ```
 truffle init
 ```
 
-作成されたディレクトリとファイル
+### 作成されたディレクトリとファイル
 
 ```
-contracts  migrations  test  truffle-config.js
+contracts
+    Migrations.sol	
+migrations		
+    1_initial_migration.js
+test			
+truffle-config.js
 ```
+
+
+## Truffleコマンド
+
+* truffle compile
+    * ディレクトリ内のコントラクトをコンパイルする
+* truffle migrate
+    * migrationsディレクトリ内のスクリプトを実行してコンパイル済みのコントラクトをデプロイする
+* truffle test
+    * testディレクトリ内のテストを実行する
+* truffle develop 
+    * テスト環境の実行
+* truffle deploy
+    * コードのデプロイ
+* 
+
+
+
+### Greeter (Hello World! プログラム）の生成
 
 ```
 truffle create contract Greeter
@@ -145,7 +181,7 @@ contract("Greeter", function (/* accounts */) {
 
 ## Migration Fileの編集
 
- ./migraionts folder
+
 
 migrations/1643812291_greeter.js 
 
@@ -528,4 +564,6 @@ Compiling your contracts...
   2 passing (2s)
 
 ```
+
+## デプロイ
 
