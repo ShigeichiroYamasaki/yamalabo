@@ -36,7 +36,7 @@ mkdir Ethereum
 cd Ethereum
 mkdir ropsten
 
- geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "192.168.0.254" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" -- console 2>> ./ropsten/geth_err.log
+geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
 ```
 
 ## geth 基本操作
@@ -129,7 +129,15 @@ alice と bob のそれぞれに Etherを送金する
 
 ```
 
-# 接続先
+## 送金
+
+```
+> personal.unlockAccount(eth.accounts[0])
+> 
+> eth.sendTransaction({from: eth.accounts[0], to: eth.accounts[1], value: web3.toWei(0.001, "ether")}) 
+```
+
+## 接続先
 
 ```
 To exit, press ctrl-d or type exit

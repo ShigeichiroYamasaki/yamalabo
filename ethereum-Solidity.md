@@ -1,5 +1,91 @@
 # Ethereum Solidityによるスマートコントラクト
 
+## Solidityの文法
+
+### Version Pragma
+
+```
+pragma solidity >=0.4.16 <0.9.0;
+```
+
+コンパイラのバージョン指定を行います。
+指定されたバージョン以外のコンパイラではコンパイルされない事を保証します。
+
+上の例では、「0.4.16以上、0.9.0 未満のコンパイラ」という意味です。
+
+### Import
+
+対象のファイルを取り込む
+
+```
+import "some.sol";
+```
+some.solの中身をsomeに格納
+
+```
+import * as some from "some.sol";
+```
+
+someの中からsymbol1と、symbol2をaliasという名前でインポート
+
+``` 
+import { symbol1, symbol2 as alias } from "some.sol";
+```
+
+### Contract
+
+Class スマートコントラクトの名前の宣言
+
+
+
+### State Valiables
+
+Contract定義の直下で宣言された変数
+
+```
+contract Human {
+  string name;
+}
+```
+
+### Function
+
+関数定義
+アクセス修飾子は後ろに書く
+
+```
+contract Human {
+  // 引数とか、返値の型の指定も必須
+  function say(string text) public returns (string) {
+    return text;
+  }
+```
+
+### Struct
+
+構造体
+
+```
+contract Human {
+  struct Parameters {
+    uint height;
+    uint weight;
+    address account;
+  }
+}
+```
+
+### Enum
+
+列挙型
+
+```
+contract Human {
+  enum State { Live, Dead }
+  State state = State.Dead;
+}
+```
+
 
 ## Ropstenノードを利用
 
