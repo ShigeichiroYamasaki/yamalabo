@@ -1090,6 +1090,9 @@ truffle コンソールの起動
 truffle console
 ```
 
+await は、JavaScriptの演算子で、非同期関数の処理を一時停止し、関数の処理が再開後に継続します。
+コントラクト Helloがデプロイされるとインスタンスがhelloに代入されます。
+
 ```
 truffle(ganache)> let hello = await Hello.deployed()
 undefined

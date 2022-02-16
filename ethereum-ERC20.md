@@ -1,0 +1,265 @@
+# Ethereum ERC20トークンの作成
+
+Truffle からOpenZeppelin のライブラリを利用してERC20トークンを作成する
+ethere
+
+### 前提
+
+* nodejsのインストール
+* Truffleのインストール
+* Ganacheのインストール
+
+### Truffle プロジェクトのディレクトリ作成
+
+```
+$ mkdir YamaLabToken
+$ cd YamaLabToken
+$ truffle init
+```
+
+### ディレクトリ構造
+
+```
+├── contracts
+├── migrations
+├── test
+└── truffle-config.js
+```
+
+### Truffleのバージョン
+
+```
+$ truffle version
+
+Truffle v5.4.31 (core: 5.4.31)
+Solidity - 0.8.11 (solc-js)
+Node v16.13.2
+Web3.js v1.5.3
+```
+
+### Solidity のバージョンを 0.5.0 にする
+
+Solidityのバージョンが新しいとライブラリがうまく動かないことが多い
+
+Truffle で使用するSolidity バージョンを指定する方法
+
+truffle-config.js を編集する
+
+```
+...
+
+
+// Configure your compilers
+  compilers: {
+    solc: {
+     // Solcのバージョンを0.8.11 から 0.5.0 に変更
+     // version: "0.8.11",    // Fetch exact version from solc-bin (default: truffle's version)
+       version: "0.5.0",    // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      // settings: {          // See the solidity docs for advice about optimization and evmVersion
+      //  optimizer: {
+      //    enabled: false,
+      //    runs: 200
+      //  },
+      //  evmVersion: "byzantium"
+      // }
+    }
+  },
+
+
+...
+```
+
+#### 確認
+
+```
+$ truffle version
+
+Truffle v5.4.31 (core: 5.4.31)
+Solidity - 0.5.0 (solc-js)
+Node v16.13.2
+Web3.js v1.5.3
+```
+
+### OpenZeppelinからスマートコントラクトのテンプレート集のインストール
+
+```
+$ npm init -y
+
+$ npm install @openzeppelin/contracts@2.5.1
+
+added 1 package, and audited 2 packages in 2s
+
+1 high severity vulnerability
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+```
+
+### ERC20 コントラクトの作成
+
+contracts/TokenSample.sol
+
+```
+pragma solidity ^0.5.0;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+/*
+//Solity 0.7 or 0.8
+contract TokenSample is ERC20 {
+    constructor() ERC20("My Token", "MT") {
+        _mint(msg.sender, 10000*10**18);
+    }
+}
+*/
+//Solidity 0.5
+contract TokenSample is ERC20 {
+  string public name = "My Token";
+  string public symbol = "MT";
+  uint public decimals = 18;
+constructor(uint256 initialSupply) public {
+    _mint(msg.sender, initialSupply);
+  }
+}
+```
+
+### Ganacheの起動
+
+Quick Start
+
+Accountsを確認して10個のアカウントを確認
+Transactions を確認する
+
+
+### デプロイスクリプトの作成
+
+migrations/2_deploy_contracts.js
+
+```
+var TokenSample = artifacts.require("./TokenSample.sol");
+module.exports = function(deployer) {
+    return deployer.then(()=>{
+        const decimals = web3.utils.toBN(18);
+        const base = web3.utils.toBN(10);
+        const initialSupply = web3.utils.toBN(100).mul(web3.utils.toBN(base).pow(decimals));
+        return deployer.deploy(
+            TokenSample,initialSupply
+        );
+    });
+};
+```
+
+### コントラクトのデプロイ
+
+```
+truffle migrate
+```
+
+Ganacheの画面でトランザクションが発生していることを確認する
+
+コントラクトの生成とコントラクトの呼び出しが発生している
+
+### デプロイしたコントラクトの操作（Truffleのコンソールを利用）
+
+Truffleのコンソールの起動（Ganacheに接続している）
+
+```
+$ truffle console
+truffle(ganache)> 
+```
+
+#### 操作
+
+```
+truffle(ganache)> TokenSample.deployed().then(function(instance){ERC20=instance})
+
+truffle(ganache)> ERC20.name.call()
+'My Token'
+
+truffle(ganache)> ERC20.symbol.call()
+'MT'
+
+truffle(ganache)> ERC20.totalSupply.call()
+BN {
+  negative: 0,
+  words: [ 51380224, 30903128, 22204, <1 empty item> ],
+  length: 3,
+  red: null
+}
+
+```
+
+#### トークンの所持金の確認
+
+Gnacheのアドレスの一覧を確認
+
+最初のアドレスがコントラクトをデプロイしたアドレスなので、トークン発行者としてトークンを持っている
+
+他のアドレスはトークンを持っていない
+
+アドレスに名前をつけて、トークン所持金を確認する
+
+```
+truffle(ganache)> let alice='0x5F11573Ba710Da0Ef32aD8325b0EE65f0e350bef'
+
+truffle(ganache)> let bob='0xF9738E098eaA76678ae8B25241Fb741E41b98d78'
+
+truffle(ganache)> ERC20.balanceOf(alice)
+BN {
+  negative: 0,
+  words: [ 51380224, 30903128, 22204, <1 empty item> ],
+  length: 3,
+  red: null
+}
+
+truffle(ganache)> ERC20.balanceOf(bob)
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
+```
+
+#### bobにトークンを送付する
+
+```
+truffle(ganache)> ERC20.transfer(bob,web3.utils.toBN(10).pow(web3.utils.toBN(18)))
+{
+  tx: '0x98b3e5cfe4b98e63f93ea19da699d1f96c8c3b51ddce45f3d0d06d922b77d0c1',
+  receipt: {
+    transactionHash: '0x98b3e5cfe4b98e63f93ea19da699d1f96c8c3b51ddce45f3d0d06d922b77d0c1',
+    transactionIndex: 0,
+    blockHash: '0x88e34776770f3d143c6bf61cd7912f2ce71952664bda71b48e8d3ca103f6da10',
+    blockNumber: 5,
+    from: '0x5f11573ba710da0ef32ad8325b0ee65f0e350bef',
+    to: '0xbc9a6e2443387923650241c0935fb97616468942',
+    gasUsed: 51462,
+    cumulativeGasUsed: 51462,
+    contractAddress: null,
+    logs: [ [Object] ],
+    status: true,
+    logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000001000000000000000000000000000000000000000000000000010000000000000000000000000400000000000010000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000002200000000000000000000000000000000000000000000000000000000000000000000000000000000040000000800000000000000000000020000000',
+    rawLogs: [ [Object] ]
+  },
+  logs: [
+    {
+      logIndex: 0,
+      transactionIndex: 0,
+      transactionHash: '0x98b3e5cfe4b98e63f93ea19da699d1f96c8c3b51ddce45f3d0d06d922b77d0c1',
+      blockHash: '0x88e34776770f3d143c6bf61cd7912f2ce71952664bda71b48e8d3ca103f6da10',
+      blockNumber: 5,
+      address: '0xbC9a6E2443387923650241C0935fb97616468942',
+      type: 'mined',
+      id: 'log_d587d17c',
+      event: 'Transfer',
+      args: [Result]
+    }
+  ]
+}
+
+truffle(ganache)> ERC20.balanceOf(bob)
+BN {
+  negative: 0,
+  words: [ 56885248, 2993385, 222, <1 empty item> ],
+  length: 3,
+  red: null
+}
+
+```
+

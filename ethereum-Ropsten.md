@@ -69,7 +69,7 @@ geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "local
 * web3.fromWei()：WeiをEtherに変換
 * web3.toWei()：EtherをWeiに変換
 * admin.addPeer()：他のノードに接続
-* net.listening : 疎通確認
+* net.listening :　導通確認
 * net.peerCount : 接続されているノード数
 * admin.nodeInfo : ノードの情報
 * admin.peers : 接続されているノード情報

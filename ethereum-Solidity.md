@@ -2,6 +2,13 @@
 
 ## Solidityの文法
 
+### 文（Statement）にはセミコロン
+
+### コメント
+
+* // 単一行のコメント
+* /* ～ */ 複数行のコメント
+
 ### Version Pragma
 
 ```
@@ -12,6 +19,59 @@ pragma solidity >=0.4.16 <0.9.0;
 指定されたバージョン以外のコンパイラではコンパイルされない事を保証します。
 
 上の例では、「0.4.16以上、0.9.0 未満のコンパイラ」という意味です。
+
+### 変数宣言
+
+```
+int x;
+```
+
+### 型
+
+|基本型|参照型|
+| :-- | :-- |
+|int 符号付き整数| 配列型|
+|iint 符号なし整数| Struct型|
+|address | Map型|
+|bool||
+
+#### アドレス型
+
+アドレス型はEOAやContractの20バイトの長さのアドレスを格納する
+
+* balance属性
+
+    アドレスが保有するetherの量が取得可能
+
+```
+address a = 0xa; //アドレス型変数aに0xaのアドレスを格納。
+uint b = a.balance; //アドレス"0xa"の持つetherの量をbに格納。
+```
+
+* send()関数
+
+指定したアドレスにx weiのetherを送金する
+
+```
+contract Test {
+    function sendTest(){
+        address a = 0xf2057b8aefb9093331faf48f30c1ebeab4ff961d; //送信先のアドレスの指定
+        a.send(5); //コントラクト・アドレスが保有するetherから指定のアドレス"a"へ5wei送金
+    }
+}
+```
+
+#### 配列
+
+データ型T、長さkの配列はT[k]と表記。
+可変長配列の場合はT[]
+
+* length属性、push関数
+
+配列長さを示すlength属性
+可変長配列の最後に要素を追加するpush関数
+
+
 
 ### Import
 
@@ -34,8 +94,13 @@ import { symbol1, symbol2 as alias } from "some.sol";
 
 ### Contract
 
-Class スマートコントラクトの名前の宣言
+スマートコントラクト名の宣言、クラス名に近い概念
 
+```
+contract Contract名 {
+   //スマート・コントラクトで行う処理をここに記述
+}
+```
 
 
 ### State Valiables
