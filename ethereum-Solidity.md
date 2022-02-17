@@ -139,6 +139,57 @@ EOAトランザクションや別のコントラクトから呼び出すこと�
 
 ★（注意）internal や private な関数定義も、ブロックチェーンのデータとしては公開されていて秘匿化はされていない。
 
+### Ethereumのコントラクトのアトミック性
+
+Ethereumのコントラクトを実行するトランザクションは、成功するか失敗するかの２つ状態しかないことが保証されます。
+エラーなどでコントラクトの処理が途中で以上終了すると、変数や残高などは元の状態に戻されます。
+但し、エラー終了の場合でも処理に要したガスは消費されます。
+
+### assert関数、require 関数
+
+ゲート条件（それが trueにならないと残りの処理を停止する関数）を定義する関数
+
+
+### コンストラクタとディストラクタ
+
+* コンストラクタ
+
+コントラクトを生成するときに１度だけ評価される関数がコンストラクタです
+コントラクトの状態を初期化します。
+
+```
+contract MyContract {
+    address owner;
+    constractor () {
+        owner = msg.sender;
+  }
+}
+```
+
+* ディストラクタ
+
+デプロイされたスマートコントラクトは、ブロックチェーンが存在し続けるかぎり動作しつずけます。
+
+コントラクトが、意図したライフサイクルが終了した時点で削除可能にするためには、予めコントラクトの中に `selfdestruct()` 関数によるデストラクタを組み込んでおく必要があります。
+
+```
+function destroy() public {
+    require(msg.sender==owner);
+    selfdestruct(owner);
+}
+```
+
+
+### コントラクトの継承
+
+コントラクトの間に継承を定義するときは、contract定義で `is` というキーワードを利用します。
+
+継承によって子コントラクトは親コントラクトの関数や変数を利用できるようになります。
+
+```
+contract Child is Parent1, Parent2 {
+}
+```
 
 ### アドレス型の利用例
 
@@ -167,7 +218,7 @@ contract Test {
 ```
 
 
-## Import
+### Import
 
 対象のファイルを取り込む
 
@@ -186,56 +237,6 @@ someの中からsymbol1と、symbol2をaliasという名前でインポート
 import { symbol1, symbol2 as alias } from "some.sol";
 ```
 
-### Contract
-
-スマートコントラクト名の宣言、クラス名に近い概念
-
-```
-contract Contract名 {
-   //スマート・コントラクトで行う処理をここに記述
-}
-```
-
-
-### State Valiables
-
-Contract定義の直下で宣言された変数
-
-```
-contract Human {
-  string name;
-}
-```
-
-### Struct
-
-構造体
-
-```
-contract Human {
-  struct Parameters {
-    uint height;
-    uint weight;
-    address account;
-  }
-}
-```
-
-### Enum
-
-列挙型
-
-```
-contract Human {
-  enum State { Live, Dead }
-  State state = State.Dead;
-}
-```
-
-
-## Ropstenノードを利用
-
-アカウント：　EOA（Externally Owned Account）とContract
 
 
 ## Silidity コンパイラ（solc)のインストール
