@@ -15,27 +15,132 @@
 pragma solidity >=0.4.16 <0.9.0;
 ```
 
-コンパイラのバージョン指定を行います。
+コンパイラ命令
 指定されたバージョン以外のコンパイラではコンパイルされない事を保証します。
 
 上の例では、「0.4.16以上、0.9.0 未満のコンパイラ」という意味です。
 
-### 変数宣言
+`^` はマイナーリビジョンの意味で、小数点2桁目以上のバージョンは許容するという意味で、小数点1桁目のバージョンアップは許容しない
+
+
+### データ型
+
+|基本型|記述内容|
+| :-- | :-- |
+|整数| int, uint (符号なし整数)|
+|固定小数点型| fixed, ufixed  例：ufixed32x2(整数部32ビット小数部2ビット）|
+|アドレス|address (20バイトのEthereumアドレス)| 
+|ブーリアン型| true, false, !(否定）,&&(論理積)、`||`(論理和), ==(等価)、!=(非等価)|
+
+|参照型|記述内容|
+|:-- |:--|
+|固定バイト配列型|bytes1 ~ bytes32|
+|動的バイト配列型|bytes, string|
+|列挙型|enum NAME {LABEL1, LABEL2,...}|
+|配列型|uint32[][5] は符号なし整数の5つの配列の配列|
+|Struct型| struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}|
+|Mapping型|mapping (KEY_TYPE => VALUE_TYPE) NAME (キー=>値ペアのハッシュテーブルの作成)|
+
+#### 変数宣言の例
 
 ```
 int x;
 ```
 
-### 型
+#### Ether通貨単位
 
-|基本型|参照型|
-| :-- | :-- |
-|int 符号付き整数| 配列型|
-|iint 符号なし整数| Struct型|
-|address | Map型|
-|bool||
+基本単位は wei = 10^(-18) ether
 
-#### アドレス型
+```
+require(withdraw_amount <= 100000000000000000);
+```
+
+は、以下のように記述可能
+
+```
+require(withdraw_amount <= 0.1 ether);
+```
+
+### グローバル変数
+
+block, msg, tx, address などのオブジェクトがスマートコントラクトからアクセス可能
+意味は想像可能だが、正確な内容は仕様書で確認してください
+
+#### masg
+
+* msg.sender
+* msg.value
+* msg.gas
+* msg.data
+* msg.sig
+
+### tx
+
+* tx.gasprice
+* tx.origin
+
+#### block
+
+* block.blockhash(BLOCKNUMBER)
+* block.coinbase
+* block.difficulty
+* block.gaslimit
+* block.number
+* block.timestamp
+
+#### address
+
+* address.balance
+* address.transfer(AMOUNT)
+* address.send(AMOUNT)
+* address.call(PAYLOAD)
+* address.callcode(PAYLOAD)
+* address.delegatecall()
+
+#### 組み込み関数
+
+* addmod ：剰余和
+* mulmod ：剰余積
+* keccak256
+* shar256
+* sha3
+* ripemd160
+* ecrecover：署名からアドレスを復元
+* selfdestruct(RECIPIENT_ADDRESS)：現在のコントラクトを削除してアカウントに残っているEtherを受信者アドレスに送付
+
+
+## コントラクトの定義
+
+Solidityのトップレベルのオブジェクトの型が　contract　
+
+つまり、Solidityプログラムとは、コントラクトオブジェクト（データとメソッド）を定義すること
+
+ただし、コントラクトに類似した、interface, library というオブジェクトも存在する。
+
+
+
+### 関数
+
+EOAトランザクションや別のコントラクトから呼び出すことが可能な関数の定義
+
+
+```
+  function say(string text) public returns (string) {
+    return text;
+  }
+```
+
+* 関数名（無名関数も可能）
+* 引数
+* visibility (public|external|internal（コントラクト内からのみ呼び出し可能）|private（他のコントラクトから呼び出し不可）)
+* 状態変更 (constant|view|pure|payable)
+* returns (戻り値の型)
+
+
+★（注意）internal や private な関数定義も、ブロックチェーンのデータとしては公開されていて秘匿化はされていない。
+
+
+### アドレス型の利用例
 
 アドレス型はEOAやContractの20バイトの長さのアドレスを格納する
 
@@ -61,19 +166,8 @@ contract Test {
 }
 ```
 
-#### 配列
 
-データ型T、長さkの配列はT[k]と表記。
-可変長配列の場合はT[]
-
-* length属性、push関数
-
-配列長さを示すlength属性
-可変長配列の最後に要素を追加するpush関数
-
-
-
-### Import
+## Import
 
 対象のファイルを取り込む
 
@@ -111,19 +205,6 @@ Contract定義の直下で宣言された変数
 contract Human {
   string name;
 }
-```
-
-### Function
-
-関数定義
-アクセス修飾子は後ろに書く
-
-```
-contract Human {
-  // 引数とか、返値の型の指定も必須
-  function say(string text) public returns (string) {
-    return text;
-  }
 ```
 
 ### Struct

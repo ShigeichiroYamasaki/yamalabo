@@ -74,11 +74,148 @@ ERC721ボタンをクリックする
 
 #### NFTの対象となるデータを決める
 
-ここでは、githubのこのページを対象にします。
+ここでは、githubのこのページをトークンの対象にします。
 
+`https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-ERC721.md`
 
 #### NFTの名前を決定する
 
+`Yamasaki Lab Token`
+
 ### NFTの通貨記号を決める
 
-### 
+`YLT`
+
+#### Base URIを設定する
+
+NFTは、対象（Deed=資産の証書）を識別する Token ID が付きます。
+このBase URIは、Token ID （資産の識別子）と連接されて  Token URIになります。
+
+
+```
+https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-ERC721.md
+```
+
+![](./img/ethereum-erc721-5.png)
+
+### features
+
+
+* Mintable
+
+NFTを発行する権限を持つ
+
+* Burnable
+
+NFTを焼却（精算）することができる
+
+* Pausable
+
+異常事態が発生したときなどに、機能を停止状態にできる
+
+* Enumerable
+
+一つのアカウントが所持しているトークンを列挙できる
+
+* URI Storage
+
+Toke ID に対する Token URIを修正できる
+
+### access control
+
+* Ownable
+
+一つのアカウントがNFTへのすべての権限を持つ
+
+* Roles
+
+アクションごとに権限を分離できる
+
+### upgradeability
+
+スマートコントラクトは基本的にアップデート不可能
+しかし、アップグレード用プロキシを設定しておけば可能になる。
+
+* Transparen
+
+複雑なプロキシを利用できる
+
+* UUPS
+
+簡単なプロキシしか利用できない
+
+## 作成したERC721のスマートコントラクトをREMIXを使ってデプロイする
+
+Open in Remix ボタンをクリックする
+
+![](./img/ethereum-erc721-6.png)
+
+### REMIXでSolidity のコードをコンパイルする
+
+![](./img/ethereum-erc721-7.png)
+
+### REMIX で ENVIRONMENTを Web3 Provider を選択し、Ropstenに接続
+
+### CONTRACTで　`YamasakiLabToken-...` のような自分のコントラクトを選択
+
+### アカウントのパスワードを入れて署名鍵をアンロックする
+
+```
+> personal.unlockAccount(eth.accounts[0])
+Unlock account 0xe56e63c5cc3c062ee39d725e1d241b126e75d3ff
+Passphrase: 
+true
+```
+
+### Deployボタンを選択する
+
+![](./img/ethereum-erc721-8.png)
+
+##  コントラクト
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.2;
+
+import "@openzeppelin/contracts@4.4.2/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts@4.4.2/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts@4.4.2/access/Ownable.sol";
+
+contract YamasakiLabToken is ERC721, ERC721Burnable, Ownable {
+    constructor() ERC721("YamasakiLabToken", "YLT") {}
+
+    function _baseURI() internal pure override returns (string memory) {
+        return "https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-ERC721.md";
+    }
+
+    function safeMint(address to, uint256 tokenId) public onlyOwner {
+        _safeMint(to, tokenId);
+    }
+}
+```
+
+### 実際にNFTを発行する
+
+
+アカウントの署名鍵をアンロックする
+
+```
+>  personal.unlockAccount(eth.accounts[0])
+Unlock account 0xe56e63c5cc3c062ee39d725e1d241b126e75d3ff
+Passphrase: 
+true
+```
+
+#### Remixの Deployed Contractsのデプロイしたコントラクトを確認する
+
+　＞　マークをクリックしてコントラクトへの操作を展開する
+
+![](./img/ethereum-erc721-A.png)
+
+#### NFTの新規発行を行う
+
+展開されたコントラクトへの操作の中で　safeMint　関数によるトランザクションをブロードキャストして新規NFTを発行する。
+
+引数は、発行するNFT所有者のアドレスとなる　eth.accounts[1]のアドレスと tokenidになる整数 12345 
+
+![](./img/ethereum-erc721-9.png)
