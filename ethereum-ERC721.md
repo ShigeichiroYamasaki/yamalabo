@@ -9,6 +9,7 @@
 ### 前提
 
 * [geth で ropstenネットワークに接続](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-Ropsten.md) faucetを利用して、テスト用のEtherを持つアカウントを準備している
+* [Solidity言語仕様を知っている](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-Solidity.md)
 
 
 
@@ -31,16 +32,26 @@ at block: 11960558 (Sun Feb 13 2022 23:44:12 GMT+0900 (JST))
 
 To exit, press ctrl-d or type exit
 > 
-
 ```
 
-### アカウントに ether をあることを確認
+### デプロイ用アカウントに ether の残高があることを確認
+
+デプロイなどにガス代が必要
+
+NFTのテストのために、他にも3〜４個程度のアカウントを作成しておく
+
 
 ```
-> eth.getBalance(eth.accounts[0])
-170100701298074633
-> eth.getBalance(eth.accounts[1])
-101000000000000000
+> eth.getBalance(eth.accounts[0]) # alice
+163109375469575313
+> eth.getBalance(eth.accounts[1]) # bob
+100937000344379000
+> eth.getBalance(eth.accounts[2]) # carol
+100000000000000000
+> eth.getBalance(eth.accounts[3]) # deivid
+100000000000000000
+> eth.getBalance(eth.accounts[4]) # taro
+0
 ```
 
 ## REMIXの設定
@@ -62,8 +73,12 @@ To exit, press ctrl-d or type exit
 
 ![](./img/ethereum-erc721-3.png)
 
+### 確認終了後、REMIXと Ropstenノードの接続をいったん解除する
 
-## Openzeppelinのウィザードサイト
+ENVIRONMENTで、JavaScript(London) などに接続を変更する
+
+
+## OpenzeppelinのウィザードサイトでNFTのコントラクトを作成する
 
 ERC721ボタンをクリックする
 
@@ -107,7 +122,7 @@ NFTを発行する権限を持つ
 
 * Burnable
 
-NFTを焼却（精算）することができる
+NFTを焼却することができる
 
 * Pausable
 
