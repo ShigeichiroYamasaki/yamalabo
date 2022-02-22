@@ -1,5 +1,8 @@
 # Ethereum Ropsten ノード　構築
 
+2022/02/17 Shigeichiro Yamasaki
+
+
 
 ## ethereum (geth)
 
@@ -74,7 +77,6 @@ geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "local
 * admin.nodeInfo : ノードの情報
 * admin.peers : 接続されているノード情報
 
-
 ## Gethの操作
 
 ```
@@ -126,7 +128,6 @@ alice と bob のそれぞれに Etherを送金する
 
 > eth.getBalance(bob)
 400000000000000000
-
 ```
 
 ## 送金
@@ -164,4 +165,3 @@ To exit, press ctrl-d or type exit
     }
 }]
 ```
-

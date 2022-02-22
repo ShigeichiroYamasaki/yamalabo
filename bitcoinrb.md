@@ -1,8 +1,24 @@
 # bitcoinrb
 
-bitcoin core API をRuby から操作する rubygems
+2022/02/21
+
+bitcoin core API をRuby から操作する rubygemsの基本
+
+## bitcoinrb WiKi
+
+開発者の安土さんによる Wikiです。
+基本的な使用法は、ここでわかります。
+
+[https://github.com/chaintope/bitcoinrb/wiki](https://github.com/chaintope/bitcoinrb/wiki)
+
+## bitcoinrb のクラスとメソッドの一覧
+
+[https://www.rubydoc.info/gems/bitcoinrb/0.1.5](https://www.rubydoc.info/gems/bitcoinrb/0.1.5)
 
 ## インストール方法
+
+2022年２月現在、M1 Mac では問題がおきるようです。
+intel Mac かubuntuマシンでの開発を推めます
 
 ### Ruby言語のインストール
 
@@ -14,7 +30,6 @@ bitcoin core API をRuby から操作する rubygems
 sudo apt install -y libleveldb-dev
 gem install bitcoinrb
 ```
-
 
 ### MacOSXでのbitcoinrbのインストール
 
@@ -31,8 +46,7 @@ bitcoind でも. bitcoin-qt でもsnap のbitocoin-core でもよい
 
 接続するネットワークを意識してポート番号などを設定する（以下ではsignetを想定）
 
-
-###  irbで確認
+### irbで確認
 
 ```bash
 irb
@@ -65,85 +79,439 @@ def bitcoinRPC(method, params)
 end
 ```
 
-## Bitcoinの送金
+
+
+## トランザクション構成の基本
+
+
+#### 使用するUTXOの選定
+
+```ruby
+# 現在のワレットが所持しているUTXOのリスト
+utxos = bitcoinRPC('listunspent', [])
+
+# ここではutxosの配列の最初のものを使用することにする
+utxo=utxos[0]
+
+utxo
+=> 
+{"txid"=>"77a2252e6d0a65ca269cb558f85f3e0ccbf0fcf32312560ca3a5530ab5347153",
+ "vout"=>0,
+ "address"=>"tb1qd6m8ke8kquz7nga6dan9ktnsx4em5zayvd7n89",
+ "label"=>"",
+ "scriptPubKey"=>"00146eb67b64f60705e9a3ba6f665b2e703573ba0ba4",
+ "amount"=>0.09999858,
+ "confirmations"=>9366,
+ "spendable"=>true,
+ "solvable"=>true,
+ "desc"=>"wpkh([e4668231/0'/0'/13']03806dceecc97d25000d6047c9b72e39ca6cbe7fe6fa49a02b06f95103abb863ba)#em8vspdk",
+ "safe"=>true}
+```
+
+#### 署名用秘密鍵の確認
+
+UTXOを受け取ったアドレスの確認
+
+```ruby
+receipt_address = utxo["address"]
+```
+
+そのアドレスの秘密鍵
+
+ ```ruby
+privkey = bitcoinRPC('dumpprivkey', [receipt_address])
+key = Bitcoin::Key.from_wif(privkey)
+ ```
+
+#### テスト用送金先アドレスの生成
+
+```ruby
+alice=bitcoinRPC('getnewaddress', [])
+bob=bitcoinRPC('getnewaddress', [])
+carol=bitcoinRPC('getnewaddress', [])
+```
+
+#### トランザクションのテンプレートの作成
+
+```ruby
+tx = Bitcoin::Tx.new
+```
+
+#### トランザクションのINPUTの作成
+
+トランザクションのinputは、使用するUTXOへの参照（out_point) 
+その内容は、トランザクションID(txid)とvoutの番号
+
+```ruby
+utxo_txid=utxo["txid"]
+utxo_vout=utxo["vout"]
+
+outpoint = Bitcoin::OutPoint.from_txid(utxo_txid, utxo_vout)
+tx.in <<  Bitcoin::TxIn.new(out_point: outpoint)
+
+```
+
+#### トランザクションのoutputの作成
+
+送金金額
+
+```ruby
+# UTXOの残高
+utxo_amount = (utxo["amount"]*(10**8)).to_i
+# 送金金額 0.001 BTCとします
+send_value=(0.001*(10**8)).to_i
+# 送金手数料
+fee = 20000
+# おつり
+change=utxo_amount-send_value-fee
+```
+
+送金先 OUTPUT (送金先アドレスをaliceとします)
+
+```ruby
+script_pubkey0 = Bitcoin::Script.parse_from_addr(alice)
+tx.out << Bitcoin::TxOut.new(value: send_value, script_pubkey: script_pubkey0)
+```
+
+おつり  OUTPUT (おつりの送付先アドレスを receipt_address とします)
+
+```ruby
+script_pubkey1 = Bitcoin::Script.parse_from_addr(receipt_address)
+tx.out << Bitcoin::TxOut.new(value: change, script_pubkey: script_pubkey1)
+```
+
+#### 未署名のトランザクションの確認
+
+```ruby
+tx
+=> 
+#<Bitcoin::Tx:0x000055fb91c89960
+ @inputs=
+  [#<Bitcoin::TxIn:0x000055fb91c46d68
+    @out_point=#<Bitcoin::OutPoint:0x000055fb91c4eab8 @index=0, @tx_hash="17880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f24">,
+    @script_sig=#<Bitcoin::Script:0x000055fb91c46b88 @chunks=[]>,
+    @script_witness=#<Bitcoin::ScriptWitness:0x000055fb91c44a40 @stack=[]>,
+    @sequence=4294967295>],
+ @lock_time=0,
+ @outputs=
+  [#<Bitcoin::TxOut:0x000055fb917688c8
+    @script_pubkey=#<Bitcoin::Script:0x000055fb91728d90 @chunks=["\x00", "\x14\xEC\xDE-\x12\x88\xFE`\xD9j\x9E\x9D\xF6\xAAe\xF7\xDDqw\xBBO"]>,
+    @value=100000>,
+   #<Bitcoin::TxOut:0x000055fb91b635e0
+    @script_pubkey=#<Bitcoin::Script:0x000055fb91751038 @chunks=["\x00", "\x14f\x1F\xE0\xDA;\xEA\x10]\x7F\x93L\xA9xC{\x8A\x19\v\xFE\xB2"]>,
+    @value=6739730>],
+ @version=1>
+```
+
+#### トランザクションへの署名 (P2WPKH)
+
+
+inputのインデックスと参照先UTXOのscriptPubKey（ここではinput 0)
+
+```ruby
+input_index = 0
+prev_scriptPubKey = Bitcoin::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+```
+
+P2WPKHのトランザクションハッシュ値 
+
+```ruby
+sighash = tx.sighash_for_input(input_index,prev_scriptPubKey, sig_version: :witness_v0, amount: utxo_amount)
+```
+
+トランザクションへの署名(SHIGHASH ALL)
+
+```ruby
+sign = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+tx.in[0].script_witness.stack << sign
+tx.in[0].script_witness.stack << key.pubkey.htb
+```
+
+#### 署名されたトランザクションの確認
+
+```ruby
+tx
+=> 
+#<Bitcoin::Tx:0x000055fb91c89960
+ @inputs=
+  [#<Bitcoin::TxIn:0x000055fb91c46d68
+    @out_point=#<Bitcoin::OutPoint:0x000055fb91c4eab8 @index=0, @tx_hash="17880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f24">,
+    @script_sig=#<Bitcoin::Script:0x000055fb91c46b88 @chunks=[]>,
+    @script_witness=
+     #<Bitcoin::ScriptWitness:0x000055fb91c44a40
+      @stack=
+       ["0D\x02 \x11J\xBF\xAEa\x9E\x92{\xE73\xA102TS\x95A~Ms\x0F~\xD7\xE1o\xD8s\x7F\xCCJ\xE9A\x02 i\xDCl\x93\xC9\xEB\x8A\xDC'\x9BkH\xDBL\x1C\x01\v\xE1\xDD\xC13|\xB4\xAB\xD3K\xD0\xC8\x84\x97[\x8B\x01",
+        "\x02\x993Q\x8Al\xA4\xD7\xD2\xD3\xD9\xF8\x90`R\xF3\x01\xB7\xC4\xF8e{\a\xF4*2\x16Yrf\x05\xA6\x14"]>,
+    @sequence=4294967295>],
+ @lock_time=0,
+ @outputs=
+  [#<Bitcoin::TxOut:0x000055fb917688c8
+    @script_pubkey=#<Bitcoin::Script:0x000055fb91728d90 @chunks=["\x00", "\x14\xEC\xDE-\x12\x88\xFE`\xD9j\x9E\x9D\xF6\xAAe\xF7\xDDqw\xBBO"]>,
+    @value=100000>,
+   #<Bitcoin::TxOut:0x000055fb91b635e0
+    @script_pubkey=#<Bitcoin::Script:0x000055fb91751038 @chunks=["\x00", "\x14f\x1F\xE0\xDA;\xEA\x10]\x7F\x93L\xA9xC{\x8A\x19\v\xFE\xB2"]>,
+    @value=6739730>],
+ @version=1>
+```
+
+#### トランザクションの検証
+
+```ruby
+tx.verify_input_sig(0, prev_scriptPubKey, amount: utxo_amount)
+
+=> true
+```
+
+#### 16進形式のトランザクション
+
+```ruby
+tx.to_hex
+=> "0100000000010117880e76f15fbb126d5d7cf04fbe9bf9f1b9363dc5cd220581d052547b493f240000000000ffffffff02a086010000000000160014ecde2d1288fe60d96a9e9df6aa65f7dd7177bb4f12d7660000000000160014661fe0da3bea105d7f934ca978437b8a190bfeb2024730440220114abfae619e927be733a13032545395417e4d730f7ed7e16fd8737fcc4ae941022069dc6c93c9eb8adc279b6b48db4c1c010be1ddc1337cb4abd34bd0c884975b8b0121029933518a6ca4d7d2d3d9f8906052f301b7c4f8657b07f42a321659726605a61400000000"
+```
+
+#### トランザクションの送信
 
 
 ```ruby
-# 送金先アドレスと送金金額を指定して送金
+ result = bitcoinRPC('sendrawtransaction', [tx.to_hex])
 
-def send_bitcoin(addr, amount, fee)
+```
+
+#### txid, wtxid
+
+```ruby
+tx.txid
+=> "b9b4e66edb225477792ec5814c43218a16140739dcfb10648d2dc86f455496d2"
+
+tx.wtxid
+=> "cfd25530b055b435d0673cb0762f225b69df8a4bf1dc508baa47cea3811b3b65"
+```
+
+## スクリプトの基本
+
+#### スクリプトの生成
+
+バイナリから生成
+
+```ruby
+script = Bitcoin::Script.parse_from_payload('76a91446c2fbfbecc99a63148fa076de58cf29b0bcf0b088ac'.htb)
+```
+
+文字列から生成
+
+```ruby
+script = Bitcoin::Script.from_string('OP_DUP OP_HASH160 46c2fbfbecc99a63148fa076de58cf29b0bcf0b0 OP_EQUALVERIFY OP_CHECKSIG')
+```
+
+オペコードから生成
+
+```ruby
+include Bitcoin::Opcodes
+script = Bitcoin::Script.new << OP_DUP << OP_HASH160 << '46c2fbfbecc99a63148fa076de58cf29b0bcf0b0' << OP_EQUALVERIFY << OP_CHECKSIG
+```
+
+#### スクリプトの評価
+
+```ruby
+script = Bitcoin::Script.from_string('6 1 OP_ADD 7 OP_EQUAL')
+script.run
+=> true
+```
+
+#### スクリプトユーティリティ
+
+P2PKHスクリプトの生成
+
+```ruby
+# 公開鍵ハッシュ
+script = Bitcoin::Script.to_p2pkh('46c2fbfbecc99a63148fa076de58cf29b0bcf0b0')
+```
+
+P2WPKH
+
+```ruby
+# 公開鍵ハッシュ
+script = Bitcoin::Script.to_p2wpkh('46c2fbfbecc99a63148fa076de58cf29b0bcf0b0')
+```
+
+P2SH
+
+```ruby
+p2sh = script.to_p2sh
+```
+
+P2WSHマルチシグ
+
+```ruby
+k1 = '021525ca2c0cbd42de7e4f5793c79887fbc8b136b5fe98b279581ef6959307f9e9'
+k2 = '032ad705d98318241852ba9394a90e85f6afc8f7b5f445675040318a9d9ea29e35'
+script = Bitcoin::Script.to_p2sh_multisig_script(1, [k1, k2])
+```
+
+P2WSH
+
+```ruby
+script = Bitcoin::Script.to_p2wsh(<redeem script>)
+```
+
+
+
+
+
+## Bitcoinの送金プログラムの例
+
+現在の所持金のUTXOのリストから送金に必要なUTXOのリストを作成して送金する
+
+```ruby
+require 'bitcoin'
+require 'net/http'
+require 'json'
+include Bitcoin
+include Bitcoin::Opcodes
+
+Bitcoin.chain_params = :signet
+
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
+FEE = 0.00002       # 手数料
+
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
+
+# Bitcoin送金メソッド
+    # 送金先アドレス、送金金額
+
+def send_bitcoin(addr, amount)
+    # 所持金残高を確認
     balance = bitcoinRPC('getbalance', [])
-    if balance < (amount+fee) then
-        puts "error (Not enough funds)"
+    if balance < (amount+FEE) then
+        puts "error (残高不足)"
     else
-        # 送金金額＋手数料をぎりぎり上回るUTXOリスト
-        utxos = consuming_utxos(amount+fee)
-        # inputの資金
+        # 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+        utxos = consuming_utxos(amount+FEE)
+        # 送金に使用するUTXOの総額
         fund = utxos.map{|utxo|utxo["amount"]}.sum
-        # おつり
-        change = fund-amount-fee 
-        # おつり用アドレス
-        addrChange =  bitcoinRPC('getnewaddress', [])
-        # トランザクションの作成
-        tx = Bitcoin::Tx.new
-        # input
-        utxos.each{|utxo|tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(utxo["txid"], utxo["vout"],))}
-        # 送金用output
-        tx.out << Bitcoin::TxOut.new(value:  (amount*(10**8)).to_i, script_pubkey: Bitcoin::Script.parse_from_addr(addr))
-        # おつり用output
-        tx.out << Bitcoin::TxOut.new(value:  (change*(10**8)).to_i, script_pubkey: Bitcoin::Script.parse_from_addr(addrChange))
-        # 各inputへの署名
-        utxos.each.with_index{|utxo,index|
-            # UTXOのscriptPubKey をオブジェクト化する
-            script_pubkey = Bitcoin::Script.parse_from_payload(utxo["scriptPubKey"].htb)
-            # scriptPubKey の送金先アドレス
-            addr = script_pubkey.to_addr
-            # 送金先アドレスの秘密鍵（署名鍵）
-            priv = bitcoinRPC('dumpprivkey', [addr])
-            # 署名鍵オブジェクト
-            key = Bitcoin::Key.from_wif(priv)
-            # UTXOの金額
-            satoshi = (utxo["amount"]*(10**8)).to_i
-            case script_pubkey.type
-            # P2WPKH
-            when "witness_v0_keyhash"
-                # トランザクションのハッシュ値を計算
-                sighash = tx.sighash_for_input(index, script_pubkey, sig_version: :witness_v0, amount: satoshi)
-                # トランザクションへの署名＋署名タイプ情報を付加
-                sig = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
-                # witness scriptの追加
-                tx.in[index].script_witness.stack << sig
-                # 公開鍵の追加
-                tx.in[index].script_witness.stack << key.pubkey.htb
-            end
-        }
+        # UTXOの総額 - 送金金額 - 手数料 = おつり
+        change = fund-amount-FEE
+        # おつり用アドレス（UTXOの０番目を受け取ったアドレスを利用する）
+        addrChange = utxos[0]["address"]
+        # トランザクションの構成（P2WPKH)
+        tx = p2wpkh_transaction(addr, amount, utxos, change, addrChange)
+        # トランザクションへの署名
+        tx = sign_inputs(utxos, tx)
+        # ビットコインネットワークへのデプロイ
         return bitcoinRPC('sendrawtransaction', [tx.to_hex])
     end
 end
 
-# 送金で消費するUTXOを選定する
+
+# P2WPKHトランザクションの構成
+
+def p2wpkh_transaction(addr,amount, utxos, change, addrChange)
+    # トランザクションのテンプレートの生成
+    tx = Bitcoin::Tx.new
+    # トランザクションのinputの構成
+    tx = make_inputs(tx,utxos)
+    # トランザクションのoutputの構成
+    tx = make_outputs(tx,amount, addr, change, addrChange)
+    return tx
+end
+
+# トランザクションのinputの構成
+
+def make_inputs(tx, utxos)
+    utxos.each{|utxo|
+        # UTXOをinputから参照するための txid と vout としてエンコードする
+        outpoint = Bitcoin::OutPoint.from_txid(utxo["txid"], utxo["vout"])
+        # エンコードした参照をトランザクションのinputに埋め込む
+        tx.in << Bitcoin::TxIn.new(out_point: outpoint)
+    }
+    return tx
+end
+
+# トランザクションのoutputの構成
+
+def make_outputs(tx,amount, addr, change, addrChange)
+    # 送金用outputの構成
+        # 金額を satoshiの整数に変換
+    amount_satoshi = (amount*(10**8)).to_i
+        # ビットコインアドレスから p2wpkhのscript_pubkey を生成
+    scriptPubKey0 = Bitcoin::Script.parse_from_addr(addr)
+        # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Bitcoin::TxOut.new(value: amount_satoshi , script_pubkey: scriptPubKey0)
+    # おつり用outputの構成
+        # 金額を satoshiの整数に変換
+    change_satoshi =  (change*(10**8)).to_i
+        # ビットコインアドレスから p2wpkhのscript_pubkey を生成
+    scriptPubKey1 = Bitcoin::Script.parse_from_addr(addrChange)
+        # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Bitcoin::TxOut.new(value: change_satoshi, script_pubkey: scriptPubKey1)
+    return tx
+end
+
+# トランザクションへの署名
+
+def sign_inputs(utxos, tx)
+    utxos.each.with_index{|utxo,index|
+        # UTXOのscriptPubKey をオブジェクト化する
+        script_pubkey = Bitcoin::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+        # scriptPubKey の送金先アドレス
+        myaddr = script_pubkey.to_addr
+        # UTXOの送付先アドレスの秘密鍵（署名鍵）
+        priv = bitcoinRPC('dumpprivkey', [myaddr])
+        # 署名鍵オブジェクト
+        key = Bitcoin::Key.from_wif(priv)
+        # UTXOの金額
+        satoshi = (utxo["amount"]*(10**8)).to_i
+        case script_pubkey.type
+        when "witness_v0_keyhash"   # UTXOがP2WPKHタイプ
+            # トランザクションのハッシュ値を計算
+            sighash = tx.sighash_for_input(index, script_pubkey, sig_version: :witness_v0, amount: satoshi)
+            # トランザクションへの署名＋署名タイプ情報を付加
+            sig = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+            # witness scriptの追加
+            tx.in[index].script_witness.stack << sig
+            # 公開鍵の追加
+            tx.in[index].script_witness.stack << key.pubkey.htb
+        end
+    }
+    return tx
+end
+
+# 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+
 def consuming_utxos(amount)
-  unspent = bitcoinRPC('listunspent', [])
-  # 消費可能状態のUTXOの選定
-  spendable_utxos = unspent.select{|t|t["spendable"]==true}
-  # UTXOを金額で昇順にソートする
-  sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
-  # 少額のUTXOから集めて，指定金額を上回るぎりぎりのUTXOのリストを作成する
-  utxos=[]
-  begin
-      utxos << sorted_utxos.shift
-      balance = utxos.reduce(0){|s,t|s+=t["amount"]}
-  end until balance >= amount
-  return utxos
+    # ワレットの未使用のUTXOの一覧を得る
+    unspent = bitcoinRPC('listunspent', [])
+    # 消費可能状態のUTXOの選定
+    spendable_utxos = unspent.select{|t|t["spendable"]==true}
+    # UTXOを金額で昇順にソートする
+    sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
+    # 少額のUTXOから集めて，指定金額を上回るぎりぎりのUTXOのリストを作成する
+    utxos=[]
+    begin
+        utxos << sorted_utxos.shift
+        balance = utxos.reduce(0){|s,t|s+=t["amount"]}
+    end until balance >= amount
+    return utxos
 end
 
 
 # 送金のテスト
     # 引数は，送金先アドレス，送金金額，手数料
-addr = "tb1qcfxtwcyflcj36fajurk5wvjwfuggyzzv2qduxd"
-amount = 0.01
-fee = 0.0002
-    # 送金の実行。実行結果はトランザクションID
-txid = send_bitcoin(addr, amount, fee)
-```
 
+
+amount = 0.01
+alice=bitcoinRPC('getnewaddress', [])
+    # 送金の実行。実行結果はトランザクションID
+txid = send_bitcoin(alice, amount)
+```

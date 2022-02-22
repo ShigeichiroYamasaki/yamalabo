@@ -1,5 +1,7 @@
 # Ethereum Solidityによるスマートコントラクト
 
+2022/02/17 Shigeichiro Yamasaki
+
 ## Solidityの文法
 
 ### 文（Statement）にはセミコロン
@@ -22,24 +24,23 @@ pragma solidity >=0.4.16 <0.9.0;
 
 `^` はマイナーリビジョンの意味で、小数点2桁目以上のバージョンは許容するという意味で、小数点1桁目のバージョンアップは許容しない
 
-
 ### データ型
 
-|基本型|記述内容|
-| :-- | :-- |
-|整数| int, uint (符号なし整数)|
-|固定小数点型| fixed, ufixed  例：ufixed32x2(整数部32ビット小数部2ビット）|
-|アドレス|address (20バイトのEthereumアドレス)| 
-|ブーリアン型| true, false, !(否定）,&&(論理積)、`||`(論理和), ==(等価)、!=(非等価)|
+| 基本型    | 記述内容                                         |
+|:------ |:-------------------------------------------- |
+| 整数     | int, uint (符号なし整数)                           |
+| 固定小数点型 | fixed, ufixed  例：ufixed32x2(整数部32ビット小数部2ビット） |
+| アドレス   | address (20バイトのEthereumアドレス)                 |
+| ブーリアン型 | true, false, !(否定）,&&(論理積)、`                 |
 
-|参照型|記述内容|
-|:-- |:--|
-|固定バイト配列型|bytes1 ~ bytes32|
-|動的バイト配列型|bytes, string|
-|列挙型|enum NAME {LABEL1, LABEL2,...}|
-|配列型|uint32[][5] は符号なし整数の5つの配列の配列|
-|Struct型| struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}|
-|Mapping型|mapping (KEY_TYPE => VALUE_TYPE) NAME (キー=>値ペアのハッシュテーブルの作成)|
+| 参照型      | 記述内容                                                        |
+|:-------- |:----------------------------------------------------------- |
+| 固定バイト配列型 | bytes1 ~ bytes32                                            |
+| 動的バイト配列型 | bytes, string                                               |
+| 列挙型      | enum NAME {LABEL1, LABEL2,...}                              |
+| 配列型      | uint32[][5] は符号なし整数の5つの配列の配列                                |
+| Struct型  | struct NAME {TYPE1 VARIABLE1; TYPE2 VARIABLE2; ...}         |
+| Mapping型 | mapping (KEY_TYPE => VALUE_TYPE) NAME (キー=>値ペアのハッシュテーブルの作成) |
 
 #### 変数宣言の例
 
@@ -108,7 +109,6 @@ block, msg, tx, address などのオブジェクトがスマートコントラ�
 * ecrecover：署名からアドレスを復元
 * selfdestruct(RECIPIENT_ADDRESS)：現在のコントラクトを削除してアカウントに残っているEtherを受信者アドレスに送付
 
-
 ## コントラクトの定義
 
 Solidityのトップレベルのオブジェクトの型が　contract　
@@ -117,12 +117,9 @@ Solidityのトップレベルのオブジェクトの型が　contract　
 
 ただし、コントラクトに類似した、interface, library というオブジェクトも存在する。
 
-
-
 ### 関数
 
 EOAトランザクションや別のコントラクトから呼び出すことが可能な関数の定義
-
 
 ```
   function say(string text) public returns (string) {
@@ -136,7 +133,6 @@ EOAトランザクションや別のコントラクトから呼び出すこと�
 * 状態変更 (constant|view|pure|payable)
 * returns (戻り値の型)
 
-
 ★（注意）internal や private な関数定義も、ブロックチェーンのデータとしては公開されていて秘匿化はされていない。
 
 ### Ethereumのコントラクトのアトミック性
@@ -148,7 +144,6 @@ Ethereumのコントラクトを実行するトランザクションは、成功
 ### assert関数、require 関数
 
 ゲート条件（それが trueにならないと残りの処理を停止する関数）を定義する関数
-
 
 ### コンストラクタとディストラクタ
 
@@ -179,7 +174,6 @@ function destroy() public {
 }
 ```
 
-
 ### コントラクトの継承
 
 コントラクトの間に継承を定義するときは、contract定義で `is` というキーワードを利用します。
@@ -196,7 +190,7 @@ contract Child is Parent1, Parent2 {
 アドレス型はEOAやContractの20バイトの長さのアドレスを格納する
 
 * balance属性
-
+  
     アドレスが保有するetherの量が取得可能
 
 ```
@@ -217,7 +211,6 @@ contract Test {
 }
 ```
 
-
 ### Import
 
 対象のファイルを取り込む
@@ -225,6 +218,7 @@ contract Test {
 ```
 import "some.sol";
 ```
+
 some.solの中身をsomeに格納
 
 ```
@@ -233,11 +227,9 @@ import * as some from "some.sol";
 
 someの中からsymbol1と、symbol2をaliasという名前でインポート
 
-``` 
+```
 import { symbol1, symbol2 as alias } from "some.sol";
 ```
-
-
 
 ## Silidity コンパイラ（solc)のインストール
 
@@ -307,7 +299,6 @@ Contract JSON ABI
 
 ```json
 > var abi=[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"}]
-
 ```
 
 ### コントラクトオブジェクトの生成
@@ -381,9 +372,8 @@ true
 > myContract.address
 "0x92f2d2dada37788f1e22a53525509f24ea45cd55"
 ```
-  
-  
-### ABI (Application Binary Interface) 
+
+### ABI (Application Binary Interface)
 
 Contractの定義
 
@@ -422,7 +412,6 @@ eth.contract(ABI).at(コントラクトアドレス);
 > var cnt = eth.contract(myContract.abi).at(myContract.address);
 ```
 
-
 ```
 > personal.unlockAccount(alice)
 Passphrase: 
@@ -448,7 +437,6 @@ Passphrase:
 true
 > cnt.get.sendTransaction({from: bob})
 "0xb985376f209f621975140ac423106dcc855051294770e2d0aeea404ac6859e21"
-
 ```
 
 ## Faucet
@@ -477,7 +465,6 @@ contract Faucet {
         payable(msg.sender).transfer(withdraw_amount);
     }
 }
-
 ```
 
 ```
@@ -490,7 +477,6 @@ Binary:
 Contract JSON ABI
 
 [{"inputs":[{"internalType":"uint256","name":"withdraw_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
-
 ```
 
 ### コントラクトアカウントの生成
@@ -508,7 +494,6 @@ Contract JSON ABI
 ```json
 > var abi2 =[{"inputs":[{"internalType":"uint256","name":"withdraw_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
 ```
-
 
 ### コントラクトオブジェクトの生成
 

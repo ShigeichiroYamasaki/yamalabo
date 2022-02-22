@@ -1,5 +1,6 @@
 # Ethereum mainnet 構築
 
+2022/02/17 Shigeichiro Yamasaki
 
 ## parityのインストール
 
@@ -48,7 +49,7 @@ ssh で作業していた場合は、nohup でバックグラウンドにして�
 nohup geth --mainnet --syncmode "snap" --http --http.addr "192.168.0.251" --http.api "eth,net,admin,miner, txpool, web3, personal" &
 ```
 
-##  JSON RPC による基本操作
+## JSON RPC による基本操作
 
 * eth：ブロックチェーンの操作
 * net：p2pネットワークステータス
@@ -96,7 +97,3 @@ curl --data '{"method":"eth_syncing","params":[],"id":1,"jsonrpc":"2.0"}' -H "Co
 ```
 curl --data '{"method":"eth_getBlockByNumber","params":["0x1b4",true],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST 192.168.0.251:8545
 ```
-
-
-
-

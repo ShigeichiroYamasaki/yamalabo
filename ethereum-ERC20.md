@@ -1,5 +1,7 @@
 # Ethereum ERC20トークンの作成
 
+2022/02/17 Shigeichiro Yamasaki
+
 Truffle からOpenZeppelin のライブラリを利用してERC20トークンを作成する
 ethere
 
@@ -94,7 +96,6 @@ added 1 package, and audited 2 packages in 2s
 
 To address all issues (including breaking changes), run:
   npm audit fix --force
-
 ```
 
 ### ERC20 コントラクトの作成
@@ -129,7 +130,6 @@ Quick Start
 
 Accountsを確認して10個のアカウントを確認
 Transactions を確認する
-
 
 ### デプロイスクリプトの作成
 
@@ -186,7 +186,6 @@ BN {
   length: 3,
   red: null
 }
-
 ```
 
 #### トークンの所持金の確認
@@ -260,6 +259,4 @@ BN {
   length: 3,
   red: null
 }
-
 ```
-

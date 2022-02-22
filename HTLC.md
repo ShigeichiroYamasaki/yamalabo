@@ -1,16 +1,14 @@
 # HTLCの作成
-2021/12/10
 
+2021/12/10 Shigeichiro Yamasaki
 
 ## Alice からBobに送金する
 
-
 ![](./htlc1.png)
 
-## Alice からBob経由で Calolに送金する
+## Alice からBob経由で Carolに送金する
 
 ![](./htlc2.png)
-
 
 ### redeem script (一般化したロックスクリプト)
 
@@ -59,7 +57,6 @@ OP_CHECKSIG
 3. `<S>` の`OP_SHA256` の結果と `<Sのハッシュ値>` が`OP_EQUALVERIFY` で比較されます
 4. 等しければ，Bobの公開鍵による Bobの署名が検証され，成功すればロックが解除されます
 
-
 ### AliceとBobのアドレスを生成する
 
 AliceとBobは異なるワレットで操作するとよいでしょう
@@ -101,7 +98,6 @@ bitcoin-core.cli send '{"tb1q92v4dxsz47zxs5rdu42q7nl4xsdlncmvswxr5f": 0.1}'
 bitcoin-core.cli getrawtransaction 243f497b5452d0810522cdc53d36b9f1f99bbe4ff07c5d6d12bb5ff1760e8817
 
 02000000000102e2963966f127b78006fb67a5a8b9d1662b3086c3b916c52ec9e141cb6cf94adc0100000000feffffffa1565e6097789c42843cf4b0eafaa6480542828daa34d8218bad6311250307ca0100000000feffffff02d2ab680000000000160014661fe0da3bea105d7f934ca978437b8a190bfeb280969800000000001600142a99569a02af8468506de5540f4ff5341bf9e36c0247304402200a42ca1de97830a203e2da163a08f04fab83d4c982789d32f3cb85115532b26e022005d42b3fe00ae0dec31d35c200d55df23cd91997503a2237b2cabe89794a1bf4012103760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e334702473044022019298d970a2414ed153ea132f903119f11e5a473a3a444ee21d330018bc5186b022069f3db1f33d566425b7549c056a87a8c23dbf419ce6e25d01b8dbe6a6b6f03db012103760b5a28bb264ca5b310d766ad3a095c9f866fe9a0b38b8079ca350c6a3e334700000000
-
 ```
 
 ## bitcoinrb を使ったバイナリデータの処理
@@ -168,8 +164,6 @@ require 'bitcoin'
 "\x01\xFE".unpack("C*")
 => [1, 254]
 ```
-
-
 
 ### 便利な bitcoinrb のメソッド
 
@@ -254,7 +248,6 @@ utxoScriptPubKey = utxos[0]["scriptPubKey"]
 ```ruby
 secret='HTLC_test'
 secret_hash=Bitcoin.sha256(secret)
-
 ```
 
 #### script処理のテスト(OP_SHA256の検証)
@@ -290,12 +283,11 @@ redeem_script.to_h
  :hex=>
   "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882103d66199f0dd6bbd161cd4a854cd238a4dbebf2d0cf1133180797e1270dac3e5286702a005b2752102f51aea0586248f9528b96d13fd155d06c394fb6dc5d790568537be68c75eaff768ac",
  :type=>"nonstandard"}
- 
+
 # 秘密情報 Sのハッシュ値(16進数形式)
 secret_hash.bth
 
 # => "996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357"
-
 ```
 
 ### HTLCロックトランザクションの scriptPubKey
@@ -380,9 +372,7 @@ tx.out << Bitcoin::TxOut.new(value: deposit_satoshi, script_pubkey:  Bitcoin::Sc
 tx.out << Bitcoin::TxOut.new(value: change_satoshi , script_pubkey:  Bitcoin::Script.parse_from_addr(addrAlice))
 ```
 
-
 ### Alice によるHTLCロックトランザクションへのデジタル署名
-
 
 #### 署名対象のsighashを計算
 
@@ -392,13 +382,12 @@ utxo_scriptPubKey = Bitcoin::Script.parse_from_payload(utxoScriptPubKey.htb)
 
 # sighashを作成
 sighash = tx.sighash_for_input(0, utxo_scriptPubKey, sig_version: :witness_v0, amount: utxoAmount_satoshi)
-
 ```
 
-####  Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
+#### Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
 
  最後に　SHIGHASH_TYPE を追加して指定することを忘れないようにする。SHIGHASH_TYPE はALL
- 
+
 ```ruby
 signature = keyAlice.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
 
@@ -461,7 +450,6 @@ bitcoinRPC('decoderawtransaction',[tx.to_hex])
       "type"=>"witness_v0_keyhash"}}]}
 ```
 
-
 #### AliceによるHTLCロックトランザクションのブロードキャスト
 
 ```ruby
@@ -511,9 +499,7 @@ privBob='cUpy2Z19AC22MnGLNBfrNMZqrbz7v7rtL9UByzMoxqGC4v9SKtFf'
 # 鍵オブジェクト(WIF形式の秘密鍵から生成）
 keyAlice=Bitcoin::Key.from_wif(privAlice)
 keyBob=Bitcoin::Key.from_wif(privBob)
-
 ```
-
 
 ### アンロックのためにBobが知っている（べき）情報
 
@@ -522,12 +508,10 @@ keyBob=Bitcoin::Key.from_wif(privBob)
 * 秘密情報 `<S>` (Carolから開示される）
 * redeem script (Aliceからもらう）
 * HTLCロックトランザクションの トランザクションID (Aliceからもらう）
-    * HTLCロックトランザクションの scriptPubKey
-    * HTLCロックトランザクションのP2WSHアドレス
-    * アンロックの対象となるUTXO のvout
-    * アンロックの対象となるUTXO の金額
-
-
+  * HTLCロックトランザクションの scriptPubKey
+  * HTLCロックトランザクションのP2WSHアドレス
+  * アンロックの対象となるUTXO のvout
+  * アンロックの対象となるUTXO の金額
 
 ```ruby
 # 秘密情報
@@ -638,7 +622,6 @@ bitcoinRPC('decoderawtransaction',[tx.to_payload.bth])
     }
   ]
 }
-
 ```
 
 ## HTLC アンロックトランザクションのブロードキャスト
@@ -652,4 +635,3 @@ htcl_unlockTx_txid
 
 => "87843211117d6b54eebffb1e5ef696a17c1d2fe1d25ea10b13e311b503d58a66"
 ```
-

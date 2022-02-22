@@ -4,11 +4,9 @@
 
 ### インストールスクリプト
 
-
 ```
 nano install-ethereum.sh
 ```
-
 
 ```bash
 #!/bin/bash
@@ -100,7 +98,6 @@ To exit, press ctrl-d or type exit
 > 
 ```
 
-
 ### Gethの操作
 
 ブロック番号 0 のブロック情報を表示
@@ -130,11 +127,9 @@ To exit, press ctrl-d or type exit
   transactionsRoot: "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
   uncles: []
 }
-
 ```
 
 ## geth 基本操作
-
 
 * eth：ブロックチェーンの操作
 * net：p2pネットワークステータス
@@ -279,7 +274,6 @@ Wei -> ether 変換
 > 
 ```
 
-
 ## etherの送金
 
 EOAの確認
@@ -320,7 +314,6 @@ true
 
 ### 送金トランザクションの確認
 
-
 ```
 > eth.getTransaction('0x5a674eba5dd9e8d178840abcb49ad13d60dfbd5c8e1ca69baae646c6d90421c4')
 {
@@ -352,11 +345,9 @@ true
 > 
 ```
 
-
 # スマートコントラクト
 
 アカウント：　EOA（Externally Owned Account）とContract
-
 
 ## Silidity コンパイラ（solc)のインストール
 
@@ -426,7 +417,6 @@ Contract JSON ABI
 
 ```json
 > var abi=[{"inputs":[],"name":"get","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"set","outputs":[],"stateMutability":"nonpayable","type":"function"}]
-
 ```
 
 ### コントラクトオブジェクトの生成
@@ -481,9 +471,8 @@ true
 > myContract.address
 "0x1e344e85ea621bccb84f5c7af4e1ac4c3989e861"
 ```
-  
-  
-### ABI (Application Binary Interface) 
+
+### ABI (Application Binary Interface)
 
 Contractの定義
 
@@ -522,7 +511,6 @@ eth.contract(ABI).at(コントラクトアドレス);
 > var cnt = eth.contract(myContract.abi).at(myContract.address);
 ```
 
-
 ```
 > personal.unlockAccount(eth.accounts[0])
 Passphrase: 
@@ -530,7 +518,6 @@ true
 
 > cnt.set.sendTransaction(100,{from:eth.accounts[0]})
  "0xde3a75f63ddf0fd25b75d35651fefa07a8e5be0771960ade37c771761bf43859"
-
 ```
 
 ## スマートコントラクトの例２（Faucet）
@@ -559,7 +546,6 @@ contract Faucet {
         payable(msg.sender).transfer(withdraw_amount);
     }
 }
-
 ```
 
 ```
@@ -572,7 +558,6 @@ Binary:
 Contract JSON ABI
 
 [{"inputs":[{"internalType":"uint256","name":"withdraw_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
-
 ```
 
 ### コントラクトアカウントの生成
@@ -590,7 +575,6 @@ Contract JSON ABI
 ```json
 > var abi2 =[{"inputs":[{"internalType":"uint256","name":"withdraw_amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
 ```
-
 
 ### コントラクトオブジェクトの生成
 

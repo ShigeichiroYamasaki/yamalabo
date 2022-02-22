@@ -1,5 +1,7 @@
 # Ethereum ERC721トークンの作成
 
+2022/02/17 Shigeichiro Yamasaki
+
 
 
 [Openzeppelinの Contract Wizard](https://docs.openzeppelin.com/contracts/4.x/wizard) を利用
@@ -10,8 +12,6 @@
 
 * [geth で ropstenネットワークに接続](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-Ropsten.md) faucetを利用して、テスト用のEtherを持つアカウントを準備している
 * [Solidity言語仕様を知っている](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-Solidity.md)
-
-
 
 ## 自分のノードでgethを起動しRemix と接続する
 
@@ -40,7 +40,6 @@ To exit, press ctrl-d or type exit
 
 NFTのテストのために、他にも3〜４個程度のアカウントを作成しておく
 
-
 ```
 > eth.getBalance(eth.accounts[0]) # alice
 163109375469575313
@@ -64,12 +63,9 @@ NFTのテストのために、他にも3〜４個程度のアカウントを作�
 
 * External node request を確認して、OKをクリックする
 
-
 ![](./img/ethereum-erc721-2.png)
 
-
 * ACCOUNTのところにEtherを所持するアカウントが設定されていることを確認する
-
 
 ![](./img/ethereum-erc721-3.png)
 
@@ -77,13 +73,11 @@ NFTのテストのために、他にも3〜４個程度のアカウントを作�
 
 ENVIRONMENTで、JavaScript(London) などに接続を変更する
 
-
 ## OpenzeppelinのウィザードサイトでNFTのコントラクトを作成する
 
 ERC721ボタンをクリックする
 
 ![](./img/ethereum-erc721-4.png)
-
 
 ### ERC721 コントラクトの作成
 
@@ -106,7 +100,6 @@ ERC721ボタンをクリックする
 NFTは、対象（Deed=資産の証書）を識別する Token ID が付きます。
 このBase URIは、Token ID （資産の識別子）と連接されて  Token URIになります。
 
-
 ```
 https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-ERC721.md
 ```
@@ -114,7 +107,6 @@ https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/ethereum-ERC721.md
 ![](./img/ethereum-erc721-5.png)
 
 ### features
-
 
 * Mintable
 
@@ -186,7 +178,7 @@ true
 
 ![](./img/ethereum-erc721-8.png)
 
-##  コントラクト
+## コントラクト
 
 ```
 // SPDX-License-Identifier: MIT
@@ -210,7 +202,6 @@ contract YamasakiLabToken is ERC721, ERC721Burnable, Ownable {
 ```
 
 ### 実際にNFTを発行する
-
 
 アカウントの署名鍵をアンロックする
 
