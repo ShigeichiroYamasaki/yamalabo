@@ -1,187 +1,223 @@
-# Ruby Language installation / update
+# How to install Ruby
 
-## MacOSX Preparation
+2022/03/24
 
-### Homebrew installation and environment maintenance
+## Installation on MacOSX
 
-```
+#### Homebrew installation and environment maintenance
+
+```bash
 ruby -e "$ (curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-### Verification
+#### Confirmation
 
-```
+```bash
 brew doctor
 ```
 
 * If you get an error or warning message, follow the instructions
 * Repeat brew doctor until no warnings appear
 
+OK if this message appears
 
 ```
 Your system is ready to brew.
 ```
 
-Is OK
+* If the error or warning doesn't go away, uninstall homebrew and then reinstall homebrew to avoid any extra trouble.
 
-* If the error or warning doesn't go away, uninstall homebrew and start over.
-
-```
-Uninstall # homebrew
-
+```bash
+How to uninstall #homebrew
 ruby -e "$ (curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 ```
 
-### Installing Ruby on MacOSX
+#### Installation of necessary libraries
 
-Creating installation scripts for rbenv and related libraries
-
-```
-nano install_rbenv.sh
-```
-
-```
-#! / bin / bash
+```bash
 brew update
 brew upgrade
 
-brew install gcc
-brew install git
-brew install leveldb
-brew install direnv
-brew install git
-brew install nodejs
-brew install ruby-dev
-brew install curl
-brew install imagemagick
-brew install yarn
-brew install npm
-brew install sqlite3
-brew install readline
-brew install zlib
-sudo npm install n -g
-sudo n stable
+brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl
+```
 
+#### Installation of rbenv
+
+```bash
+cd ~
 rm -fr ~ / .rbenv
-
 git clone https://github.com/rbenv/rbenv.git ~ / .rbenv
-git clone https://github.com/rbenv/ruby-build.git ~ / .rbenv / plugins / ruby-build
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
+```
 
-echo'export PATH = "$ HOME / .rbenv / bin: $ PATH"' >> ~ / .zshrc
-echo'eval "$ (rbenv init-)"' >> ~ / .zshrc
+#### Editing the login script (.zshrc)
+
+`nano .zshrc`
+
+Add the following two lines to the end of the file and save it
+
+```bash
+export PATH = "~ / .rbenv / bin: $ PATH"
+eval "$ (rbenv init-)"
+```
+
+#### Evaluate the login script
+
+```bash
 source ~ / .zshrc
-source ~ / .zprofile
-brew install rbenv
 ```
 
-#### Change and execute permissions of rbenv installation script
+#### Check the rbenv command
 
-```
-chmod u + x install_rbenv.sh
-./install_rbenv.sh
-```
+There will be an installable version of Ruby
 
-
-Rebooting the shell
-
-```
-exec $ SHELL -l
-```
+```bash
+git clone https://github.com/rbenv/ruby-build.git "$ (rbenv root)" / plugins / ruby-build
+rbenv install -l
 
 
-#### Installing Ruby with rbenv
 
-```
-rbenv install 3.0.1
-rbenv global 3.0.1
-```
+2.6.9
+2.7.5
+3.0.3
+3.1.1
+jruby-9.3.3.0
+mruby-3.0.0
+rbx-5.0
+truffleruby-22.0.0.2
+truffleruby + graalvm-22.0.0.2
 
-Rebooting the shell
-
-```
-exec $ SHELL -l
+Only latest stable releases for each Ruby implementation are shown.
+Use'rbenv install --list-all / -L' to show all local versions.
 ```
 
+If you want to install a new version of Ruby, update the rbenv environment as follows
 
-## ubuntu
-
-
-Installation script file
-
-### Install rbenv
-
-```
-nano install_rbenv.sh
+```bash
+git clone https://github.com/rbenv/ruby-build.git "$ (rbenv root)" / plugins / ruby-build
 ```
 
+### Ruby installation
+
+#### Install by specifying the version
+
+The latest 3.X.X versions are fast, but may not be stable.
+Here, we will use 2.7.5.
+
+It takes a lot of time because it compiles etc.
+
+```bash
+rbenv install 2.7.5
 ```
-#! / bin / bash
+
+#### Specify the version of Ruby to use
+
+You can install multiple versions of Ruby using rbenv.
+Specify the version to be used in it as follows
+
+```bash
+rbenv global 2.7.5
+source .zshrc
+```
+
+Checking the actual Ruby version
+
+```bash
+ruby -v
+ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [arm64-darwin21]
+```
+
+
+## Installation on Ubuntu
+
+#### Installation of necessary libraries
+
+```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y build-essential
-sudo apt install -y clang
-sudo apt install -y cmake
-sudo apt install -y direnv
-sudo apt install -y git
-sudo apt install -y nodejs
-sudo apt install -y ruby-dev
-sudo apt install -y curl
-sudo apt install -y imagemagick
-curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-doctor | bash
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add-
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update
+sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev
+sudo apt autoremove -y
+```
 
-sudo apt install -y yarn
-sudo apt install -y npm
-sudo npm install n -g
-yarn install
-yarn upgrade
-sudo n stable
-sudo apt purge -y nodejs npm
-exec $ SHELL -l
-sudo apt install -y sqlite3 libsqlite3-dev
-sudo apt install -y libssl-dev libreadline-dev zlib1g-dev
+#### Installation of rbenv
 
-apt-get install -y libreadline-dev zlib1g-dev
+```bash
+cd ~
 rm -fr ~ / .rbenv
-
 git clone https://github.com/rbenv/rbenv.git ~ / .rbenv
-git clone https://github.com/rbenv/ruby-build.git ~ / .rbenv / plugins / ruby-build
-echo'export PATH = "$ HOME / .rbenv / bin: $ PATH"' >> ~ / .bash_profile
-echo'eval "$ (~ / .rbenv / bin / rbenv init-)"' >> ~ / .bash_profile
-echo'export PATH = "$ HOME / .rbenv / bin: $ PATH"' >> ~ / .bashrc
-echo'eval "$ (rbenv init-)"' >> ~ / .bashrc
+```
+
+#### Editing the login script (.bashrc)
+
+`nano .bashrc`
+
+Add the following two lines to the end of the file and save it
+
+```bash
+export PATH = "~ / .rbenv / bin: $ PATH"
+eval "$ (rbenv init-)"
+```
+
+#### Login script rating
+
+```bash
 source ~ / .bashrc
 ```
 
-#### Change and execute permissions of rbenv installation script
+#### Check the rbenv command
 
+There will be an installable version of Ruby
+
+```bash
+git clone https://github.com/rbenv/ruby-build.git "$ (rbenv root)" / plugins / ruby-build
+rbenv install -l
+
+
+2.6.9
+2.7.5
+3.0.3
+3.1.1
+jruby-9.3.3.0
+mruby-3.0.0
+rbx-5.0
+truffleruby-22.0.0.2
+truffleruby + graalvm-22.0.0.2
+
+Only latest stable releases for each Ruby implementation are shown.
+Use'rbenv install --list-all / -L' to show all local versions.
 ```
-chmod u + x install_rbenv.sh
-./install_rbenv.sh
+
+If you want to install a new version of Ruby, update the rbenv environment as follows
+
+```bash
+git clone https://github.com/rbenv/ruby-build.git "$ (rbenv root)" / plugins / ruby-build
 ```
 
-Rebooting the shell
+### Ruby installation
 
+#### Install by specifying the version
+
+The latest 3.X.X versions are fast, but may not be stable.
+Here, we will use 2.7.5.
+
+It takes a lot of time because it compiles etc.
+
+```bash
+rbenv install 2.7.5
 ```
-exec $ SHELL -l
+
+#### Specify the version of Ruby to use
+
+You can install multiple versions of Ruby using rbenv.
+Specify the version to be used in it as follows
+
+```bash
+rbenv global 2.7.5
+source .bashrc
 ```
 
+Checking the Ruby version
 
-#### Installing Ruby with rbenv
-
-```
-rbenv install 3.0.1
-rbenv global 3.0.1
-```
-
-
-
-
-## Check version
-
-```
+```bash
 ruby -v
-```
+ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [arm64-darwin21]
+``` 

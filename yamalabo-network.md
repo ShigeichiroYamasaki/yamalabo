@@ -4,32 +4,8 @@
 
 ### bitcoin mainnet
 
-* A.X.Y.66 (山崎)
-* 
-
 ### web
 
-* A.X.Y.51 （3年生）
-* A.X.Y.53 （山崎）
-* A.X.Y.54 （深田）
-
-
-## ネットワークセグメント構成
-
-```
----------+--------------------- A.X.Z.0/24
-         |
-         62
-+----+---+------------------+-- A.X.Y.0/26 (Libra,Etherum,web,IPFS)
-60   61                     6
-|    |                     WiFi
-|   129
-|    +-------------------------- A.X.Y.128/25 (bitcoin testnet,lightning network)
-|
-65
-+------------------------------ A.X.Y.64/26 (bitcoin mainnet,lightning network)
-
-```
 
 ## IPアドレス申請
 
@@ -40,7 +16,6 @@
 ### IPアドレス新規申請対象
 
 * Etherum: A.X.Y.1~20     (20台)
-* Libra: A.X.Y.21~40         (20台)
 * IPFS: A.X.Y.41~50          (10台)
 * web : A.X.Y.51~54           (4台)
 * bitcoin mainnet (Lightning network): A.X.Y.66~126      (61台)
@@ -54,12 +29,16 @@
 * sidechain (elements)
 * Ethereum (parity)
 * IPFS
-* Libra (testnet)
+* tapyrus (testnet)
 * web (apache ssl) web wallet用
 
 
 ## 利用するポート番号一覧
 
+###tapyrus (mainnet)
+
+* ★TCP: 2357 : ノード接続
+* 
 ### bitcoind (mainnet)
 
 * ★TCP: 8333 : ノード接続
@@ -95,13 +74,6 @@
 
 * ★UDP: 50303
 * ★TCP: 50303
-
-### Libra validator
-
-* ★TCP: 30307
-* ★TCP: 8000
-* ★TCP: 443 (HTTP/2)
-* ★TCP: 80 (HTTP/2)
 
 ### IPFS
 
@@ -163,43 +135,5 @@
 
 ### Ethereum testnet (ベアボーン 512G)
 
-* 3台
-
-[ethereumインストール方法](./ethereum-testnet.md)
-
-
-### Libra testnet (ベアボーン 512G)
-
-* 6台
-
-[Libraインストール方法](./libra.md)
 
 ---
-
-
-
-## 機材
-
-* ベアボーン：　512Gb 21台
-* ベアボーン：  1T  　1台
-* ベアボーン：　256Gb   3台
-* raspberry pi 3：256Gb 76台
-    * 12*4 =48
-    * 8*3=24
-    * 4*1=4
-* (今年度追加計画）
-    * raspberry pi4 512Gb 10台) mainnet
-    * raspberry pi3 256Gb 30台) testnet
-
-
-
-## OSのインストール方法
-
-### ベアボーンノードのOSインストール方法
-
-[./barebone.md](./barebone.md)
-
-### ラズベリーパイノードのOSインストール方法
-
-[./raspberrypi.md](./raspberrypi.md)
-
