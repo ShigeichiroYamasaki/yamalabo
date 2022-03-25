@@ -3,11 +3,11 @@
 
 # Alice からBobに送金する
 
-![](./micropayment-fig1.png)
+![](./img/micropayment-fig1.png)
 
-![](./micropayment-fig2.png)
+![](./img/micropayment-fig2.png)
 
-![](./mycropayment-fig3.png)
+![](./img/mycropayment-fig3.png)
 
 * Aliceのアドレス：tb1qa20gy39as4qgce353fegq4cl7ss2jcsqu0e6w0
 * Bobのアドレス：tb1q9vml26m9vgm5nk3fk9v7cfkad7tlfgsgnahkfu

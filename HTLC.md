@@ -4,11 +4,11 @@
 
 ## Alice からBobに送金する
 
-![](./htlc1.png)
+![](./img/htlc1.png)
 
 ## Alice からBob経由で Carolに送金する
 
-![](./htlc2.png)
+![](./img/htlc2.png)
 
 ### redeem script (一般化したロックスクリプト)
 
