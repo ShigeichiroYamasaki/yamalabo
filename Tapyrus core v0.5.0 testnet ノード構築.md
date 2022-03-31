@@ -25,7 +25,8 @@ bitcoin coreからのフォークなので、基本的にbitcoin coreの知識�
 
 #### Tapyrusのインストール関連情報
 
-次のブロクが参考になります
+次のブログが参考になります
+
 * [Tapyrus Coreをdevモードで起動する 〜Ubuntu編〜](https://zenn.dev/shmn7iii/articles/6dbdf6394a44c1)
 * [Tapyrusネットワークを構築してみる その①](https://zenn.dev/shmn7iii/articles/ff647417bfdf16)
 * [Tapyrus Coreをdevモードで構築する 〜Docker編〜](https://zenn.dev/shmn7iii/articles/53e533e2ac3756)
@@ -447,23 +448,25 @@ tapyrusには、BCHのOP_GROUP オペコードに類似したカラードコイ�
 #### Non-Reissuable Token の発行
 
 ```bash
-tapyrus-cli issuetoken 2 10 9a5a34640f3d6a89ee1365375bd94cc0ed68a251d751edf9fe7940523ff37195 0
+tapyrus-cli issuetoken 2 1000 3ccfbe4a213545e6bd53fffedac0b56deab168c90f7f4e5beab2713673512e7a 0
 =>
 {
-  "color": "c24ea64767f57d27f9689402954fbc6ceecd90ae6c7375836817a3b562e1248411",
-  "txid": "99050cb3c0f82ca6158463b60748cb7f2f1bd6e277850ba6e94b981f1729a8ab"
+  "color": "c2866471e5a47fd54afe755674211615f358aa0535e825266876ad81b95a326271",
+  "txid": "2b617b6b660055917476d89d634983fdd87c0c8e6bce0d7d19c12e3612d1367b"
 }
+
 ```
 
 #### NFT の発行
 
 ```bash
-tapyrus-cli issuetoken 3 1 9a5a34640f3d6a89ee1365375bd94cc0ed68a251d751edf9fe7940523ff37195 1
+tapyrus-cli issuetoken 3 1 3ccfbe4a213545e6bd53fffedac0b56deab168c90f7f4e5beab2713673512e7a 1
 =>
 {
-  "color": "c38e674bf2613870ead5a3d52ca81ac63903dfbe9960410ae93e47f2031e72bddb",
-  "txid": "54a0f24a416c2358fd0b5b8f0a2b2b7798f95a038cce170b728ee562f833e65d"
+  "color": "c342f902ff12fc1a0041ee9715c2fe327760b55b65abc34be2807a6d5cf1adc2c1",
+  "txid": "72fbae441fcc31f36eb23b6363e3d3c96e530eaf58340205c6398a8f21a99544"
 }
+
 ```
 
 #### Reissuable Token の発行
@@ -471,16 +474,18 @@ tapyrus-cli issuetoken 3 1 9a5a34640f3d6a89ee1365375bd94cc0ed68a251d751edf9fe794
 使用するUTXOのscriptPubKeyを引数に指定する
 
 ```bash
-tapyrus-cli issuetoken 1 10 76a914a9ce714577e0e2a5fcc5923fa29fd74ec6b8fade88ac
+tapyrus-cli issuetoken 1 100 76a9142226bf3bb2909e001dfd0fbc2a0d9e045382f6b988ac
 =>
 {
-  "color": "c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082",
+  "color": "c18052819dfb017498f89e82cb233073c4b6fabf20605e2ab9ef021eb008a15fd5",
   "txids": [
-    "d6d65a40ba190c9fb9e0da2a830a59d3f82f27d175efa29cd3b33245716d8a41",
-    "cb00c9dbfd2732e5bb307e7b1e11eee36383f10371ff06841a76df03abaf1388"
+    "49294c2deb2fd7af096f2eaa8783fcf2df65abe2f9e2a772dfc0ca1fb890b346",
+    "c4e1f16129f1df138bed0b6b0e0acb10278e054d1d0f8d484b1ff0f2ce84a524"
   ]
 }
 ```
+
+
 
 #### Reissuable Token の再発行
 
@@ -654,11 +659,12 @@ tapyrus-cli burntoken c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb638
 
 ### トークンの送金
 
-getnewaddress ( <color> )
+`getnewaddress ( <color> )`
 
-transfertoken <address> <value>
+`transfertoken <address> <value>`
 
-```bash
+
+```
 tapyrus-cli getnewaddress c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082
 =>
 18fT75yCqPv4RRZsAMg3pK6T1Wz4X3KkyJ
@@ -666,3 +672,4 @@ tapyrus-cli getnewaddress c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3f
 tapyrus-cli transfertoken 18fT75yCqPv4RRZsAMg3pK6T1Wz4X3KkyJ 3
 
 ```
+
