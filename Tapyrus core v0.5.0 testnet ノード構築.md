@@ -1,6 +1,6 @@
 # Tapyrus core v0.5.0 testnet ノード構築
 
-2022/03/25
+2022/03/31
 
 #### 環境は ubuntu 20.04LTS
 
