@@ -251,7 +251,8 @@ Uncaught TypeError: Assignment to constant variable.
 
 if文
 
-```js > if (1+1 == 2) "正しい";
+```js
+ > if (1+1 == 2) "正しい";
 
 '正しい'
 
