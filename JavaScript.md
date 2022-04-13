@@ -182,6 +182,11 @@ true
 true
 > 1<(1+1) || 3==5
 true
+> "b">"z"
+false
+> "b"<"z"
+true
+
 ```
 
 ### 式
@@ -506,7 +511,11 @@ undefined
 6
 ```
 
-イテレータ
+### イテレータによる繰り返し
+
+ループ以外に、配列のようにオブジェクト自体が持つ繰り返し構造を利用した繰り返し制御が可能です
+
+配列に対する map, filter, reduce, for of
 
 ```js
 > arr.map(function(x){return x;})
@@ -528,6 +537,33 @@ undefined
 
 > arr.reduce((s,x)=>s+x)
 21
+
+> let ss=0
+> for(n of arr){ss+=n}
+21
+
+```
+
+文字列に対するイテレータ
+
+```js
+let str="abcdefghijklmnopqrstu"
+
+Array.from(str).map(function(x){return x+x;})
+[
+  'aa', 'bb', 'cc', 'dd',
+  'ee', 'ff', 'gg', 'hh',
+  'ii', 'jj', 'kk', 'll',
+  'mm', 'nn', 'oo', 'pp',
+  'qq', 'rr', 'ss', 'tt',
+  'uu'
+]
+
+> Array.from(str).reduce((s,x)=>s+x+x)
+'abbccddeeffgghhiijjkkllmmnnooppqqrrssttuu'
+
+
+
 ```
 
 
@@ -574,13 +610,8 @@ Promiseのインスタンスオブジェクトは状態を持ち、非同期処�
 ![](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/promises.png)
 
 ```js
-new Promise(function(resolve, reject) {
-    resolve('成功');
-});
-
-new Promise(function(resolve, reject) {
-    reject('失敗');
-});
+new Promise(function(resolve, reject) {resolve('成功');});
+new Promise(function(resolve, reject) {reject('失敗');});
 ```
 
 thenを使って完了後に実行する処理を実行する
