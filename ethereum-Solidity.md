@@ -2,6 +2,22 @@
 
 2022/02/23 Shigeichiro Yamasaki
 
+### mac への処理系のインストール
+
+```bash
+brew update
+brew upgrade
+brew tap ethereum/ethereum
+brew install solidity
+brew link --overwrite solidity
+```
+
+### ubuntu への処理系のインストール
+
+```bash
+sudo apt install solc
+```
+
 ## Solidityの文法
 
 ### 文（Statement）にはセミコロン

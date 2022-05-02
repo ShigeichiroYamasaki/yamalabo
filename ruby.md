@@ -75,16 +75,15 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 rbenv install -l
 
 
-
-2.6.9
-2.7.5
-3.0.3
-3.1.1
-jruby-9.3.3.0
+2.6.10
+2.7.6
+3.0.4
+3.1.2
+jruby-9.3.4.0
 mruby-3.0.0
 rbx-5.0
-truffleruby-22.0.0.2
-truffleruby+graalvm-22.0.0.2
+truffleruby-22.1.0
+truffleruby+graalvm-22.1.0
 
 Only latest stable releases for each Ruby implementation are shown.
 Use 'rbenv install --list-all / -L' to show all local versions.

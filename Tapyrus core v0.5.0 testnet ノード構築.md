@@ -1,6 +1,6 @@
-# Tapyrus core v0.5.0 testnet ノード構築
+# Tapyrus core v0.5.1 testnet ノード構築
 
-2022/03/31
+2022/05/01更新
 
 #### 環境は ubuntu 20.04LTS
 
@@ -39,6 +39,7 @@ bitcoin coreからのフォークなので、基本的にbitcoin coreの知識�
     したがってネットワークごとにジェネシスブロック（0番目の最初のブロック）が存在します。
 * ネイティブなカラードコイン（トークン）生成ができる
     bitcoin でも Ethereumでもトークンはスマートコントラクトによるアプリケーションの一つなので、駆動させるためにはネイティブなbitcoinやEtherが必要です。
+* Proof of Authrity型のブロックチェーンで、ブロックの生成は signer networkの信頼点の合意の下に実行されます。
 
 ##### Tapyrusネットワークのパラメータ
 
@@ -63,27 +64,27 @@ bitcoin coreからのフォークなので、基本的にbitcoin coreの知識�
 
 #### バイナリの入手
 
-taapyrus core v 0.5.0 のx86 64 linux用のバイナリは以下から入手可能です
-[v0.5.0 release](https://github.com/chaintope/tapyrus-core/releases/tag/v0.5.0)
+taapyrus core v 0.5.1 のx86 64 linux用のバイナリは以下から入手可能です
+[v0.5.1 release](https://github.com/chaintope/tapyrus-core/releases/)
 
-[tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz](https://github.com/chaintope/tapyrus-core/releases/download/v0.5.0/tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz)
+[tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz](https://github.com/chaintope/tapyrus-core/releases/download/v0.5.1/tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz)
 
 ```bash
 cd ~
-wget https://github.com/chaintope/tapyrus-core/releases/download/v0.5.0/tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz
+wget https://github.com/chaintope/tapyrus-core/releases/download/v0.5.1/tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz
 ```
-tapyrus core v0.5.0 のx86 64 linuxバイナリが圧縮ファイルでダウンロードされているはずです
+tapyrus core v0.5.1 のx86 64 linuxバイナリが圧縮ファイルでダウンロードされているはずです
 
 ```bash
 ls
 =>
-...  tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz ...
+...  tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz ...
 ```
 
 tarコマンドによる圧縮ファイルの解凍
 
 ```bash
-tar xfvz tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz
+tar xfvz tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz
 ```
 
 これで、新しいディレクトリができているはずです
@@ -91,13 +92,13 @@ tar xfvz tapyrus-core-0.5.0-x86_64-linux-gnu.tar.gz
 ```bash
 ls
 =>
-... tapyrus-core-0.5.0  ...
+... tapyrus-core-0.5.1  ...
 ```
 
 このディレクトリのbinというサブディレクトリに tapyrus coreのバイナリがあります
 
 ```bash
-cd tapyrus-core-0.5.0
+cd tapyrus-core-0.5.1
 ls
 =>
 bin  include  lib  share
@@ -121,7 +122,7 @@ nano .bashrc
 
 ```bash
 ...
-export PATH="$HOME/tapyrus-core-0.5.0/bin:$PATH"
+export PATH="$HOME/tapyrus-core-0.5.1/bin:$PATH"
 ```
 
 ログインスクリプトを評価してパスを有効化する
@@ -381,9 +382,25 @@ tapyrus-cli getnewaddress alice
 =>
 1GUrWJ1sGeYYUS8fu8GP6ad7jPyADya2Fb
 
+tapyrus-cli getnewaddress bob
+=>
+19duDdmEvnPTsFcL9P8cQh1idf2TRNuzru
+
 tapyrus-cli getnewaddress carol
 =>
 14qtfhPHArQr9mahPutysQA7Y9Nqjf4y4N
+
+tapyrus-cli getnewaddress david
+=>
+1ph4Yq54zdQ4UKwjdfrkw8zamBa5Kpe4N
+
+tapyrus-cli getnewaddress eve
+=>
+19BsKCX5Yi59w7m3yi6ipCsRqQXoc7sS2j
+
+tapyrus-cli getnewaddress franck
+=>
+1CP8WGaNd9xZYTJ7j6HJUz79kHfgX3pMh1
 ```
 
 新しいアドレスへ送金
@@ -579,82 +596,97 @@ tapyrus-cli gettransaction 54a0f24a416c2358fd0b5b8f0a2b2b7798f95a038cce170b728ee
 
 
 ```bash
-yamasaki@tpcore3:~$ tapyrus-cli gettransaction d6d65a40ba190c9fb9e0da2a830a59d3f82f27d175efa29cd3b33245716d8a41
-=>
-{
-  "token": "TPC",
-  "amount": 0.00000000,
-  "fee": -0.00000225,
-  "confirmations": 1,
-  "blockhash": "774eaba7fc0efcd70b197fc5704988318ce590ae7b7967ea74f787358140d125",
-  "blockindex": 1,
-  "blocktime": 1648198803,
-  "txid": "d6d65a40ba190c9fb9e0da2a830a59d3f82f27d175efa29cd3b33245716d8a41",
-  "walletconflicts": [
-  ],
-  "time": 1648198236,
-  "timereceived": 1648198236,
-  "bip125-replaceable": "no",
-  "details": [
-    {
-      "address": "1GUrWJ1sGeYYUS8fu8GP6ad7jPyADya2Fb",
-      "category": "send",
-      "token": "TPC",
-      "amount": -0.00020000,
-      "label": "",
-      "vout": 0,
-      "fee": -0.00000225,
-      "abandoned": false
-    },
-    {
-      "address": "1GUrWJ1sGeYYUS8fu8GP6ad7jPyADya2Fb",
-      "category": "receive",
-      "token": "TPC",
-      "amount": 0.00020000,
-      "label": "",
-      "vout": 0
-    }
-  ],
-  "hex": "01000000012109181539323fd4b547ea650635769a6e9c0ad9b629403f23ea13d63c5bf4d7000000006a4730440220552b34370a50897735944358a8bfb895dcfc69b79f809a439796a95605fac24302204c8517b51efb9c6c8e95eddeeaf100635e024b693a1147cdf2dd64acf3e8eed0012103a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14feffffff02204e0000000000001976a914a9ce714577e0e2a5fcc5923fa29fd74ec6b8fade88acbf850100000000001976a9140b87651d58bfb650f625f2e3847ab6cb895e8dcf88acafca0200"
-}
-
-
-
-tapyrus-cli gettransaction cb00c9dbfd2732e5bb307e7b1e11eee36383f10371ff06841a76df03abaf1388
-=>
+tapyrus-cli gettransaction def9453068265c5b33d267201a4425befbf25636c8683eba50816982526fb47e
 {
   "token": "TPC",
   "amount": 0.00000000,
   "fee": -0.00000258,
   "confirmations": 0,
   "trusted": false,
-  "txid": "cb00c9dbfd2732e5bb307e7b1e11eee36383f10371ff06841a76df03abaf1388",
+  "txid": "def9453068265c5b33d267201a4425befbf25636c8683eba50816982526fb47e",
   "walletconflicts": [
   ],
-  "time": 1648198236,
-  "timereceived": 1648198236,
+  "time": 1648201151,
+  "timereceived": 1648201151,
   "bip125-replaceable": "unknown",
   "details": [
     {
-      "address": "4ZnPkx2PQ2neLZ2abhpMfSym3B1V1bxGuAbUKvkPENerxMnsKmJwTwEvYUU2pALLW2nxVmDhyEkdRW6",
+      "address": "4ZnPkx2PQ2neLZ2abhpMfSym3B1V1bxGuAbUKvkPENerxMkMJTtKjEg3szPwcWVDaWPDHU2wymydBUW",
       "category": "receive",
       "token": "c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082",
-      "amount": 10,
+      "amount": 100,
       "label": "",
       "vout": 0
     }
   ],
-  "hex": "0100000001418a6d714532b3d39ca2ef75d1272ff8d3590a832adae0b99f0c19ba405ad6d6000000006a4730440220780014f93756b57cd023e84d541da16392bc7890f28073ad1fdddcfc352d3b5702200bcb6352f2378d0ce0600b5554ba06804190792a927ade9cea0897bb58a3de1b012103a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14feffffff020a000000000000003a21c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082bca91457d7c96060658faab9e9e3c1c6d614dd3d8a0ad6871e4d0000000000001976a914a1bacf722cb55485973f9bf8a51528edbbbf2d9788acadca0200"
+  "hex": "01000000014fc46b0551d8e9ceaa1f8a3340b9af4a9e9d34a5678c57d96abe95cb30bee0d5000000006a4730440220798d03646bcd42c9d3a6cbc8688fa026974a03de631e7b79b5a9e89ebbbdb0cd022063335bd6a502404eef33c59984b6ea4d5fb2fd10f23ab6660e82998111322f3b012103a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14feffffff0264000000000000003a21c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082bca9143c39f87dc0eda15a2d852aecf991e9f4063cad59871e4d0000000000001976a9145f49d75ed451946ed5e0bd3337bf2aa511e76e1088acb4ca0200"
 }
 
+```
+
+hex 部分を解析してみる
+
+
+```js
+tapyrus-cli decoderawtransaction 01000000014fc46b0551d8e9ceaa1f8a3340b9af4a9e9d34a5678c57d96abe95cb30bee0d5000000006a4730440220798d03646bcd42c9d3a6cbc8688fa026974a03de631e7b79b5a9e89ebbbdb0cd022063335bd6a502404eef33c59984b6ea4d5fb2fd10f23ab6660e82998111322f3b012103a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14feffffff0264000000000000003a21c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082bca9143c39f87dc0eda15a2d852aecf991e9f4063cad59871e4d0000000000001976a9145f49d75ed451946ed5e0bd3337bf2aa511e76e1088acb4ca0200
+{
+  "txid": "def9453068265c5b33d267201a4425befbf25636c8683eba50816982526fb47e",
+  "hash": "95bb7e3b44cab9dcc046120068743598d0283b084469a1e5ea68cee0e5a8ed05",
+  "features": 1,
+  "size": 258,
+  "locktime": 182964,
+  "vin": [
+    {
+      "txid": "d5e0be30cb95be6ad9578c67a5349d9e4aafb940338a1faacee9d851056bc44f",
+      "vout": 0,
+      "scriptSig": {
+        "asm": "30440220798d03646bcd42c9d3a6cbc8688fa026974a03de631e7b79b5a9e89ebbbdb0cd022063335bd6a502404eef33c59984b6ea4d5fb2fd10f23ab6660e82998111322f3b[ALL] 03a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14",
+        "hex": "4730440220798d03646bcd42c9d3a6cbc8688fa026974a03de631e7b79b5a9e89ebbbdb0cd022063335bd6a502404eef33c59984b6ea4d5fb2fd10f23ab6660e82998111322f3b012103a8b17425211774a33fc6c2882468b7856d14e53a4c8298c7ec3cd504c6a62e14"
+      },
+      "sequence": 4294967294
+    }
+  ],
+  "vout": [
+    {
+      "token": "c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082",
+      "value": 100,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082 OP_COLOR OP_HASH160 3c39f87dc0eda15a2d852aecf991e9f4063cad59 OP_EQUAL",
+        "hex": "21c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082bca9143c39f87dc0eda15a2d852aecf991e9f4063cad5987",
+        "reqSigs": 1,
+        "type": "coloredscripthash",
+        "addresses": [
+          "4ZnPkx2PQ2neLZ2abhpMfSym3B1V1bxGuAbUKvkPENerxMkMJTtKjEg3szPwcWVDaWPDHU2wymydBUW"
+        ]
+      }
+    },
+    {
+      "token": "TPC",
+      "value": 0.00019742,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 5f49d75ed451946ed5e0bd3337bf2aa511e76e10 OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a9145f49d75ed451946ed5e0bd3337bf2aa511e76e1088ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "19gqeonnnWPijwb2TiHs3zWYhii1w6GskQ"
+        ]
+      }
+    }
+  ]
+}
 ```
 
 ### トークンの焼却
 
 burntoken <color> <value>
 
+#### NFTの焼却
+
 ```bash
-tapyrus-cli burntoken c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082
+tapyrus-cli burntoken c342f902ff12fc1a0041ee9715c2fe327760b55b65abc34be2807a6d5cf1adc2c1 1
 ```
 
 ### トークンの送金
@@ -665,11 +697,11 @@ tapyrus-cli burntoken c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb638
 
 
 ```
-tapyrus-cli getnewaddress c1f11a9a709939d650c2df0b30ec7d566bc8ef1ecc3d1e954f1e3fb6387e0e7082
+tapyrus-cli getnewaddress "c3b9c4be2f73cd2f9e1c5e072468a76f931a241d4ff4647dfdacdeba28c4bee157"
 =>
-18fT75yCqPv4RRZsAMg3pK6T1Wz4X3KkyJ
+15SSb9pWzPj5yrd8B7xcK5Ys6Wv6FrTW79
 
-tapyrus-cli transfertoken 18fT75yCqPv4RRZsAMg3pK6T1Wz4X3KkyJ 3
+tapyrus-cli transfertoken 15SSb9pWzPj5yrd8B7xcK5Ys6Wv6FrTW79 1
+01858822e8b0bae02850560621e009398775974c5ffc0061dcab3dd76f108cf4
 
 ```
-

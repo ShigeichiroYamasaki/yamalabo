@@ -326,6 +326,53 @@ for文
 6
 ```
 
+for in文
+
+```js
+> let week={mon: 10, tue: 11, wed: 13, thu: 11, fri: 9, sat: 8}
+> for (let key in week){
+   console.log(key);
+ }
+ 
+mon
+tue
+wed
+thu
+fri
+sat
+undefined
+
+> for (let key in week){
+   console.log(week[key]);
+ }
+
+10
+11
+13
+11
+9
+8
+undefined
+```
+
+for of文
+
+```js
+> let data=[2,5,1,8,3,4]
+
+> for (let x of data){
+  console.log(x);
+}
+
+2
+5
+1
+8
+3
+4
+undefined
+```
+
 
 ### 関数
 
@@ -509,6 +556,24 @@ undefined
 4
 > arr.length;
 6
+
+> let arr2=[9,3,1,7,8,3,5];
+> arr2.sort()
+[
+  1, 3, 3, 5,
+  7, 8, 9
+]
+
+> arr2.sort().reverse()
+[
+  9, 8, 7, 5,
+  3, 3, 1
+]
+
+> let arr3 = [[1,2],[3,4]]
+> arr3.flat()
+[ 1, 2, 3, 4 ]
+
 ```
 
 ### イテレータによる繰り返し
@@ -577,14 +642,18 @@ Array.from(str).map(function(x){return x+x;})
 
 一定時間経過後に関数を実行する
 
-`setTimeout(function, delay);`
+`setTimeout(callBackFunction, delay);`
 
 delayは、ミリ秒
 
 ```js
-> let t1=setTimeout(() => {console.log("event1")}, 5000);
-> let t2=setTimeout(() => {console.log("event2")}, 3000);
-> let t3=setTimeout(() => {console.log("event3")}, 1000);
+> const f1=()=>console.log("event1")
+> const f2=()=>console.log("event2")
+> const f3=()=>console.log("event3")
+> 
+> let t1=setTimeout(f1, 50000);
+> let t2=setTimeout(f2, 30000);
+> let t3=setTimeout(f3, 10000);
  
 event3
 event2
@@ -600,14 +669,48 @@ JavaScriptの場合、プロミスは、Promiseクラスのインスタンスオ
 Promiseのインスタンスオブジェクトは状態を持ち、非同期処理の結果に応じて状態が決定されて値がバインドされます。
 
 
- Promiseの状態
+例：
 
-* 待機 (pending): 初期状態。成功も失敗もしていません。
-* 履行 (fulfilled): 処理が成功して完了したことを意味します。
-* 拒否 (rejected): 処理が失敗したことを意味します。
+1. 学食で定食の食券を出す
+2. ご飯をよそう（ 10sec)
+3. 味噌汁をよそう (20 sec)
+4. おかずをもりつける (50 sec)
+5. すべてトレーに揃ったら定食購入完了
+6. 給湯器で、お茶を入れる
+6. たべる
+ 
 
+```js
+const gohan=()=>console.log("ごはん")
+const misosiru=()=>console.log("味噌汁")
+const okazu=()=>console.log("おかず")
+const teisyoku=()=>console.log("定食")
+const otya=()=>console.log("お茶")
+// 
+setTimeout(gohan,10000)
+setTimeout(misosiru,20000)
+setTimeout(okazu,50000)
 
-![](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/promises.png)
+//定食
+const promise=new Promise((resolve,reject)=>{
+    resolve()
+    })
+    
+const success=()=>{}
+const failure=()=>{}
+promise.then(sucess,failure)
+```
+ 
+Promiseの結果を通知するステートメント文とPromiseのインスタンス
+
+```js
+const statements=(resolve,reject)=>{
+    // resolve() 成功を通知する関数
+    // reject()　失敗を通知する関数
+}
+
+const p=new Promise(statements)
+```
 
 ```js
 new Promise(function(resolve, reject) {resolve('成功');});
