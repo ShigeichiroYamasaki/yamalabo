@@ -1,35 +1,32 @@
 # Ethereum Ropsten ノード　構築
 
-2022/02/17 Shigeichiro Yamasaki
+2022/05/05 更新 Shigeichiro Yamasaki
 
 
+## Ethrerumテストネットワークの種類
 
-## ethereum (geth)
+* Ropsten: Proof-of-work test network
+* Rinkeby: Proof-of-authority test network
+* Görli: Proof-of-authority test network
 
-### インストールスクリプト
+## ethereum (geth) ubuntu 20.04 LTS
 
-新規マシンにインストール
+ubuntu 22.04 LTSでのインストールは 2022年５月現在おすすめしません
 
-```
-nano install-ethereum.sh
-```
+### インストール手順
+
 
 ```bash
-#!/bin/bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install git -y
-sudo apt install -y libsnappy-dev wget curl build-essential cmake gcc sqlite3
-sudo apt install software-properties-common
 sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt update
-sudo apt install -y ethereum
+sudo apt-get update
+sudo apt-get install ethereum
 ```
 
-```bash
-chmod a+x install-ethereum.sh
-./install-ethereum.sh
-```
+## Ethereumネットワークの同期モード
+
+* Full: ブロックチェーンの全ブロックをダウンロードし、全てのブロックでの状態更新を確認して同期する
+* Snap: (Default): ブロックチェーンの全ブロックをダウンロードし、最近ブロックでの状態更新を確認して同期する
+* Light: 最近のブロックヘッダーのみダウンロードし、オンデマンドで必要なデータをダウンロードする
 
 ## Ropstenネットワークへの接続(高速モード 'snap' で同期）
 
@@ -40,7 +37,7 @@ mkdir Ethereum
 cd Ethereum
 mkdir ropsten
 
-geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
+geth --testnet --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
 ```
 
 ## geth 基本操作

@@ -1,23 +1,32 @@
 # Bitcoin core Signet ノードの構築
 
+2022/05/05更新 Shigeichiro Yamasaki
+
 ## install 方法
 
-### MacOSX
+
+### MacOSXの場合
 
 [Bitcoin core ダウンロードサイト](https://bitcoin.org/ja/download)から dmg 形式のインストーラをダウンロードする
 
 
 #### インストーラで bitcoin core をインストールしてアプリを起動
 
+bitcon coreは「危険なアプリ」という扱いになっています。
+
 * ドラックアンドドロップでアプリフォルダーにインストール
+* アプリを起動してみる（起動しない）
 * 「システム環境設定」の「セキュリティとプライバシー」で，ロックのアイコンをクリックしてパスワード入力
 *  bitcoin coreに対して「ダウンロードしたアプリケーションの実行許可」を与える
+
 
 #### アプリ起動
 
 「アプリケーションフォルダ」の bitcoin core アプリ起動
 
-### ubuntu 20.04LTS
+--
+
+### ubuntu 20.04LTS/ ubuntu 22.04/LTSの場合
 
 #### snap でインストールする
 
@@ -25,10 +34,18 @@
 sudo snap install bitcoin-core
 ```
 
-## bitcoin-qt アプリを起動
+#### bitcoin-qt アプリを起動してみる
+
+リモート起動はできません
 
 ```
 bitcoin-core.qt
+```
+
+コマンドで実行する場合
+
+```bash
+bitcoin-core.daemon &
 ```
 
 #### snap で bitcoin core をインストールしたときのコマンドインターフェース
@@ -36,10 +53,13 @@ bitcoin-core.qt
 * bitcoin-core.daemon : デーモン起動 (bitcoind)
 * bitcoin-core.cli : クライアント (bitcoin-cli)
 
+--
 
 ## bitcoind 設定ファイルを編集（作成）
 
 設定ファイル (bitcoin.conf) を編集
+
+bitcoin.confの場所
 
 * ubuntu で通常インストールしたときの bitcoin.conf のデフォルトの場所
     * ~/.bitcoin/bitcoin.conf
@@ -49,12 +69,18 @@ bitcoin-core.qt
     * ~/Library/Application Support/Bitcoin/bitcoin.conf
 
 
-### bitcoin-qt (GUI) から設定ファイル (bitcoin.conf) を編集
+####  bitcoin.conf を編集
+
+##### bitcoin-qtの場合
 
 * MacOSX :「ファイル」メニューの 「preferences」.. 
 * ubuntu: 「設定」メニューの「オプション」
 * 「設定ファイルを開く」ボタンをクリック
 * 設定ファイルを以下のように作成して保存
+
+
+
+`nano bitcoin.conf`
 
 ```
 signet=1
@@ -72,7 +98,18 @@ fallbackfee=0.0002
 
 * 「OK」をクリック
 
-## bitcoin core を一旦終了して再度起動
+#### bitcoind の停止
+
+bitcoin-qtはメニューから停止
+
+コマンドで実行する場合
+
+```bash
+bitcoin-core.cli stop
+```
+
+
+#### 
 
 アイコンが薄い黄緑になっていれば成功
 
