@@ -1,2 +1,0 @@
-# yamalabo
-yamasaki labo

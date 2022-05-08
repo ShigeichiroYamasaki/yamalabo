@@ -1,6 +1,6 @@
 # Ruby インストール方法
 
-2022/03/24
+2022/05/06 Shigeichiro Yamasaki
 
 ## MacOSXでのインストール
 
@@ -82,8 +82,8 @@ rbenv install -l
 jruby-9.3.4.0
 mruby-3.0.0
 rbx-5.0
-truffleruby-22.1.0
-truffleruby+graalvm-22.1.0
+truffleruby-22.0.0.2
+truffleruby+graalvm-22.0.0.2
 
 Only latest stable releases for each Ruby implementation are shown.
 Use 'rbenv install --list-all / -L' to show all local versions.
@@ -92,6 +92,7 @@ Use 'rbenv install --list-all / -L' to show all local versions.
 新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
 
 ```bash
+rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 ```
 
@@ -105,7 +106,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 2.7.5
+rbenv install 2.7.6
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -114,7 +115,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 2.7.5
+rbenv global 2.7.6
 source .zshrc 
 ```
 
@@ -122,7 +123,7 @@ Rubyのバージョンの確認
 
 ```bash
 ruby -v
-ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [arm64-darwin21]
+ruby 2.7.6p219 (2022-04-12 revision c9c2245c0a) [arm64-darwin21]
 ```
 
 
@@ -167,19 +168,20 @@ source ~/.bashrc
 インストール可能なRubyのバージョンが出てきます
 
 ```bash
+rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 rbenv install -l
 
 
-2.6.9
-2.7.5
-3.0.3
-3.1.1
-jruby-9.3.3.0
+2.6.10
+2.7.6
+3.0.4
+3.1.2
+jruby-9.3.4.0
 mruby-3.0.0
 rbx-5.0
-truffleruby-22.0.0.2
-truffleruby+graalvm-22.0.0.2
+truffleruby-22.1.0
+truffleruby+graalvm-22.1.0
 
 Only latest stable releases for each Ruby implementation are shown.
 Use 'rbenv install --list-all / -L' to show all local versions.
@@ -188,6 +190,7 @@ Use 'rbenv install --list-all / -L' to show all local versions.
 新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
 
 ```bash
+rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 ```
 
@@ -201,7 +204,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 2.7.5
+rbenv install 2.7.6
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -210,7 +213,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 2.7.5
+rbenv global 2.7.6
 source .bashrc 
 ```
 
@@ -218,5 +221,5 @@ Rubyのバージョンの確認
 
 ```bash
 ruby -v
-ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [arm64-darwin21]
+ruby 2.7.6p219 (2022-04-12 revision c9c2245c0a) [x86_64-linux]
 ```
