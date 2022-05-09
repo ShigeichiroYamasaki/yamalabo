@@ -1,6 +1,6 @@
 # Ethereum Ropsten ノード　構築
 
-2022/05/05 更新 Shigeichiro Yamasaki
+2022/05/09 更新 Shigeichiro Yamasaki
 
 
 ## Ethrerumテストネットワークの種類
@@ -37,7 +37,7 @@ mkdir Ethereum
 cd Ethereum
 mkdir ropsten
 
-geth --testnet --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
+geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
 ```
 
 ## geth 基本操作
