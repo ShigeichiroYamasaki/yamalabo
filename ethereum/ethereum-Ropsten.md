@@ -9,17 +9,27 @@
 * Rinkeby: Proof-of-authority test network
 * Görli: Proof-of-authority test network
 
-## ethereum (geth) ubuntu 20.04 LTS
+## ethereum (geth) インストール手順 ubuntu 20.04 LTS
 
 ubuntu 22.04 LTSでのインストールは 2022年５月現在おすすめしません
-
-### インストール手順
 
 
 ```bash
 sudo add-apt-repository -y ppa:ethereum/ethereum
 sudo apt-get update
 sudo apt-get install ethereum
+```
+
+## ethereum (geth) インストール手順 MacOSX
+
+HOmebrew がインストールされている前提です
+
+[Homebrew インストール](https://brew.sh/index_ja)
+
+
+```bash
+brew tap ethereum/ethereum
+brew install ethereum
 ```
 
 ## Ethereumネットワークの同期モード
@@ -38,6 +48,13 @@ cd Ethereum
 mkdir ropsten
 
 geth --ropsten --syncmode "snap" --datadir "./ropsten" --http --http.addr "localhost" --http.port "8545" --http.api "eth,net,web3,admin,miner,txpool,personal" --allow-insecure-unlock -- console 2>> ./ropsten/geth_err.log
+```
+
+しばらくして以下のプロンプトが現れると成功
+
+```
+To exit, press ctrl-d or type exit
+> 
 ```
 
 ## geth 基本操作
