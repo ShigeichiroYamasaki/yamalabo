@@ -174,13 +174,14 @@ nano tapyrus.conf
 ##### tapyrus.conf の内容
 
 コインを送金するにはfallbackfeeを設定しておく必要がある
+fallbackfeeが少ないとトランザクションがブロックに含められなくなるので注意
 
 ```
 networkid=1939510133
 txindex=1
 server=1
 rest=1
-fallbackfee=0.000001
+fallbackfee=0.0002
 rpcuser="hoge"
 rpcpassword="hoge"
 rpcbind=0.0.0.0
