@@ -32,6 +32,13 @@ brew tap ethereum/ethereum
 brew install ethereum
 ```
 
+shellを zsh からbashに切り替える
+（Macではデフォルトでzsh)
+
+```
+bash
+```
+
 ## Ethereumネットワークの同期モード
 
 * Full: ブロックチェーンの全ブロックをダウンロードし、全てのブロックでの状態更新を確認して同期する
@@ -94,6 +101,8 @@ To exit, press ctrl-d or type exit
 
 ## Gethの操作
 
+#### ノード情報
+
 ```js
 > admin.nodeInfo 
 {
@@ -135,7 +144,11 @@ To exit, press ctrl-d or type exit
   }
 }
 
+```
 
+#### 接続しているピア
+
+```
 > admin.peers
 [{
     caps: ["eth/66"],
@@ -201,7 +214,11 @@ To exit, press ctrl-d or type exit
     }
 }]
 
+```
 
+#### 同期しているブロック数
+
+```
 > eth.blockNumber
 11931513
 ```
@@ -263,30 +280,3 @@ alice と bob のそれぞれに Etherを送金する
 > eth.sendTransaction({from: eth.accounts[0], to: eth.accounts[1], value: web3.toWei(0.001, "ether")}) 
 ```
 
-## 接続先
-
-```
-To exit, press ctrl-d or type exit
-> admin.peers
-[{
-    caps: ["eth/66"],
-    enode: "enode://f60710578e6e364ea003cd6a0d6f0aecf23fc592c45fc761d1f4a01872cebc8adee220260dde64634b39d440bcf78b383e59a80fe05506a0959aa210b5136e1b@34.81.33.87:30303",
-    enr: "enr:-Je4QHSLBLi6ZvDDTCX4dLo4VwAxDSbEFh_9JQkm2xMV3SnFS_U5G6rUYxklNaSKq7eA_ejKzgwPo3XD1z2eH7n4IPAHg2V0aMfGhHEZtrOAgmlkgnY0gmlwhCJRIVeJc2VjcDI1NmsxoQP2BxBXjm42TqADzWoNbwrs8j_FksRfx2HR9KAYcs68ioN0Y3CCdl-DdWRwgnZf",
-    id: "393db698665fe2466892b6262cf67707da5ff33c4b54fe020aa3eab2a6612ba5",
-    name: "erigon/v2021.12.3-beta-47c3b9df/linux-amd64/go1.17.5",
-    network: {
-      inbound: false,
-      localAddress: "192.168.0.254:49842",
-      remoteAddress: "34.81.33.87:30303",
-      static: false,
-      trusted: false
-    },
-    protocols: {
-      eth: {
-        difficulty: 39372544544231100,
-        head: "0x4974392269413df7a0c469775267942f2076a0c5eed4cae44f2f68a5844ecea6",
-        version: 66
-      }
-    }
-}]
-```
