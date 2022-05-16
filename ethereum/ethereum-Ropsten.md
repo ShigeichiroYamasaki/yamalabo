@@ -1,6 +1,6 @@
 # Ethereum Ropsten ノード　構築
 
-2022/05/09 更新 Shigeichiro Yamasaki
+2022/05/16 更新 Shigeichiro Yamasaki
 
 
 ## Ethrerumテストネットワークの種類
