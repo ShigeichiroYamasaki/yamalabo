@@ -1,6 +1,6 @@
 # Tapyrus ネットワークの構築
 
-2022/03/26
+2022/05/19更新　Shigeichiro Yamasaki
 
 ### 参考文献
 
@@ -95,9 +95,9 @@ export PATH="$HOME/tapyrus-signer/target/release:$PATH"source ~/.bashrc
 
 #### tapyrus coreのインストール
 
-tapyrus core v0.5.0 のインストール方法はここにあります
+tapyrus core v0.5.1 のインストール方法はここにあります
 
-[Tapyrus core v0.5.0 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/Tapyrus%20core%20testnet%20node.md)
+[Tapyrus core v0.5.1 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/tapyrus/TapyrusCoreV0.5.1testnet.md)
 
 ## Signerネットワーク
 
@@ -200,24 +200,36 @@ signed_genesis_block = `tapyrus-setup computesig #{params1} --private-key #{priv
 # ノード数 n しきい値 t
 
 def trusted_setup(n, t)
+    # 鍵を生成し、鍵を公開鍵の辞書順で並べ替える
     signerkeys = (0..(n-1)).map{`tapyrus-setup createkey`.chomp.split(' ')}.sort_by{|k|k[1]}
+    # 公開鍵リスト
     pubkeys= signerkeys.map{|k|k[1]}
+    # 秘密鍵リスト
     privkeys= signerkeys.map{|k|k[0]}
+    # ノードVSSの生成
     node_vss=(0..(n-1)).map{|i|params=(0..(n-1)).reduce(""){|c,j|c+=" --public-key=#{pubkeys[j]}"}
         `tapyrus-setup createnodevss #{params} --private-key=#{privkeys[i]} --threshold=#{t}`.chomp.split("\n").map{|x|x.split(":")}.map{|y|y[1]}}
+    # 集約公開鍵の生成
     agg_key=(0..(n-1)).map{|i|params=(0..(n-1)).reduce(""){|c,j|c+=" --vss=#{node_vss[j][i]}"}
         `tapyrus-setup aggregate #{params} --private-key=#{privkeys[i]}`.chomp.split(' ')}
+    # 集約公開鍵
     agg_pubkey= agg_key[0][0]
+    # ノードの集約秘密鍵
     node_secret_share=(0..(n-1)).map{|i|agg_key[i][1]}
+    # ジェネシスブロックの生成
     genesis_block = `tapyrus-genesis -signblockpubkey=#{agg_pubkey}`.chomp
+    # ジェネシスブロックVSSの生成
     blockvss = (0..(n-1)).map{|i| params=(0..(n-1)).reduce(""){|c,j|c+=" --public-key=#{pubkeys[j]}"}
         `tapyrus-setup createblockvss #{params} --private-key=#{privkeys[i]} --threshold=#{t}`.chomp.split("\n").map{|z|z.split(':')[1]}}
+    # ブロックの署名
     block_sig = (0..(n-1)).map{|i| params=(0..(n-1)).reduce(""){|c,j| c+=" --block-vss=#{blockvss[j][i]}"}
         `tapyrus-setup sign #{params} --aggregated-public-key=#{agg_pubkey} --node-secret-share=#{node_secret_share[i]} --private-key=#{privkeys[i]} --block=#{genesis_block} --threshold=#{t}`.chomp}
+    # マスターノードをノード 0にします
     node = 0
     params1 = (0..(n-1)).reduce(""){|c,j|c+=" --sig #{block_sig[j]}"}
     params2 = (0..(n-1)).reduce(""){|c,j|c+=" --block-vss #{blockvss[j][node]}"}
     params3 = (0..(n-1)).reduce(""){|c,j|c+=" --node-vss #{node_vss[j][node]}"}
+    # 署名付きジェネシスブロック
     signed_genesis_block = `tapyrus-setup computesig #{params1} --private-key #{privkeys[node]} --block #{genesis_block} #{params2} #{params3} --aggregated-public-key #{agg_pubkey} --node-secret-share #{node_secret_share[node]} --threshold #{t}`.chomp
     return [pubkeys, privkeys, node_vss, agg_pubkey, node_secret_share, blockvss, signed_genesis_block]
 end
@@ -264,7 +276,7 @@ genesis.1905960821
 
 ## Tapyrus core ネットワークの起動
 
-[Tapyrus core v0.5.0 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/Tapyrus%20core%20testnet%20node.md)
+[Tapyrus core v0.5.1 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/tapyrus/TapyrusCoreV0.5.1testnet.md)
 
 
 #### tapyrus.conf の内容
@@ -278,7 +290,7 @@ networkid=1905960821
 txindex=1
 server=1
 rest=1
-fallbackfee=0.000001
+fallbackfee=0.00001
 rpcuser="hoge"
 rpcpassword="hoge"
 rpcbind=0.0.0.0
