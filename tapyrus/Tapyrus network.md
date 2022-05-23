@@ -58,6 +58,21 @@ Tapyrus Signer Networkは、各ブロック生成ラウンドに次の固有の�
 
 ## 事前準備
 
+必要そうなライブラリのセットアップ
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev
+sudo apt autoremove -y
+```
+
+Rubyもいれておく
+
+[Ruby インストール方法](../ruby/ruby.md)
+
+---
+
 * signer マシン３台以上、core用マシン１台以上を用意する
     * tpsig1, tpsig2, tpsig3, tpcore1 とする
 * Rustのインストール
@@ -72,8 +87,13 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ~/.bashrc の最後に以下を追加して source で評価する
 
+`nano ~/.bashrc`
+
 ```
 export PATH="$HOME/.cargo/bin:$PATH"
+```
+
+```
 source ~/.bashrc
 ```
 
@@ -89,8 +109,14 @@ cargo build --release
 
 ~/.bashrc の最後に以下を追加して source で評価する
 
+`nano ~/.bashrc`
+
 ```
-export PATH="$HOME/tapyrus-signer/target/release:$PATH"source ~/.bashrc
+export PATH="$HOME/tapyrus-signer/target/release:$PATH"
+```
+
+```
+source ~/.bashrc
 ```
 
 #### tapyrus coreのインストール
