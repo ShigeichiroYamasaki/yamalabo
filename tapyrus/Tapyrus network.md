@@ -1,6 +1,6 @@
 # Tapyrus ネットワークの構築
 
-2022/05/19更新　Shigeichiro Yamasaki
+2022/05/27更新　Shigeichiro Yamasaki
 
 ### 参考文献
 
@@ -21,63 +21,29 @@ Tapyrus ネットワークには、Tapyrus Signer NetworkとTapyrus Core Network
 
 Tapyrus Signer Networkの設定をサポートするために、コマンドラインユーティリティtapyrus-setupを提供しています
 
-### Tapyrus Signer Networkのパラメータ
-
-Tapyrus Core Networkのパラメータに加えて、Tapyrus Signer Networkは、ノードごとに次のパラメータを使用します。
-
-#### ノードVSS
-
-ノードVSSは、検証可能な秘密分散シェア（VSS）です。
-各署名者は、すべての署名者からのノードVSSを持っている必要があります。
-ノードの起動には、このVSSをfederations.toml設定ファイルに含めておく必要があります。
-
-#### ノードシークレットシェア
-
-ノードシークレットシェアは、KeyGenerationProtocolで作成されるシェアです。
-各署名者は、ノードシークレットシェアを持っている必要があります。
-これは、収集されたノードVSSによって計算されます。
-その値は、secp256k1曲線上の秘密鍵の32バイトのデータです。
-
-Tapyrus Signer Networkは、各ブロック生成ラウンドに次の固有のパラメーターを使用します。
-
-#### ブロックVSS
-
-ブロックVSSは、署名発行プロトコルで作成されるVSSです。
-各署名者は、ブロックVSSを生成し、相互に交換する必要があります。
-
-#### ブロックシークレットシェア
-
-ブロックシークレットシェアは、署名発行プロトコルで作成されるシェアです。
-値は、secp256k1曲線上の秘密鍵の32バイトのデータです。
-
-#### ローカル署名
-
-ローカル署名は、署名発行プロトコルで各署名者ノードで生成される署名です。
-ローカル署名を収集することにより、最終的な署名を生成できます。
-これは、ラグランジュ補間を計算して、公開鍵を集約することで検証できます。
-
 ## 事前準備
-
-必要そうなライブラリのセットアップ
-
-```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev
-sudo apt autoremove -y
-```
-
-Rubyもいれておく
-
-[Ruby インストール方法](../ruby/ruby.md)
-
----
 
 * signer マシン３台以上、core用マシン１台以上を用意する
     * tpsig1, tpsig2, tpsig3, tpcore1 とする
 * Rustのインストール
 * tapyrus signer のインストール
 * tapyrus coreのインストール
+
+
+### tapyrus coreのインストール
+
+tapyrus core v0.5.1 のインストール方法はここにあります
+
+[Tapyrus core v0.5.1 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/tapyrus/TapyrusCoreV0.5.1testnet.md)
+
+### Tapyrus Signer のインストール
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y ssh openssl llvm autoconf gcc clang cmake make curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget curl imagemagick libreadline-dev libleveldb-dev
+```
+
 
 #### Rustのインストール
 
@@ -119,11 +85,49 @@ export PATH="$HOME/tapyrus-signer/target/release:$PATH"
 source ~/.bashrc
 ```
 
-#### tapyrus coreのインストール
+### Ruby インストール
+Rubyもいれておく
 
-tapyrus core v0.5.1 のインストール方法はここにあります
+[Ruby インストール方法](../ruby/ruby.md)
 
-[Tapyrus core v0.5.1 testnet ノード構築](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/tapyrus/TapyrusCoreV0.5.1testnet.md)
+---
+
+
+## Tapyrus Signer Networkのパラメータ
+
+Tapyrus Core Networkのパラメータに加えて、Tapyrus Signer Networkは、ノードごとに次のパラメータを使用します。
+
+#### ノードVSS
+
+ノードVSSは、検証可能な秘密分散シェア（VSS）です。
+各署名者は、すべての署名者からのノードVSSを持っている必要があります。
+ノードの起動には、このVSSをfederations.toml設定ファイルに含めておく必要があります。
+
+#### ノードシークレットシェア
+
+ノードシークレットシェアは、KeyGenerationProtocolで作成されるシェアです。
+各署名者は、ノードシークレットシェアを持っている必要があります。
+これは、収集されたノードVSSによって計算されます。
+その値は、secp256k1曲線上の秘密鍵の32バイトのデータです。
+
+Tapyrus Signer Networkは、各ブロック生成ラウンドに次の固有のパラメーターを使用します。
+
+#### ブロックVSS
+
+ブロックVSSは、署名発行プロトコルで作成されるVSSです。
+各署名者は、ブロックVSSを生成し、相互に交換する必要があります。
+
+#### ブロックシークレットシェア
+
+ブロックシークレットシェアは、署名発行プロトコルで作成されるシェアです。
+値は、secp256k1曲線上の秘密鍵の32バイトのデータです。
+
+#### ローカル署名
+
+ローカル署名は、署名発行プロトコルで各署名者ノードで生成される署名です。
+ローカル署名を収集することにより、最終的な署名を生成できます。
+これは、ラグランジュ補間を計算して、公開鍵を集約することで検証できます。
+
 
 ## Signerネットワーク
 

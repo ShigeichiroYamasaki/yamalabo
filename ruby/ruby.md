@@ -174,7 +174,6 @@ source ~/.bashrc
 インストール可能なRubyのバージョンが出てきます
 
 ```bash
-rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 rbenv install -l
 
