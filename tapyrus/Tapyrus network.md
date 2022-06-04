@@ -23,11 +23,11 @@ Tapyrus Signer Networkの設定をサポートするために、コマンドラ�
 
 ## 事前準備
 
-* signer マシン３台以上、core用マシン１台以上を用意する
-    * tpsig1, tpsig2, tpsig3, tpcore1 とする
+* signer マシン３台以上
 * Rustのインストール
 * tapyrus signer のインストール
 * tapyrus coreのインストール
+* redis のインストール
 
 ### tapyrus coreのインストール
 
