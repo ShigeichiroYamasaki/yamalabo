@@ -525,12 +525,17 @@ skip-waiting-ibd = true
 to-address = "1KwQsWB9zSZMuDvmWBP8vYStw6aLUvRZKe"
 public-key = "0220b84d8429ff7056b68e6771cfc3deee84c0c99d69eb4c116fc620a965880470"
 federations-file = "~/.tapyrus/federations.toml"
+log-file = "~/.tapyrus/tapyrus-signer.log"
 
 [rpc]
 rpc-endpoint-host = "127.0.0.1"
-rpc-endpoint-port = 2377
+rpc-endpoint-port = 12381
 rpc-endpoint-user = "hoge"
 rpc-endpoint-pass = "hoge"
+rpc-host = "127.0.0.1"
+rpc-port = 12381
+rpc-user = "hoge"
+rpc-pass = "hoge"
 
 [redis]
 redis-host = "127.0.0.1"
@@ -564,18 +569,18 @@ node_vss = ["0220b84d8429ff7056b68e6771cfc3deee84c0c99d69eb4c116fc620a9658804700
 sudo apt install -y redis
 ```
 
+### 必要なファイルの作成
+
+```bash
+touch .tapyrus/tapyrus-signer.log
+
+```
+
 ## signer ノードの起動
 
 ```bash
-tapyrus-signerd &
+tapyrus-signerd -c .tapyrus/signer.toml -l error  --log-file .tapyrus/tapyrus-signer.log --pid .tapyrus/prod-20220604/tapyrus.pid &
 
 ```
 
-
-★★　現時点では以下のエラーで起動しません
-
-```
-thread 'main' panicked at 'RPC connect failed. Please confirm RPC connection info. url: http://127.0.0.1:2377, user: '' ,: JsonRpc(Json(Error("EOF while parsing a value", line: 1, column: 0)))', src/bin/tapyrus-signerd.rs:100:27
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-```
-
+以上を signer ノードすべてで行う
