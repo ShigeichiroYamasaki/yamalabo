@@ -46,15 +46,6 @@ gem install devise-i18n-views
 gem install rails
 ```
 
-### Railsのインストール実行
-
-```bash
-chmod u+x install_rails.sh
-
-./install_rails.sh
-```
-
-
 ## Railsアプリのモデル例
 
 Railsアプリを作成するためには、まずモデルを設計する必要があります
