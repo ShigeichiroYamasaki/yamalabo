@@ -1,21 +1,36 @@
 # rails7 のインストールと devise認証
 
+最終修正 2022/07/21
 
-## Rubyのインストール
+### Rubyのインストール
 
-[Rubyのインストール](./ruby.md)
+ここを参照してください　[Rubyのインストール](./ruby.md)
 
-★ Ruby 3.1.0 と Rails 7 の組み合わせにはまだ問題があります。
-
-### Railsインストールスクリプトの作成
+#### yarnのインストール
 
 ```bash
-nano install_rails.sh
+curl -o- -L https://yarnpkg.com/install.sh | bash
+source ~/.bashrc
 ```
 
-```bash
-#!/bin/bash
+#### nvmのインストール
 
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+source ~/.bashrc
+```
+
+#### node 12.13.0 のインストール
+
+```bash
+nvm install 12.13.0
+nvm use v12.13.0
+```
+
+
+### Railsインストール
+
+```bash
 gem install bundler
 gem install sqlite3
 gem install json-jwt
@@ -23,16 +38,15 @@ gem install jwt
 gem install nokogiri
 gem install devise
 gem install bootstrap
-
-gem install rails
 gem install jquery-rails
 gem install bootstrap-sass
 gem install sass-rails
 gem install devise-i18n
 gem install devise-i18n-views
+gem install rails
 ```
 
-### 実行
+### Railsのインストール実行
 
 ```bash
 chmod u+x install_rails.sh
@@ -40,27 +54,78 @@ chmod u+x install_rails.sh
 ./install_rails.sh
 ```
 
-### Railsの起動テスト
+
+## Railsアプリのモデル例
+
+Railsアプリを作成するためには、まずモデルを設計する必要があります
+
+ここでは、仮想通貨のワレットを作成してみます。
+bitcoin coreなどにはワレット機能があるので、フロントエンドを作成するだけならDB作成は冗長なだけですが、ここではあえて冗長構成にします。
+
+```
+Wallet: 個人が所有するワレット
+    owner:所有者
+
+Log: 送金履歴
+    date:日時
+    sendto: 送金先アドレス
+    amount: 金額
+```
+
+###  モデル間の関連
+
+```
+# 一つのワレットには、複数の送金履歴が対応する
+Wallet 1 : n Log    
+```
+
+## Railsプロジェクトの生成
+
+アセットパイプラインは使用しません
 
 ```bash
-rails new test1
+rails new bitcoin_wallet --skip-sprockets
 
-cd test1
+cd bitcoin_wallet
 bundle install
 ```
 
-#### scaffold で生成
+#### scaffold で MVCを生成
 
 ```bash
-rails g scaffold person name
+rails g scaffold Wallet owner
+rails g scaffold Log date:date sendto amount:float
 ```
+
+#### モデル間の関連を定義
+
+* Walletモデル
+
+nano app/models/wallet.rb 
+
+```ruby
+class Wallet < ApplicationRecord
+    has_many :logs
+end
+```
+
+
+* Logモデル
+
+nano app/models/log.rb 
+
+```ruby
+class Log < ApplicationRecord
+    belongs_to :wallet
+end
+```
+
 
 ### DB のマイグレーション
 
 ```bash
 rails db:migrate
 ```
-
 
 ### サーバーの起動
 
@@ -70,119 +135,7 @@ rails s -b 0.0.0.0
 
 ### ブラウザから確認
 
-http://localhost:3000/people
+http://<ipアドレス>:3000/wallets
 
 確認後，control-c でサーバを停止
 
-## bootstrap のテスト
-
-#### Gemfile編集
-
-```bash
-nano Gemfile
-```
-
-以下を追加
-
-```ruby
-gem 'bootstrap-sass', '~> 3.3.6'
-gem 'sass-rails', '>= 3.2'
-```
-
-```bash
-bundle install
-```
-
-### css のファイル名を.css から .scssに変更
-
-```bash
-mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss
-```
-
-
-### SCSSを編集
-
-```bash
-nano app/assets/stylesheets/application.scss
-```
-
-最後に以下を追加
-
-```
-@import "bootstrap-sprockets";
-@import "bootstrap"; 
-```
-
-以下は削除
-
-```bash
-*= require_self
-*= require_tree .
-```
-
-### application.js を修正
-
-```bash
-app/assets/javascripts/application.js
-```
-
-以下を追加する
-
-```javascript
-//= require jquery
-//= require bootstrap-sprockets
-```
-
-### サーバー再起動
-
-
-```bash
-rails s -b 0.0.0.0
-```
-
-確認後，ctr-c で停止
-
-## deviseによるユーザ管理のテスト
-
-```bash
-nano Gemfile
-```
-
-以下を追加
-
-```ruby
-gem 'devise'
-```
-
-```bash
-bundle install
-```
-
-### devise のジェネレーター
-
-```bash
-rails g devise:install
-```
-
-### deviseの Userモデルの作成
-
-```bash
-rails g devise User
-
-rails db:migrate
-```
-
-### サーバ起動テスト
-
-
-```bash
-rails s -b 0.0.0.0
-```
-
-接続確認
-
-```
-http://<ホストIP>:3000/users/sign_in
-```
-
-「NoMethodError」や「Routing Error」が出ている場合は、Rails（Puma）を再起動させてからアクセスする

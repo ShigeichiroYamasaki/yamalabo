@@ -1,7 +1,6 @@
 # tapyrusrb
 
-
-2022/05/06
+最終更新 2022/07/20 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 

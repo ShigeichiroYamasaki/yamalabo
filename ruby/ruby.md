@@ -1,11 +1,9 @@
 # Ruby インストール方法
 
-2022/05/20 Shigeichiro Yamasaki
+最終更新　2022/07/20 Shigeichiro Yamasaki
 
 推奨バージョン変更
-Ruby 2.7.5 -> 2.7.5
-
-2.7.6 ではbitcoinrbでエラーが起きることがあります
+Ruby 2.7.5 -> 3.1.2
 
 ## MacOSXでのインストール
 
@@ -105,14 +103,11 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 
 #### バージョンを指定してインストール
 
-最新の3.X.X バージョンは高速ですが、安定していないことがあります。
-
-2.7.5 を推奨することにします。
 
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 2.7.5
+rbenv install 3.1.2
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -121,17 +116,9 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 2.7.5
+rbenv global 3.1.2
 source .zshrc 
 ```
-
-Rubyのバージョンの確認
-
-```bash
-ruby -v
-ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [x86_64-linux]
-```
-
 
 ## Ubuntuでのインストール
 
@@ -203,13 +190,10 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 
 #### バージョンを指定してインストール
 
-最新の3.X.X バージョンは高速ですが、安定していないことがあります。
-ここでは、2.7.5 を利用することにします。
-
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 2.7.5
+rbenv install 3.1.2
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -218,13 +202,8 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 2.7.5
+rbenv global 3.1.2
 source .bashrc 
 ```
 
-Rubyのバージョンの確認
 
-```bash
-ruby -v
-ruby 2.7.5p219 (2022-04-12 revision c9c2245c0a) [x86_64-linux]
-```
