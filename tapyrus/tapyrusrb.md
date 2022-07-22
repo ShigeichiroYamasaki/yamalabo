@@ -1,6 +1,6 @@
 # tapyrusrb
 
-最終更新 2022/07/20 Shigeichiro Yamasaki
+最終更新 2022/07/22 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 
@@ -227,7 +227,7 @@ color3 = rt["color"]
 
 # 10分後
 
-nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color2}
+nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color3}
 => 
 [{"txid"=>"669a3062518dc15beaed588748e055474a4feec8e279dc15c3742614713ce716",
   "vout"=>0,                   
@@ -242,7 +242,58 @@ nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color2}
   "safe"=>true}]  
 ```
 
+### カラー付きアドレスの生成
 
+UTXOからカラーの一覧を出す
+
+```ruby
+def colors
+  utxos=tapyrusRPC('listunspent',[])
+  return utxos.map{|x|x["token"]}.uniq
+end
+
+c=colors
+
+=> 
+["TPC",                          
+ "c2c61090ce2cc17b30b2234355dcf4baa7a212f12dcbbed4facccc08e3984ad446",
+ "c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1",
+ "c26a15e5ade9c5c137e04ce7e200b3a9566dcefb403781221794e9471145738cb2",
+ "c1265b7a6ce4237625f4bbbb2bcc03bd8cc5d0b1574ae17d0d452afd483eabb51d"]
+```
+
+カラー付きアドレスを生成する
+
+```ruby
+addrNRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[1]])
+=> "vt8xz9MePQj3DrCR4xCBU2E1N64mRHRreSX7t6b4g9FzVMRhyG6KarYNkgtg8FhVTpHLBpcspNsNAP"
+addrNFT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[2]])
+=> "vw6aD8hZXoNBBLWRehHPBS3QtWZQ2oscdyTD9gucbuS2Wndq61srxpaoHz3fBVeWJcum6GPvis3mbW"
+addrRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[4]])
+=> "vgt1L6fTUm1wjKsbo1Gkipbp74nveakeTRaAMgzwu6VUJapbi7nTb9mwH5vcm4HCDCaDqmp59PB6ke"
+```
+
+### トークンの送付
+
+```ruby
+tt1=tapyrusRPC('transfertoken',[addrNRT1,10])
+
+tt2=tapyrusRPC('transfertoken',[addrNFT1,1])
+
+tt3=tapyrusRPC('transfertoken',[addrRT1,15])
+```
+
+### トランザクションの解析
+
+```ruby
+tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt1])])
+
+tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt2])])
+
+tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt3])])
+```
+
+--
 
 ## Railsプロジェクトの生成
 
