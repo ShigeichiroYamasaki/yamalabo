@@ -54,20 +54,26 @@ Railsアプリを作成するためには、まずモデルを設計する必要
 bitcoin coreなどにはワレット機能があるので、フロントエンドを作成するだけならDB作成は冗長なだけですが、ここではあえて冗長構成にします。
 
 ```
-Wallet: 個人が所有するワレット
-    owner:所有者
+Market: 市場
+    name
 
-Log: 送金履歴
-    date:日時
-    sendto: 送金先アドレス
-    amount: 金額
+Wallet: 個人が所有するワレット
+    market_id
+    owner:所有者
+Token: トークン
+    market_id
+    color: トークンのカラー
+Address:
+    wallet_id:ワレット
+    color: トークンのカラー
 ```
 
 ###  モデル間の関連
 
 ```
-# 一つのワレットには、複数の送金履歴が対応する
-Wallet 1 : n Log    
+Market 1 : n Wallet
+Market 1 : n Token
+Wallet 1 : n Address
 ```
 
 ## Railsプロジェクトの生成
@@ -75,20 +81,37 @@ Wallet 1 : n Log
 アセットパイプラインは使用しません
 
 ```bash
-rails new bitcoin_wallet --skip-sprockets
+rails new tapyrus_wallet --skip-sprockets
 
-cd bitcoin_wallet
+cd tapyrus_wallet
+```
+
+```
 bundle install
 ```
 
 #### scaffold で MVCを生成
 
 ```bash
-rails g scaffold Wallet owner
-rails g scaffold Log date:date sendto amount:float
+rails g scaffold Market name
+rails g scaffold Wallet market_id:integer owner
+rails g scaffold Token market_id:integer color
+rails g scaffold Address wallet_id:integer color
 ```
 
 #### モデル間の関連を定義
+
+* Marketモデル
+
+nano app/models/market.rb 
+
+```ruby
+class Market < ApplicationRecord
+  has_many :wallets
+  has_many :tokens
+end
+```
+
 
 * Walletモデル
 
@@ -96,21 +119,30 @@ nano app/models/wallet.rb
 
 ```ruby
 class Wallet < ApplicationRecord
-    has_many :logs
+  belongs_to :market
+  has_many :addresses
 end
 ```
 
+* Tokenモデル
 
-* Logモデル
-
-nano app/models/log.rb 
+nano app/models/token.rb 
 
 ```ruby
-class Log < ApplicationRecord
-    belongs_to :wallet
+class Token < ApplicationRecord
+  belongs_to :wallet
 end
 ```
 
+* Addressモデル
+
+nano app/models/address.rb 
+
+```ruby
+class Address < ApplicationRecord
+  belongs_to :wallet
+end
+```
 
 ### DB のマイグレーション
 
@@ -126,7 +158,12 @@ rails s -b 0.0.0.0
 
 ### ブラウザから確認
 
-http://<ipアドレス>:3000/wallets
+http://106.157.214.199:3000/markets
 
-確認後，control-c でサーバを停止
+http://192.168.0.247:3000/markets
 
+### QR codeの表示
+
+Google chart API のQR codeジェネレータを利用
+
+<img src="https://chart.apis.google.com/chart?chs=150x150&cht=qr&chl=http://106.157.214.199:3000/markets" alt="Token Market">
