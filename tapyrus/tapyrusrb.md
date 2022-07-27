@@ -300,7 +300,7 @@ tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt3])])
 アセットパイプラインは使用しません
 
 ```bash
-rails new tapyrus_wallet --skip-sprockets -css=bootstrap
+rails new tapyrus_wallet -css=bootstrap
 cd tapyrus_wallet
 ```
 
@@ -313,7 +313,6 @@ nano Gemfile
 ```ruby
 gem "tapyrus"
 gem "json"
-gem "sassc-rails"
 ```
 
 ```
@@ -326,6 +325,9 @@ bundle install
 ```bash
 rails g scaffold Market name
 rails g scaffold Wallet market_id:integer owner
+rails g scaffold Log wallet_id:integer sendto amount color
+rails g scaffold Address wallet_id color address label
+
 ```
 
 #### モデル間の関連を定義
