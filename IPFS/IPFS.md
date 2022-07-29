@@ -30,13 +30,20 @@ cd kubo
 sudo ./install.sh
 ```
 
-確認
+インストール確認
 
 ```bash
 ipfs version
 =>
 ipfs version 0.14.0
 ```
+
+IPFSネットワークへの接続
+
+```bash
+ipfs daemon &
+```
+
 
 ## IPFSへのファイルの追加参照
 
@@ -65,7 +72,7 @@ ls -a
 .bashrc       .ipfs    .ssh      kubo_v0.14.0_linux-amd64.tar.gz  ドキュメント  公開
 ```
 
-メッセージある ipfs cat コマンドを実行してみる
+init した結果の出力メッセージの ipfs cat コマンドをコピーして実行する
 
 ```bash
 ipfs cat /ipfs/QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc/readme
@@ -123,6 +130,8 @@ QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o　は "hello world" のハッシ�
 ### IDからコンテントを表示する
 
 `ipfs cat <ID>`
+
+この例では、'hello world' が表示されれば成功
 
 ```bash
 ipfs cat QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o
@@ -195,7 +204,7 @@ ipfs object get QmbUfTkfmeUjgdjPUs6ayKk2PJBY8sq9CuDXuib821ndZG
 ipfs デーモンの起動　（TCPポート4001を利用）
 
 ```bash
-ipfs daemon
+ipfs daemon &
 =>
 Initializing daemon...
 Kubo version: 0.14.0
@@ -231,10 +240,12 @@ Gateway (readonly) server listening on /ip4/127.0.0.1/tcp/8080
 Daemon is ready
 ```
 
-### 別のターミナルから接続状態を確認
+### ターミナルから接続状態を確認
+
+すごく多数のピアを接続していることがわかる
 
 ```bash
-ipfs swarm peers |tail
+ipfs swarm peers
 =>
 /ip6/2a01:4f8:192:33dd::2/udp/4001/quic/p2p/12D3KooWGNVQ5cEBowFLpDtYGMbfTEXxWEvcwfH51oG17Tpnperw
 /ip6/2a01:4f9:4a:286c::2/udp/4001/quic/p2p/12D3KooWLd7SenSa4qLQ8CCSyH1VxMQxbSPyCVyT2jfpnu9W6DWe
@@ -246,6 +257,8 @@ ipfs swarm peers |tail
 /ip6/2a02:c207:2029:2052:e7ca::6/tcp/4001/p2p/QmZHBBrcBtDk7yVzcNUDJBJsZnVGtPHzpTzu16J7Sk6hbp
 /ip6/2a04:a42:11:0:225:90ff:fea4:32b2/udp/4001/quic/p2p/12D3KooWMgn96XzAKN5gCppChMcqvReQ8NL8fGbTFs3i99F61dBY
 /ip6/2a0d:f302:105:447c::1/udp/4001/quic/p2p/12D3KooWG7XVfNuxGtkRUE8pJ24gPaZkamgip38pcqv27gN34wnC
+
+...
 
 ```
 
