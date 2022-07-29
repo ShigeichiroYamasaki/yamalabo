@@ -18,6 +18,8 @@ DIDの実装の一つであるIONのインストール
 
 ![](https://tsmatz.files.wordpress.com/2020/09/20200904_ion_architecture.jpg?w=829)
 
+引用：https://tsmatz.files.wordpress.com/2020/09/20200904_ion_architecture.jpg?w=829
+
 ## Sidetree
 
  IONは Bitcoin のsidetreeというセカンドレイヤ技術を利用しています
@@ -42,9 +44,19 @@ Blockchain Peer Network , Content-Addressed Storage System（CAS）, Sidetree No
 
 ![](https://techcommunity.microsoft.com/t5/image/serverpage/image-id/196855i991A3EAF0316F716/image-dimensions/659x758?v=1.0)
 
+引用：　https://techcommunity.microsoft.com/t5/identity-standards-blog/ion-booting-up-the-network/ba-p/1441552
+
 ![](https://crypto.watch.impress.co.jp/img/ctw/docs/1184/673/image02_o.jpg)
 
+引用：https://crypto.watch.impress.co.jp/img/ctw/docs/1184/673/image02_o.jpg
+
  ![](https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/ralm4rvhwuv60e1kxnsnxi39mksr/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6)
+ 
+引用：https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/ralm4rvhwuv60e1kxnsnxi39mksr/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6
+
+ ![](https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/aln8jgqb75txsjralygfx3ko4zwp/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6)
+ 
+ 引用: https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE2DjfY 
  
 ## IONのgithub
 
@@ -160,11 +172,6 @@ bitcoin-cli -named createwallet wallet_name="" descriptors=false
   "warning": ""
 }
 ```
-
-
-### bitcoin coreのdatadir
-
-`~/snap/bitcoin-core/common/.bitcoin`
 
 ## IPFSのインストール
 
