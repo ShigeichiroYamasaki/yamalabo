@@ -452,8 +452,19 @@ npm run build
 
 ##  ION Bitcoin microserviceの実行
 
+環境変数の設定
+
+`nano ~/.bashrc`
+
+```
+...
+
+export ION_CORE_CONFIG_FILE_PATH="/home/yamasaki/ion/json/testnet-core-config.json"
+export ION_CORE_VERSIONING_CONFIG_FILE_PATH="/home/yamsaki/ion/json/testnet-core-versioning.json"
+```
+
 ```bash
-cd ion
+cd ~/ion
 npm run bitcoin
 
 =>
@@ -530,9 +541,11 @@ Sending jRPC request: id: hoagcislik, method: importpubkey
 
 bitcoind が動いていることが前提です
 
+
 ```bash
 cd ~/ion
-npm run core
+npm run core &
+
 =>
 > ion@1.0.4 core /home/yamasaki/ion
 > node dist/src/core.js
