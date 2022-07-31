@@ -465,7 +465,7 @@ export ION_CORE_VERSIONING_CONFIG_FILE_PATH="/home/yamsaki/ion/json/testnet-core
 
 ```bash
 cd ~/ion
-npm run bitcoin
+npm run bitcoin &
 
 =>
 
