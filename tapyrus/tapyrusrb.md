@@ -227,7 +227,7 @@ color3 = rt["color"]
 
 # 10分後
 
-nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color3}
+rts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color3}
 => 
 [{"txid"=>"669a3062518dc15beaed588748e055474a4feec8e279dc15c3742614713ce716",
   "vout"=>0,                   

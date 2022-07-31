@@ -1,44 +1,48 @@
 # ION(アイオン）のインストール
 
-最終更新　2022/07/29 Shigeichiro Yamasaki
+最終更新　2022/07/31 Shigeichiro Yamasaki
 
-DIDの実装の一つであるIONのインストール
+DID（Decentralized Identifier）の実装の一つであるIONのインストール
 
 ![](https://github.com/decentralized-identity/ion/raw/master/images/logo.png)
 
 [https://tsmatz.wordpress.com/2020/09/01/did-sidetree-ion/](https://tsmatz.wordpress.com/2020/09/01/did-sidetree-ion/)
+
+開発元のマイクロソフトの解説ページ
+
+ ![](https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/aln8jgqb75txsjralygfx3ko4zwp/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6)
+ 
+ 引用: https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE2DjfY 
 
 ## ION
 
 * IONは bitcoin のブロックチェーンを利用するDIDシステムです
 * Sidetree は、DIDプロトコルです。
 * IONは、Node.js で実装されています。
-* Content Addressable Store にIPFSを利用していて、ポート 5002, 4003を使用します
+* Content Addressable Store にIPFSを利用します。
 * ローカルリポジトリには、MongoDBを使用します
 
 ![](https://tsmatz.files.wordpress.com/2020/09/20200904_ion_architecture.jpg?w=829)
 
 引用：https://tsmatz.files.wordpress.com/2020/09/20200904_ion_architecture.jpg?w=829
 
-## Sidetree
+### Sidetree
 
- IONは Bitcoin のsidetreeというセカンドレイヤ技術を利用しています
+IONは sidetreeというBitcoin のセカンドレイヤ技術を利用しています
 
-#### Sidetree の３要素
+#### Sidetree の３階層とその実装システム
 
-Blockchain Peer Network , Content-Addressed Storage System（CAS）, Sidetree Node
 
 |要素| システム|
 | :--| :--|
-|Blockchain Peer Network | Bitcoin|
 |Content-Addressed Storage System（CAS）|IPFS|
-|Sidetree Node | ION node |
+|Sidetree Node | ION node (Bitcoinのセカンドレイヤ）|
+|Blockchain Peer Network | Bitcoin|
 
 
- 
- * Blockchain Peer Network : DIDやそれに付随したDID SubjectやDID Documentを保存するための基盤
- * Content-Addressed Storage System（CAS）: データとポインタをリンクして保存し、一定期間に渡ってデータの更新や修正を行うことができないストレージシステム（Content-Addressed Storage Systemのエンドポイント情報はブロックチェーン上に固定されて保存）
- * Sidetree Node : DID Documentに対するオペレーション(作成、解決、更新、削除等)を行うためのプログラム
+ * Content-Addressed Storage System（CAS）: データをポインタでリンクして保存するストレージシステム。（CASのエンドポイント情報はブロックチェーン上に固定されて保存される）
+ * Sidetree Node : DID Documentに対するオペレーション(作成、解決、更新、削除等)を行うためのプログラム（パグリックブロックチェーンのセカンドレイヤ）
+ * Blockchain Peer Network : DIDやそれに付随するDID SubjectやDID Documentを保存するための改ざん耐性を持つパブリックブロックチェーンによる基盤
 
 
 
@@ -46,17 +50,6 @@ Blockchain Peer Network , Content-Addressed Storage System（CAS）, Sidetree No
 
 引用：　https://techcommunity.microsoft.com/t5/identity-standards-blog/ion-booting-up-the-network/ba-p/1441552
 
-![](https://crypto.watch.impress.co.jp/img/ctw/docs/1184/673/image02_o.jpg)
-
-引用：https://crypto.watch.impress.co.jp/img/ctw/docs/1184/673/image02_o.jpg
-
- ![](https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/ralm4rvhwuv60e1kxnsnxi39mksr/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6)
- 
-引用：https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/ralm4rvhwuv60e1kxnsnxi39mksr/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6
-
- ![](https://d10nlab-prd-app-image.s3.ap-northeast-1.amazonaws.com/variants/aln8jgqb75txsjralygfx3ko4zwp/a995f8972e5d6d5993e5c77cbd8550c80b3681f3919a95feea65027a8c801bf6)
- 
- 引用: https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE2DjfY 
  
 ## IONのgithub
 
@@ -66,7 +59,7 @@ Blockchain Peer Network , Content-Addressed Storage System（CAS）, Sidetree No
 
 [sidetree](https://github.com/decentralized-identity/sidetree)
 
-## インストールの準備
+## インストールの準備（ubuntu 20.04LTS)
 
 ```bash
 sudo apt install -y snap snapd
@@ -154,7 +147,7 @@ cd ~
 bitcoin-core.daemon &
 ```
 
-IDBの完了まで待つ（２〜３時間）
+IBD の完了まで待つ（testnetの場合２〜３時間、mainnet の場合は1日くらい）
 
 
 ## bitcoin core の名前無しワレットの生成
@@ -535,9 +528,10 @@ Sending jRPC request: id: hoagcislik, method: importpubkey
 
 ## ION core サービスの起動
 
-別のターミナルから
+bitcoind が動いていることが前提です
 
 ```bash
+cd ~/ion
 npm run core
 =>
 > ion@1.0.4 core /home/yamasaki/ion
