@@ -6,35 +6,57 @@
 
 ストーリーとしては、Alice が所持している （デポジットしている）TPCを BobがBTCで購入するイメージです
 
-### 双方向のHTLC
+* 秘密情報は Bob (bitcoinでTPCを購入する人）が生成し、そのハッシュ値をAliceに伝えます
+* Bobは、その同じハッシュ値で bitcoin をロックしたHTLCロックトランザクションをブロードキャストします。
+* Aliceはそのハッシュ値でTPCをロックしたHTLCロックトランザクションをブロードキャストします。
+* ロックされたTPCをアンロックするために、Bobは秘密情報を埋め込んだトランザクションをブロードキャストしなければなりません
+* Aliceは、ブロードキャストされた秘密情報を入手し、bitcoinのHTLCロックトランザクションをアンロックします。
+
+## 双方向のHTLC
 
 * Alice: Tapyrus
 * Bob : bitcoin
 
-Alice, Bob, Carol は別マシンで実行することが望ましい。
+Alice, Bobは別マシンで実行することが望ましい。
 同じマシンでも別ターミナルで実施する
 
-#### HTLCでAlice からBobに送金しようとする
+### Alice とBobの事前準備
 
-* HTLC ロックトランザクションのブロードキャストまで
+アドレス、鍵、UTXOを準備しておく
 
-#### HTLCでBob からAliceへも送金しようとする
+### BobがAliceに秘密情報のハッシュ値をおしえる
 
-* HTLC ロックトランザクションのブロードキャストまで
+* Bobが秘密情報を生成する →　ここでは　'DAO24hChallenge'　とします
+* Bobが秘密情報のハッシュ値を生成して、Aliceに伝える
+* Bobの公開鍵もAliceに伝える
+* AliceはBobにAliceの公開鍵を伝える
 
-#### BobがCarolから秘密情報を得てアンロックする
+### Bob は Aliceへ bitcoin を送金しようとする
+
+* Bobがbitcoin のHTLC ロックトランザクションを作成
+* ブロードキャストまで行う
+
+### Alice からBobに TPC を送金しようとする
+
+* Aliceが TPCのHTLC ロックトランザクションを作成
+* ブロードキャストまで行う
+
+### BobがCarolから秘密情報を得てアンロックする
 
 * HTLCアンロックトランザクションをブロードキャストする
 
-#### Alice が秘密情報を見つける
+### Alice が秘密情報を見つける
 
-* Aliceは、HTLCアンロックトランザクションの中を解析して秘密情報を得る
+* Aliceは、ブロックチェーンをモニタする
+* 秘密情報のハッシュ値を含むHTLCアンロックトランザクションを見つけると
+* トランザクションから秘密情報を得る
 
-#### 秘密情報を得たAliceがHTLCアンロックトランザクションを作成する
+### 秘密情報を得たAliceがHTLCアンロックトランザクションを作成する
 
-* Alice がHTLCアンロックトランザクションをブロードキャストしてBobからの資金を得る
+* Alice がHTLCアンロックトランザクションをブロードキャストしてBobからのbitcoinの資金を得る
 
-## Aliceの準備
+
+## Aliceの準備(Tapyrus)
 
 Alice用ターミナルで実行
 
@@ -70,316 +92,342 @@ keyAlice=Tapyrus::Key.from_wif(privAlice)
 
 # Aliceの公開鍵
 pubkeyAlice = keyAlice.pubkey
-=> "02c1573c7683efd2146af199311fc2b36179e8fb5a8bd39965abb27e14ad16e27b"
 
-
-# Aliceに送金しておく (0.0002)のUTXOを4個
+# Aliceに送金してUTXOを用意する
 tapyrusRPC('sendtoaddress',[addrAlice, 0.0003])
 tapyrusRPC('sendtoaddress',[addrAlice, 0.0004])
+tapyrusRPC('sendtoaddress',[addrAlice, 0.0005])
+tapyrusRPC('sendtoaddress',[addrAlice, 0.0006])
+tapyrusRPC('sendtoaddress',[addrAlice, 0.0007])
 
 # 10分後（マイニングされるのを待つ）
 ```
 
 
+## Bobの準備(bitcoin)
 
+Bob用ターミナルで実行
 
+```ruby
+require 'bitcoin'
+require 'net/http'
+require 'json'
+include Bitcoin::Opcodes
 
+Bitcoin.chain_params = :signet
 
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
 
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
 
+# Bobのアドレス生成
+addrBob = bitcoinRPC("getnewaddress", [])
 
+# Bobの秘密鍵
+privBob = bitcoinRPC("dumpprivkey", [addrBob])
 
+# Bobの鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyBob = Bitcoin::Key.from_wif(privBob)
 
+# Bobの公開鍵
+pubkeyBob = keyBob.pubkey
+=> 
+"037344b60d92625fb2b1f903c959eae0c5ac07a98f4f5d89c00fb2cfafe36d51d3"
 
+# Bobに送金しておく (0.0002)のUTXOを4個
+bitcoinRPC('sendtoaddress',[addrBob, 0.0003])
+bitcoinRPC('sendtoaddress',[addrBob, 0.0004])
+bitcoinRPC('sendtoaddress',[addrBob, 0.0005])
+bitcoinRPC('sendtoaddress',[addrBob, 0.0006])
+bitcoinRPC('sendtoaddress',[addrBob, 0.0007])
 
-
-
-## tapyrusrb WiKi
-
-開発者の安土さんによる Wikiです。
-基本的な使用法は、ここでわかります。
-
-[https://github.com/chaintope/tapyrusrb/wiki](https://github.com/chaintope/tapyrusrb/wiki)
-
-## tapyrusrb のクラスとメソッドの一覧
-
-[https://www.rubydoc.info/gems/tapyrus/0.3.0](https://www.rubydoc.info/gems/tapyrus/0.3.0)
-
-## インストール方法
-
-###  install LevelDB
-
-for Ubuntu
-
-```bash
-sudo apt-get install libleveldb-dev
+# 10分後（マイニングされるのを待つ）
 ```
 
-for Mac
+## BobがAliceに秘密情報のハッシュ値をおしえる
 
-```bash
-brew install --build-from-source leveldb
+* Bobが秘密情報を生成する →　ここでは　'DAO24hChallenge'　とします
+* Bobが秘密情報のハッシュ値を生成して、Aliceに伝える
+* Bobの公開鍵もAliceに伝える
+* AliceはBobにAliceの公開鍵を伝える
+
+```ruby
+# 秘密情報
+secret = 'DAO24hChallenge'
+# 秘密情報のハッシュ値
+secret_hash=Bitcoin.sha256(secret).bth
+=> "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
 ```
 
-共通
+### BobからAliceへ
 
-```bash
-gem install leveldb-ruby
+```ruby
+# Bobの公開鍵
+pubkeyBob = "037344b60d92625fb2b1f903c959eae0c5ac07a98f4f5d89c00fb2cfafe36d51d3"
+# 秘密情報のハッシュ値
+secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
 ```
 
-```bash
-gem install tapyrus
+### Alice から Bobへ
+
+```ruby
+# Aliceの公開鍵
+pubkeyAlice = "0223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e985"
 ```
 
-## tapyrus core を起動しておく
+## Bob は Aliceへ bitcoin を送金しようとする (bitcoin)
 
-### tapyrus RPC
+* Bobがbitcoin のHTLC ロックトランザクションを作成
+* ブロードキャストまで行う
 
 
 ```ruby
-require 'tapyrus'
-require 'json'
-include Tapyrus
-include Tapyrus::Opcodes
+# key　鍵オブジェクト
+# secret_hash 秘密情報のハッシュ値
+# pubkey 送金先の公開鍵
+# deposit HTLCでロックする資金の金額
+# fee　手数料
+# lockDays ロック時間
 
-Tapyrus.chain_params = :prod
-
-# tapyrus-cli コマンドのフルパス
-Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
-
-# RPC
-def tapyrusRPC(method,params)
-    r=`#{Tapyrus_cli} #{method} #{params.join(' ')}`.chomp
-    begin
-        return JSON.parse(r)
-    rescue JSON::ParserError
-        return r
+def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays)
+    balance = bitcoinRPC('getbalance',[])
+    utxos=bitcoinRPC('listunspent',[]).select{|x| x["address"]==key.to_p2wpkh}
+    unless (deposit > balance) or (utxos == []) then
+        # AliceのUTXOと残高を確認（とりあえず最初の Aliceのアドレス宛のUTXOを利用することにする）
+        utxoAmount = utxos[0]["amount"]
+        utxoVout = utxos[0]["vout"]
+        utxoTxid = utxos[0]["txid"]
+        utxoScriptPubKey = utxos[0]["scriptPubKey"]
+        # <ロックするブロック数> 10日間のブロック数（リトルエンディアン）
+        locktime = (6*24*lockDays).to_bn.to_s(2).reverse.bth
+        # redeem script
+        redeem_script = Bitcoin::Script.new << OP_IF << OP_SHA256 << secret_hash << OP_EQUALVERIFY << pubkey.htb << OP_ELSE << locktime << OP_CSV << OP_DROP << key.pubkey.htb << OP_ENDIF << OP_CHECKSIG
+        # HTLCロックトランザクションの scriptPubKey
+        scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_script.to_sha256}")
+        # P2WSH アドレスの生成
+        p2wshaddr = scriptPubKey_p2wsh.to_addr
+        # お釣り
+        change= utxoAmount-deposit-fee
+        # それぞれの金額をSatoshiに変換
+        utxoAmount_satoshi = (utxoAmount * (10**8)).to_i
+        deposit_satoshi = (deposit *  (10**8)).to_i
+        change_satoshi = (change *  (10**8)).to_i
+        # トランザクションテンプレートの生成
+        tx = Bitcoin::Tx.new
+        # inputの作成
+        tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(utxoTxid, utxoVout))
+        # デポジット用　P2WSH outputの作成
+        tx.out << Bitcoin::TxOut.new(value: deposit_satoshi, script_pubkey:  Bitcoin::Script.parse_from_addr(p2wshaddr))
+        # おつり用のP2WPKH outputの作成
+        tx.out << Bitcoin::TxOut.new(value: change_satoshi , script_pubkey:  Bitcoin::Script.parse_from_addr(key.to_p2wpkh))
+        # UTXOのロックを解除するために、UTXOのScript Public key を取得
+        utxo_scriptPubKey = Bitcoin::Script.parse_from_payload(utxoScriptPubKey.htb)
+        # sighashを作成
+        sighash = tx.sighash_for_input(0, utxo_scriptPubKey, sig_version: :witness_v0, amount: utxoAmount_satoshi)
+        # Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
+        signature = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+        # witness 領域にAliceのsighash へ署名をプッシュする
+        tx.in[0].script_witness.stack << signature
+        # witness 領域にAliceの公開鍵（バイナリ形式）をプッシュする
+        tx.in[0].script_witness.stack <<  key.pubkey.htb
+        # Aliceによる、完成したHTLCロックトランザクションのブロードキャスト
+        return [tx, redeem_script.to_hex]
+    else
+        puts "you don't have enough funds for deposit"
     end
 end
 ```
 
-### 実行確認
+### HTLC ロックトランザクションの生成とredeem_scriptの生成
 
 ```ruby
-balance = tapyrusRPC('getbalance',[])
-=> 29.12661982
+lockTx, redeem_script  = create_HTCL_lock_transaction(keyBob, secret_hash, pubkeyAlice, 0.0005, 0.00002, 10)
 
-utxos = tapyrusRPC('listunspent',[])
-=> 
-[{"txid"=>"47556d8f51fd5bc5d39eb0d50fd881fd26b0351c8ec39f094a8c6a5966080b27",
-...
-
-alice = tapyrusRPC('getnewaddress',['alice'])
-=> "1Aq7soZtCEuaHkjExL9kTWQPsJGW1REb8e"
-
-txid = tapyrusRPC('sendtoaddress',[alice, 0.001])
-=> "aa5b4c6607d4a33e0d2ece8d27ba29c3bca4ee387c67bd6c91aa758dd8b131b5"
-
-tx = tapyrusRPC('gettransaction',[txid])
+redeem_script
+=> "63a82023ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c1588210223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e9856702a005b27521027b14d72f48077413ca77ace53c900fa2c4fbc4465f8025e244044cd1ebb72dc168ac"
 ```
 
-### UTXOの作成
-
-とりあえず10個に分割し
-その後さらにに50個に分割する
+### HTLC ロックトランザクションのブロードキャスト
 
 ```ruby
-def newutxo(amount)
-    address=tapyrusRPC('getnewaddress',["user#{rand(10000)}"])
-    txid=tapyrusRPC('sendtoaddress',[address, amount])
-    puts txid
+lockTx_txid = bitcoinRPC('sendrawtransaction',[lockTx.to_hex])
+
+# HTLCロックトランザクションのトランザクションID（Bobにわたす）
+htcl_lockTx_txid 
+=> 
+"1501924bac50fc8f66367179f4f669921e9e2eb273b0a642b43c7e9fc026fe7a"
+```
+
+### BobはAlice に redeem_scriptを渡す
+
+Alice側の処理
+
+```ruby
+redeem_script_Bob = "63a82023ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c1588210223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e9856702a005b27521027b14d72f48077413ca77ace53c900fa2c4fbc4465f8025e244044cd1ebb72dc168ac"
+```
+
+## Alice からBobに TPC を送金しようとする (Tapyrus)
+
+* Aliceが TPCのHTLC ロックトランザクションを作成
+* ブロードキャストまで行う
+
+
+```ruby
+# key　鍵オブジェクト
+# secret_hash 秘密情報のハッシュ値
+# pubkey 送金先の公開鍵
+# deposit HTLCでロックする資金の金額
+# fee　手数料
+# lockDays ロック時間
+# お釣り用アドレス
+
+def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays, addr)
+    balance = tapyrusRPC('getbalance',[])
+    utxos= tapyrusRPC('listunspent',[]).select{|x| x["address"]==addr}
+    unless (deposit > balance) or (utxos == []) then
+        # AliceのUTXOと残高を確認（とりあえず最初の Aliceのアドレス宛のUTXOを利用することにする）
+        utxoAmount = utxos[0]["amount"]
+        utxoVout = utxos[0]["vout"]
+        utxoTxid = utxos[0]["txid"]
+        utxoScriptPubKey = utxos[0]["scriptPubKey"]
+        # <ロックするブロック数> 10日間のブロック数（リトルエンディアン）
+        locktime = (6*24*lockDays).to_bn.to_s(2).reverse.bth
+        # redeem script
+        redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash << OP_EQUALVERIFY << pubkey.htb << OP_ELSE << locktime << OP_CSV << OP_DROP << key.pubkey.htb << OP_ENDIF << OP_CHECKSIG
+        # HTLCロックトランザクションの scriptPubKey
+        scriptPubKey_p2sh=redeem_script.to_p2sh
+        # P2SH アドレスの生成
+        p2shaddr = scriptPubKey_p2sh.addresses[0]
+        # お釣り
+        change= utxoAmount-deposit-fee
+        # それぞれの金額をSatoshiに変換
+        utxoAmount_satoshi = (utxoAmount * (10**8)).to_i
+        deposit_satoshi = (deposit *  (10**8)).to_i
+        change_satoshi = (change *  (10**8)).to_i
+        # トランザクションテンプレートの生成
+        tx = Tapyrus::Tx.new
+        # inputの作成
+        tx.in << Tapyrus::TxIn.new(out_point: Tapyrus::OutPoint.from_txid(utxoTxid, utxoVout))
+        # デポジット用　P2SH outputの作成
+        tx.out << Tapyrus::TxOut.new(value: deposit_satoshi, script_pubkey:  Tapyrus::Script.parse_from_addr(p2shaddr))
+        # おつり用のP2PKH outputの作成
+        tx.out << Tapyrus::TxOut.new(value: change_satoshi , script_pubkey:  Tapyrus::Script.parse_from_addr(addr))
+        # UTXOのロックを解除するために、UTXOのScript Public key を取得
+        utxo_scriptPubKey = Tapyrus::Script.parse_from_payload(utxoScriptPubKey.htb)
+        # sighashを作成
+        sighash = tx.sighash_for_input(0, utxo_scriptPubKey, amount: utxoAmount_satoshi)
+        # Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
+        signature = key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+        # script_sig 領域にAliceのsighash へ署名をプッシュする
+        tx.in[0].script_sig << signature
+        # script_sig 領域にAliceの公開鍵（バイナリ形式）をプッシュする
+        tx.in[0].script_sig <<  key.pubkey.htb
+        # Aliceによる、完成したHTLCロックトランザクションのブロードキャスト
+        return [tx, redeem_script.to_hex]
+    else
+        puts "you don't have enough funds for deposit"
+    end
 end
-
-6.times do newutxo(0.1) end
-
-# 20分後(10分後ではまだUTXOになっていません）
-50.times do newutxo(0.01) end
-
-# さらに10分待つ
 ```
 
-### トークン発行
-
-使用するUTXO
+### HTLC ロックトランザクションとredeem_scriptの生成
 
 ```ruby
-# TPCトークンを選択
-tpcs = tapyrusRPC('listunspent',[]).select{|x|x["token"]=="TPC"}
+lockTx, redeem_script  = create_HTCL_lock_transaction(keyAlice, secret_hash, pubkeyBob, 0.0005, 0.00002, 10, addrAlice)
 
-=> 
-{"txid"=>"1659e271e8fabd50e07f2a41873ce033d4c65ed236f768b017299a98b4b4400d",
- "vout"=>0,
- "address"=>"1Aq7soZtCEuaHkjExL9kTWQPsJGW1REb8e",
- "token"=>"TPC",
- "amount"=>0.001,
- "label"=>"alice",
- "scriptPubKey"=>"76a9146bd2d6835c85f0f4beb6641861c60df138d1c9f588ac",
- "confirmations"=>1,
- "spendable"=>true,
- "solvable"=>true,
- "safe"=>true}
-
+redeem_script
+=> "63a82023ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c158821037344b60d92625fb2b1f903c959eae0c5ac07a98f4f5d89c00fb2cfafe36d51d36702a005b275210223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e98568ac"
 ```
 
-#### Non-Reissuable Token の発行
+### HTLC ロックトランザクションのブロードキャスト
 
 ```ruby
-def mint_NRT(amount)
-    tpcs = tapyrusRPC('listunspent',[]).select{|x|x["token"]=="TPC"}
-    # NRTの発行
-    nrt = tapyrusRPC('issuetoken',[2, amount, tpcs[0]["txid"], tpcs[0]["vout"]])
-end
-
-# 1000トークン発行
-nrt=mint_NRT(1000)
-
-=> 
-{"color"=>"c26a15e5ade9c5c137e04ce7e200b3a9566dcefb403781221794e9471145738cb2",
- "txid"=>"c95295be03d965bd31ebf699c7c9b0923d81afe0d172e5b5b6d48e56bd597c5a"}
-```
-
-NRTトークンのcolorとUTXOの確認
-
-```ruby
-color1 = nrt["color"]
-
-# 10分後
-
-nrts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color1}
-=> 
-[{"txid"=>"c95295be03d965bd31ebf699c7c9b0923d81afe0d172e5b5b6d48e56bd597c5a",
-  "vout"=>0,                   
-  "address"=>"4ZqfnakPgRvbWtEwnywDfoTkfENr4teS45dVnBfuZgRYfL9BYSRtMP8KczL14PWKYufac4rnn4fwxa7",
-  "token"=>"c26a15e5ade9c5c137e04ce7e200b3a9566dcefb403781221794e9471145738cb2",
-  "amount"=>1000,              
-  "scriptPubKey"=>             
-   "21c26a15e5ade9c5c137e04ce7e200b3a9566dcefb403781221794e9471145738cb2bca914186460b6b034f6c76c6fe57483a5737326cca13387",           
-  "confirmations"=>4,
-  "spendable"=>true,
-  "solvable"=>true,
-  "safe"=>true}] 
+ lockTx_txid = tapyrusRPC('sendrawtransaction',[lockTx.to_hex])
+=> "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c6"
 ```
 
 
-#### NFTの発行
+### BobがCarolから秘密情報を使って AliceのHTLCロックトランザクションをアンロックする
 
-```ruby
-def mint_NFT
-    tpcs = tapyrusRPC('listunspent',[]).select{|x|x["token"]=="TPC"}
-    # NFTの発行
-    nft = tapyrusRPC('issuetoken',[3, 1, tpcs[0]["txid"], tpcs[0]["vout"]])
-end
-
-# NFT発行
-nft=mint_NFT
-```
-
-NFTトークンのcolorとUTXOの確認
-
-```ruby
-color2 = nft["color"]
-
-# 10分後
-
-nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color2}
-=> 
-[{"txid"=>"669a3062518dc15beaed588748e055474a4feec8e279dc15c3742614713ce716",
-  "vout"=>0,                   
-  "address"=>"4Zw7sGTmZHgkfS8L1VSe7nz1Mpq4YjE2XfXqhWbJ8gQGoZ1FSkLjTJqkw24BNjTvg7QxYRie15a1dvw",
-  "token"=>"c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1",
-  "amount"=>1,                 
-  "scriptPubKey"=>             
-   "21c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1bca914e0af93c9eb8494e9ddbd63a3b839bf718856d6c687",           
-  "confirmations"=>3,          
-  "spendable"=>true,
-  "solvable"=>true,
-  "safe"=>true}]  
-```
-
-#### Reissuable Token の発行
+* HTLCアンロックトランザクションを作成する
+* HTLCアンロックトランザクションをブロードキャストする
 
 
 ```ruby
-def mint_RT(amount)
-    tpcs = tapyrusRPC('listunspent',[]).select{|x|x["token"]=="TPC"}
-    # NFTの発行
-    rt = tapyrusRPC('issuetoken',[1, amount, tpcs[0]["scriptPubKey"]])
-end
-
-# RT発行
-rt=mint_RT(1000)
 ```
 
-RTトークンのcolorとUTXOの確認
+
+### Alice が秘密情報を見つける
+
+* Aliceは、ブロックチェーンをモニタする
+* 秘密情報のハッシュ値を含むHTLCアンロックトランザクションを見つけると
+* トランザクションから秘密情報を得る
+
 
 ```ruby
-color3 = rt["color"]
-
-# 10分後
-
-rts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color3}
-=> 
-[{"txid"=>"669a3062518dc15beaed588748e055474a4feec8e279dc15c3742614713ce716",
-  "vout"=>0,                   
-  "address"=>"4Zw7sGTmZHgkfS8L1VSe7nz1Mpq4YjE2XfXqhWbJ8gQGoZ1FSkLjTJqkw24BNjTvg7QxYRie15a1dvw",
-  "token"=>"c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1",
-  "amount"=>1,                 
-  "scriptPubKey"=>             
-   "21c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1bca914e0af93c9eb8494e9ddbd63a3b839bf718856d6c687",           
-  "confirmations"=>3,          
-  "spendable"=>true,
-  "solvable"=>true,
-  "safe"=>true}]  
 ```
 
-### カラー付きアドレスの生成
 
-UTXOからカラーの一覧を出す
+### 秘密情報を得たAliceがHTLCアンロックトランザクションを作成する
+
+* Alice がHTLCアンロックトランザクションをブロードキャストしてBobからのbitcoinの資金を得る
+
 
 ```ruby
-def colors
-  utxos=tapyrusRPC('listunspent',[])
-  return utxos.map{|x|x["token"]}.uniq
-end
-
-c=colors
-
-=> 
-["TPC",                          
- "c2c61090ce2cc17b30b2234355dcf4baa7a212f12dcbbed4facccc08e3984ad446",
- "c3335194a791210d8fe60d5f3c767f238b410c115c708c987098ffd61d56bf25e1",
- "c26a15e5ade9c5c137e04ce7e200b3a9566dcefb403781221794e9471145738cb2",
- "c1265b7a6ce4237625f4bbbb2bcc03bd8cc5d0b1574ae17d0d452afd483eabb51d"]
 ```
 
-カラー付きアドレスを生成する
 
-```ruby
-addrNRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[1]])
-=> "vt8xz9MePQj3DrCR4xCBU2E1N64mRHRreSX7t6b4g9FzVMRhyG6KarYNkgtg8FhVTpHLBpcspNsNAP"
-addrNFT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[2]])
-=> "vw6aD8hZXoNBBLWRehHPBS3QtWZQ2oscdyTD9gucbuS2Wndq61srxpaoHz3fBVeWJcum6GPvis3mbW"
-addrRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[4]])
-=> "vgt1L6fTUm1wjKsbo1Gkipbp74nveakeTRaAMgzwu6VUJapbi7nTb9mwH5vcm4HCDCaDqmp59PB6ke"
-```
 
-### トークンの送付
 
-```ruby
-tt1=tapyrusRPC('transfertoken',[addrNRT1,10])
 
-tt2=tapyrusRPC('transfertoken',[addrNFT1,1])
 
-tt3=tapyrusRPC('transfertoken',[addrRT1,15])
-```
 
-### トランザクションの解析
 
-```ruby
-tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt1])])
 
-tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt2])])
 
-tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt3])])
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
