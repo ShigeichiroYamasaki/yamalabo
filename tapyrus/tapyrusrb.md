@@ -1,6 +1,6 @@
 # tapyrusrb
 
-最終更新 2022/07/22 Shigeichiro Yamasaki
+最終更新 2022/08/03 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 
@@ -55,7 +55,7 @@ include Tapyrus::Opcodes
 Tapyrus.chain_params = :prod
 
 # tapyrus-cli コマンドのフルパス
-Tapyrus_cli ='/home/yamalabo/tapyrus-core-0.5.1/bin/tapyrus-cli'
+Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
 
 # RPC
 def tapyrusRPC(method,params)
@@ -413,4 +413,112 @@ nano app/views/layouts/application.html.erb
 <div>
   <%= link_to "近畿大学Tokenマーケットプレイス", markets_path(1) %>
 </div>
+```
+
+## Tapyrus でHTCL
+
+```ruby
+# AliceとBobのアドレス
+addrAlice = tapyrusRPC('getnewaddress',['alice'])
+addrBob = tapyrusRPC('getnewaddress',['bob'])
+
+# 秘密鍵（WIF形式）
+privAlice = tapyrusRPC('dumpprivkey',[addrAlice])
+
+privBob = tapyrusRPC('dumpprivkey',[addrBob])
+
+# 鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyAlice=Tapyrus::Key.from_wif(privAlice)
+keyBob=Tapyrus::Key.from_wif(privBob)
+
+
+addrAlice = keyAlice.to_p2wpkh
+addrBob = keyBob.to_p2wpkh
+
+# Aliceに送金しておく (0.003)
+tapyrusRPC('sendtoaddress',[addrAlice, 0.003])
+
+# AliceのUTXOと残高を確認（とりあえず最初の Alice宛のUTXOを利用することにする）
+utxos=tapyrusRPC('listunspent',[]).select{|x| x["address"]==addrAlice}
+
+# 10分後
+# UTXO
+utxoAmount = utxos[0]["amount"]
+utxoVout = utxos[0]["vout"]
+utxoTxid = utxos[0]["txid"]
+utxoScriptPubKey = utxos[0]["scriptPubKey"]
+```
+
+秘密情報はCarolが生成するものとします。
+
+<Secret> ：秘密情報　
+
+この説明では　HTLC_test　とします。
+
+script処理のテスト(OP_SHA256の検証)
+
+```ruby
+# <Secretの OP_SHA256 ハッシュ値>
+secret='HTLC_test'
+secret_hash=Tapyrus.sha256(secret)
+
+# scriptのテスト
+ts = Tapyrus::Script.new << secret.bth << OP_SHA256 << secret_hash << OP_EQUAL
+ts.run
+
+# => true
+```
+
+redeem script
+
+```ruby
+# <ロックするブロック数> 10日間のブロック数（リトルエンディアン）
+locktime = (6*24*10).to_bn.to_s(2).reverse.bth
+# => "a005"
+
+# redeem script
+redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash << OP_EQUALVERIFY << keyBob.pubkey.htb << OP_ELSE << locktime << OP_CSV << OP_DROP << keyAlice.pubkey.htb << OP_ENDIF << OP_CHECKSIG
+
+# redeem scriptの内容の確認
+redeem_script.to_h
+
+=> 
+{:asm=>                                  
+  "OP_IF OP_SHA256 996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357 OP_EQUALVERIFY 02a17901ec79e6931d5b8639c83caee889e1c70a77f685259df98e206ed42fad35 OP_ELSE 1440 OP_CSV OP_DROP 0244d425d7b9e17decb5d876ee0fee53e51d60bd9f05c20d3954e639a3eea71fa7 OP_ENDIF OP_CHECKSIG",
+ :hex=>
+  "63a820996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357882102a17901ec79e6931d5b8639c83caee889e1c70a77f685259df98e206ed42fad356702a005b275210244d425d7b9e17decb5d876ee0fee53e51d60bd9f05c20d3954e639a3eea71fa768ac",
+ :type=>"nonstandard"}
+
+# 秘密情報 Sのハッシュ値(16進数形式)
+secret_hash.bth
+#=> "996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357"
+```
+
+HTLCロックトランザクションの scriptPubKey
+
+P2WSHのscriptPubKeyは，以下の形式になる
+
+`0 <redeem scriptの SHA256ハッシュ>`
+
+Tapyrus::Script オブジェクトの to_payload メソッドでバイナリを得ることができるので，そのSHA256ハッシュをとる
+
+```ruby
+scriptPubKey_p2wsh = Tapyrus::Script.from_string("0 #{redeem_script.to_sha256}")
+
+scriptPubKey_p2wsh.to_h
+
+=> 
+{:asm=>"0 515edfd5d28179a89fc46cba5b720a5f6da99f758970c994086edbacad6f3135",
+ :hex=>"0020515edfd5d28179a89fc46cba5b720a5f6da99f758970c994086edbacad6f3135",
+ :type=>"nonstandard"}
+```
+
+✗　P2WSH アドレスの生成
+
+```ruby
+p2wshaddr = scriptPubKey_p2wsh.to_addr
+```
+
+```ruby
+pubkeyBob = keyBob.pubkey
 ```
