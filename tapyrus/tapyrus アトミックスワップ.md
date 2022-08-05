@@ -1,8 +1,98 @@
-# tapyrusrb
+# Tapyrus と Bitcoin の間でアトミックスワップ
 
 最終更新 2022/08/05 Shigeichiro Yamasaki
 
-Tapyrus API をRuby から操作する rubygemsの基本
+とりあえず Tapyrus側のトークンは、TPCとします
+
+ストーリーとしては、Alice が所持している （デポジットしている）TPCを BobがBTCで購入するイメージです
+
+### 双方向のHTLC
+
+* Alice: Tapyrus
+* Bob : bitcoin
+
+Alice, Bob, Carol は別マシンで実行することが望ましい。
+同じマシンでも別ターミナルで実施する
+
+#### HTLCでAlice からBobに送金しようとする
+
+* HTLC ロックトランザクションのブロードキャストまで
+
+#### HTLCでBob からAliceへも送金しようとする
+
+* HTLC ロックトランザクションのブロードキャストまで
+
+#### BobがCarolから秘密情報を得てアンロックする
+
+* HTLCアンロックトランザクションをブロードキャストする
+
+#### Alice が秘密情報を見つける
+
+* Aliceは、HTLCアンロックトランザクションの中を解析して秘密情報を得る
+
+#### 秘密情報を得たAliceがHTLCアンロックトランザクションを作成する
+
+* Alice がHTLCアンロックトランザクションをブロードキャストしてBobからの資金を得る
+
+## Aliceの準備
+
+Alice用ターミナルで実行
+
+```ruby
+require 'tapyrus'
+require 'json'
+include Tapyrus
+include Tapyrus::Opcodes
+
+Tapyrus.chain_params = :prod
+
+# tapyrus-cli コマンドのフルパス
+Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
+
+# RPC
+def tapyrusRPC(method,params)
+    r=`#{Tapyrus_cli} #{method} #{params.join(' ')}`.chomp
+    begin
+        return JSON.parse(r)
+    rescue JSON::ParserError
+        return r
+    end
+end
+
+# Aliceのアドレス生成
+addrAlice = tapyrusRPC("getnewaddress", [])
+
+# Aliceの秘密鍵
+privAlice = tapyrusRPC("dumpprivkey", [addrAlice])
+
+# Aliceの鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyAlice=Tapyrus::Key.from_wif(privAlice)
+
+# Aliceの公開鍵
+pubkeyAlice = keyAlice.pubkey
+=> "02c1573c7683efd2146af199311fc2b36179e8fb5a8bd39965abb27e14ad16e27b"
+
+
+# Aliceに送金しておく (0.0002)のUTXOを4個
+tapyrusRPC('sendtoaddress',[addrAlice, 0.0003])
+tapyrusRPC('sendtoaddress',[addrAlice, 0.0004])
+
+# 10分後（マイニングされるのを待つ）
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## tapyrusrb WiKi
 
