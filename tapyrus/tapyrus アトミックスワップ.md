@@ -1,18 +1,18 @@
 # Tapyrus と Bitcoin の間でアトミックスワップ
 
-最終更新 2022/08/06 Shigeichiro Yamasaki
+最終更新 2022/08/07 Shigeichiro Yamasaki
 
-* Tapyrus側のトークンは、TPCとします
-* ストーリーは、Alice が所持している （デポジットしている）TPCを Bobが bitcoin で購入するというものです。
+* Tapyrus側のトークンは、TPCとします（ほかのトークンでもOK)
+* Alice の TPCを Bobが bitcoin で購入する。
 * 秘密情報は Bob (bitcoinでTPCを購入する人）が生成し、そのハッシュ値をAliceに伝えます
 
 --
 
-1. Bobは、そのハッシュ値で bitcoin をロックした HTLCロックトランザクションを作成、ブロードキャストします。（bitcoinのがロック状態になります）
+1. Bobは、秘密情報のハッシュ値で bitcoin をロックした HTLCロックトランザクションを作成、ブロードキャストします。（bitcoinがロック状態になります）
 2. Aliceも、そのハッシュ値で TPC をロックした HTLCロックトランザクションを作成し、ブロードキャストします。（TPCがロック状態になります）
-3. Bobは、ロック状態のTPCをアンロックするために、秘密情報（ハッシュ値の原像）を埋め込んだ HTLCアンロックトランザクションを作成し、ブロードキャストします。これによってTPCを入手します。
+3. Bobは、ロック状態のTPCをアンロックするために、秘密情報（ハッシュ値の原像）を埋め込んだ HTLCアンロックトランザクションを作成し、ブロードキャストします。これによってBobは Alice のTPCを入手します。
 4. Aliceは、Bobによって TapyrusネットワークにブロードキャストされたHTLCアンロックトランザクションから、秘密情報（ハッシュ値の原像）を入手します。
-5. Aliceは、秘密情報（ハッシュ値の原像）を使って bitcoin の HTLCアンロックトランザクションを作成し、ブロードキャストします。これによって bitcoin を入手します。
+5. Aliceは、秘密情報（ハッシュ値の原像）を使って bitcoin の HTLCアンロックトランザクションを作成し、ブロードキャストします。これによって Bobは代金の bitcoin を入手します。
 
 ![](./images/tapyrus-swap01.png)
 
@@ -134,7 +134,6 @@ require 'bitcoin'
 require 'net/http'
 require 'json'
 include Bitcoin::Opcodes
-
 Bitcoin.chain_params = :signet
 
 HOST="localhost"
@@ -230,9 +229,8 @@ bitcoinRPC('sendtoaddress',[addrBobBC, 0.0007])
 
 * Bobが秘密情報を生成する →　ここでは　'DAO24hChallenge'　とします
 * Bobが秘密情報のハッシュ値を生成して、Aliceに伝える
-* Bobの公開鍵もAliceに伝える
-* AkuceはBobにAliceのアドレスを伝える
-* AliceはBobにAliceの公開鍵を伝える
+
+BobBC
 
 ```ruby
 # 秘密情報
@@ -242,80 +240,96 @@ secret_hash=Bitcoin.sha256(secret).bth
 => "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
 ```
 
-### BobからAliceへ (bitcoin -> Tapyrus)
-
-BobBC
-
-```ruby
-# Bobの公開鍵
-pubkeyBobBC
-=> "02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754"
-
-#設定
-pubkeyAliceBC = "029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1"
-```
-
 BobTP
 
 ```ruby
-# Bobの公開鍵
-pubkeyBobTP
-=> "03a19529f0c86628b5b4f027b2e0430fd13540595a90cbebf9797dad933cd6dc86"
-```
-
-AliceTP
-
-```ruby
-# Bobの公開鍵
-pubkeyBobTP = "03a19529f0c86628b5b4f027b2e0430fd13540595a90cbebf9797dad933cd6dc86"
-# 秘密情報のハッシュ値
 secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
 ```
 
 AliceBC
 
 ```ruby
-# AliceBCの公開鍵
-pubkeyAliceBC
-=> "029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1"
-
-# Bobの公開鍵
-pubkeyBobBC = "02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754"
-# 秘密情報のハッシュ値
 secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+```
+
+AliceTP
+
+```ruby
+secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+```
+
+## 4. Bobの公開鍵をAliceに伝え、Aliceの公開鍵をBobに伝える
+
+(bitcoin -> bitcoin)
+
+BobBC
+
+```ruby
+# Bobの公開鍵
+pubkeyBobBC
+=> "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
+```
+
+AliceBC
+
+```ruby
+pubkeyBobBC = "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
+
+# Aliceの公開鍵
+pubkeyAliceBC
+=> "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
 ```
 
 BobBC
 
 ```ruby
-#設定
-pubkeyAliceBC = "029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1"
+pubkeyAliceBC = "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
 ```
 
-### Alice から Bobへ (Tapyrus -> bitcoin)
+(Tapyrus -> Tapyrus)
 
-Tapyrus側
+BobTP
 
 ```ruby
+# Bobの公開鍵
+pubkeyBobTP
+=> "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
+```
+
+AliceTP
+
+```ruby
+pubkeyBobTP = "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
+
 # Aliceの公開鍵
-pubkeyAlice
-=> "035e3e797153be07b3997e2bf97fc9db9fe1f15cd968e7921f50f25c01d569a3ae"
-```
-bitcoin側
-
-```ruby
-pubkeyAlice = "035e3e797153be07b3997e2bf97fc9db9fe1f15cd968e7921f50f25c01d569a3ae" 
+pubkeyAliceTP
+=> "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
 ```
 
-## 4. Bob は Aliceへ bitcoin を送金しようとする (bitcoin) BobBC
-
-* Bobがbitcoin のHTLC ロックトランザクションを作成
-* ブロードキャストまで行う
-
+BobTP
 
 ```ruby
-# key　鍵オブジェクト key=keyBobBC
-# secret_hash 秘密情報のハッシュ値 secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+pubkeyAliceTP = "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
+```
+
+公開鍵の確認
+
+```ruby
+pubkeyBobBC = "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
+pubkeyBobTP = "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
+pubkeyAliceTP = "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
+pubkeyAliceBC = "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
+```
+
+## 5. Bob は Aliceへ bitcoin を送金しようとする (bitcoin) BobBC
+
+### 5.1  HTLC ロックトランザクション作成メソッド　(bitcoin)
+
+BobBC
+
+```ruby
+# key　鍵オブジェクト 
+# secret_hash 秘密情報のハッシュ値 
 # pubkey 送金先の公開鍵
 # deposit HTLCでロックする資金の金額
 # fee　手数料
@@ -370,42 +384,53 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
 end
 ```
 
-### 4.1 HTLC ロックトランザクションの生成とredeem_scriptの生成 (bitcoin) BobBC
+### 5.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (bitcoin) 
 
+BobBC
 
 ```ruby
-lockTx, redeem_script  = create_HTCL_lock_transaction(keyBobBC, secret_hash, pubkeyAliceBC, 0.0005, 0.00002, 10)
+# HTLC ロックトランザクションの生成
+lockTx, redeem_scriptBC  = create_HTCL_lock_transaction(keyBobBC, secret_hash, pubkeyAliceBC, 0.0003, 0.00002, 10)
 
-redeem_script.to_h[:asm]
-irb(main):147:0> redeem_script.to_h[:asm]
-
-=> "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1 OP_ELSE 1440 OP_CSV OP_DROP 02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754 OP_ENDIF OP_CHECKSIG"             
+# redeem_scriptの確認
+redeem_scriptBC.to_h[:asm]
+=> "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480 OP_ELSE 1440 OP_CSV OP_DROP 03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272 OP_ENDIF OP_CHECKSIG"            
 ```
 
-### 4.2 HTLC ロックトランザクションのブロードキャスト (bitcoin) BobBC
+### 5.3 HTLC ロックトランザクションのブロードキャスト (bitcoin) 
+
+BobBC
 
 ```ruby
-lockTx_txid = bitcoinRPC('sendrawtransaction',[lockTx.to_hex])
+# HTLC ロックトランザクションのブロードキャスト 
+lockTx_txidBC = bitcoinRPC('sendrawtransaction',[lockTx.to_hex])
 
-# HTLCロックトランザクションのトランザクションID（Bobにわたす）
-htcl_lockTx_txid 
+# HTLCロックトランザクションのトランザクションID
+lockTx_txidBC 
 => 
-"8425ee07a9053bc3fc796f9cf92bb21b5fbea4648d49890f4bf96dc8b88f9f2e"
+"bb5ac459a1a4157b08ff32fa27927eeacdbd2d5f816bbb4dffd7e3a8f6f94902"
 ```
 
-### 4.3 BobはAlice に redeem_scriptを渡す (bitcoin -> Tapyrus)
 
-Alice側の処理 AliceBC
+### 5.4 BobはAlice に redeem_scriptとトランザクションIDを渡す (bitcoin)
+
+AliceBC
 
 ```ruby
-redeem_script_BobBC_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1 OP_ELSE 1440 OP_CSV OP_DROP 02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754 OP_ENDIF OP_CHECKSIG" 
+# redeem_scriptのasm文字列
+redeem_scriptBC_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1 OP_ELSE 1440 OP_CSV OP_DROP 02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754 OP_ENDIF OP_CHECKSIG"
+# redeem_scriptの復元
+redeem_scriptBC = Bitcoin::Script.from_string(redeem_scriptBC_asm)
+
+# HTLCロックトランザクションのトランザクションID
+lockTx_txidBC = "bb5ac459a1a4157b08ff32fa27927eeacdbd2d5f816bbb4dffd7e3a8f6f94902"
 ```
 
-## 5. Alice からBobに TPC を送金しようとする (Tapyrus)
+## 6. Alice からBobに TPC を送金しようとする (Tapyrus) 
 
-* Aliceが TPCのHTLC ロックトランザクションを作成
-* ブロードキャストまで行う
+### 6.1  HTLC ロックトランザクション作成メソッド (Tapyrus)
 
+AliceTP
 
 ```ruby
 # key　鍵オブジェクト
@@ -416,9 +441,9 @@ redeem_script_BobBC_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841
 # lockDays ロック時間
 # お釣り用アドレス
 
-def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays, addr)
+def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays)
     balance = tapyrusRPC('getbalance',[])
-    utxos= tapyrusRPC('listunspent',[]).select{|x| x["address"]==addr}
+    utxos= tapyrusRPC('listunspent',[]).select{|x| x["address"]==key.to_p2pkh}
     unless (deposit > balance) or (utxos == []) then
         # AliceのUTXOと残高を確認（とりあえず最初の Aliceのアドレス宛のUTXOを利用することにする）
         utxoAmount = utxos[0]["amount"]
@@ -446,7 +471,7 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
         # デポジット用　P2SH outputの作成
         tx.out << Tapyrus::TxOut.new(value: deposit_satoshi, script_pubkey:  Tapyrus::Script.parse_from_addr(p2shaddr))
         # おつり用のP2PKH outputの作成
-        tx.out << Tapyrus::TxOut.new(value: change_satoshi , script_pubkey:  Tapyrus::Script.parse_from_addr(addr))
+        tx.out << Tapyrus::TxOut.new(value: change_satoshi , script_pubkey:  Tapyrus::Script.parse_from_addr(key.to_p2pkh))
         # UTXOのロックを解除するために、UTXOのScript Public key を取得
         utxo_scriptPubKey = Tapyrus::Script.parse_from_payload(utxoScriptPubKey.htb)
         # sighashを作成
@@ -465,53 +490,203 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
 end
 ```
 
-### 5.1 HTLC ロックトランザクションとredeem_scriptの生成 (tapyrus)
+### 6.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (tapyrus)
+
+AliceTP
 
 ```ruby
-lockTx, redeem_script  = create_HTCL_lock_transaction(keyAlice, secret_hash, pubkeyBob, 0.0005, 0.00002, 10, addrAlice)
+# HTLC ロックトランザクションの生成
+lockTx, redeem_scriptTP  = create_HTCL_lock_transaction(keyAliceTP, secret_hash, pubkeyBobTP, 0.0005, 0.00002, 10)
 
-redeem_script.to_h[:asm]
-WARNING: Bitcoin::Script#addresses is deprecated. Use Bitcoin::Script#to_addr instead.
-=> "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 0223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e985 OP_ELSE 1440 OP_CSV OP_DROP 027b14d72f48077413ca77ace53c900fa2c4fbc4465f8025e244044cd1ebb72dc1 OP_ENDIF OP_CHECKSIG"                
+# redeem_script
+redeem_scriptTP.to_h[:asm]
+=> "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73 OP_ELSE 1440 OP_CSV OP_DROP 02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b OP_ENDIF OP_CHECKSIG"           
 ```
 
-### 5.2 HTLC ロックトランザクションのブロードキャスト (tapyrus)
+### 6.3 HTLC ロックトランザクションのブロードキャスト (tapyrus)
+
+AliceTP
 
 ```ruby
- lockTx_txid = tapyrusRPC('sendrawtransaction',[lockTx.to_hex])
+# HTLC ロックトランザクションのブロードキャスト
+lockTx_txidTP = tapyrusRPC('sendrawtransaction',[lockTx.to_hex])
 => "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c6"
 ```
 
+### 6.4 Alice はBob に redeem_scriptとトランザクションIDを渡す (Tapyrus)
 
-## 6. BobがCarolから秘密情報を使って AliceのHTLCロックトランザクションをアンロックする (bitcoin)
-
-* HTLCアンロックトランザクションを作成する
-* HTLCアンロックトランザクションをブロードキャストする
-
-
-* Bobは、秘密情報を知っている
-* Aliceから redeem script をもらう
-* Aliceから　HTLCロックトランザクションの トランザクションIDをもらう（ブロックチェーンで検出してもよい）
+BobTP
 
 ```ruby
-# 秘密情報
+# redeem_scriptのasm文字列
+redeem_scriptTP_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73 OP_ELSE 1440 OP_CSV OP_DROP 02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b OP_ENDIF OP_CHECKSIG"
+
+# redeem_scriptの復元
+redeem_scriptTP = Bitcoin::Script.from_string(redeem_scriptTP_asm)
+
+# HTLCロックトランザクションのトランザクションID
+lockTx_txidTP = "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c6"
+```
+
+
+## 7. Bobが秘密情報を使って AliceのHTLCロックトランザクションをアンロックする (Tapyrus)
+
+### 7.1 HTLCアンロックトランザクション作成メソッド(Tapyrus)
+
+BobTP
+
+```ruby
+# 秘密情報（Bobは知っている）
 secret
 
-# redeem script
-redeem_script = "63a82023ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c158821037344b60d92625fb2b1f903c959eae0c5ac07a98f4f5d89c00fb2cfafe36d51d36702a005b275210223e1fe76cf8c0ef4c4531a71d14d7e4d3010d34324ba1ad934122ebe35c2e98568ac"
+# redeem_script
+redeem_scriptTP
 
 # HTLCロックトランザクションの トランザクションID
-lockTx_txid = "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c6"
+lockTx_txidTP
 ```
 
 ```ruby
-def unlock_HTLC_transaction(secret, redeem_script_asm, htcl_lockTx_txid, keyBob, fee)
-    # redeem scriptの復元
-    redeem_script = Bitcoin::Script.from_string(redeem_script_asm)
+def unlock_HTLC_transaction(secret, redeem_scriptTP, lockTx_txidTP, key, fee)
     # HTLCロックトランザクションを得る
-    htlc_tx = bitcoinRPC('decoderawtransaction',[ bitcoinRPC('getrawtransaction',[htcl_lockTx_txid])])
+    htlc_tx = bitcoinRPC('decoderawtransaction',[ bitcoinRPC('getrawtransaction',[lockTx_txidTP])])
     # HTLCロックトランザクションの scriptPubKey
-    scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_script.to_sha256}")
+    scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_scriptTP.to_sha256}")
+    # HTLCロックトランザクションのP2WSHアドレス
+    p2wshaddr = scriptPubKey_p2wsh.to_addr
+    # アンロックの対象となるUTXO のvout
+    lockTx_vout=0
+    # アンロックの対象となるUTXO のデポジット金額
+    deposit=htlc_tx["vout"][0]["value"]
+    # 報酬金額
+    reward = deposit-fee
+    # satoshi 変換
+    deposit_satoshi = (deposit * (10**8)).to_i
+    reward_satoshi = (reward* (10**8)).to_i
+    
+    # トランザクションテンプレートの生成
+    tx = Bitcoin::Tx.new
+    # inputの作成
+    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(lockTx_txid, lockTx_vout))
+    # 報酬用のP2WPKH outputの作成
+    tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(key.to_p2wpkh))
+    # sighashを作成
+    sighash = tx.sighash_for_input(0, redeem_script, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
+    # SHIGHASH_TYPE ALLでBobが署名
+    signature = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+    tx.in[0].script_sig << signature
+    tx.in[0].script_sig << secret
+    tx.in[0].script_sig << [1].pack("C")
+    tx.in[0].script_sig << redeem_script.to_payload
+    return tx
+end
+```
+
+### 7.2 BobがHTLC アンロックトランザクションの生成 (Tapyrus)
+
+BobTP
+
+```ruby
+unlock_tx = unlock_HTLC_transaction(secret,redeem_scriptTP, lockTx_txid, keyBobTP, 0.00002)
+```
+
+### 7.3 BobがHTLC アンロックトランザクションをブロードキャスト (Tapyrus)
+
+BobTP
+
+```ruby
+# HTLC アンロックトランザクションのブロードキャスト
+unlockTx_txid = bitcoinRPC('sendrawtransaction',[unlock_tx.to_hex])
+
+unlockTx_txid
+=> 
+"4df0f17d418c1e913369e5cdf83c6f047a4156274a2336ffc282837187a30fd2"
+```
+
+## 8. Alice がTapyrusブロックチェーンを観測して秘密情報を見つける (Tapyrus)
+
+* Bobがブロードキャストした秘密情報のハッシュ値を含むHTLCアンロックトランザクションを見つけ
+* そのランザクションから秘密情報を得る
+
+### 8.1 redeem_scriptに秘密情報のハッシュ値を含むものを見つける
+
+AliceTP
+
+```ruby
+# 秘密情報のハッシュ値
+secret_hash
+
+# メモリープール内のトランザクションで、redeem_scriptに秘密情報のハッシュ値を含むものを見つける
+
+def watch_mempool(secret_hash)
+    txids = tapyrusRPC('getrawmempool',[])
+    txids.select{|txid|
+        begin
+            Tapyrus::Script.parse_from_payload(
+                Tapyrus::Tx.parse_from_payload(
+                    tapyrusRPC('getrawtransaction',[txid]).htb
+                ).inputs[0].script_witness.stack[3]
+            ).to_h[:asm].split(' ')[2]==secret_hash
+        rescue
+            false
+        end
+    }
+end
+
+# 監視ループ
+
+def watch_loop(secret_hash,sec)
+    r=[]
+    while r==[]
+        r=watch_mempool(secret_hash)
+        sleep sec
+        print "*"
+    end
+    return r[0]
+end
+
+# 10秒ごとに監視する
+txid = watch_loop(secret_hash,10)
+```
+
+### 8.2 HTLCアンロックトランザクションから秘密情報を見つける
+
+AliceTP
+
+```ruby
+def find_secret(txid)
+    Tapyrus::Tx.parse_from_payload(tapyrusRPC('getrawtransaction',[txid]).htb).inputs[0].script_sig.chunks[1]
+end
+
+secret =find_secret(txid)
+```
+
+## 9 AliceがBobがブロードキャストした秘密情報を使って BobのHTLCロックトランザクションをアンロックする (bitcoin)
+
+これによって、AliceはTPCトークンの代金をbitcoinで回収することができます。
+
+### 9.1 HTLCアンロックトランザクション作成メソッド
+
+AliceBC
+
+```ruby
+# 秘密情報 (Tapyrusブロックチェーンから得た）
+secret = 'DAO24hChallenge'
+
+# redeem script
+redeem_scriptBC
+
+# HTLCロックトランザクションの トランザクションID
+lockTx_txidBC = "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c6"
+
+```
+
+```ruby
+def unlock_HTLC_transaction(secret, redeem_scriptBC, lockTx_txidBC, key, fee)
+    # HTLCロックトランザクションを得る
+    htlc_tx = bitcoinRPC('decoderawtransaction',[ bitcoinRPC('getrawtransaction',[lockTx_txidBC])])
+    # HTLCロックトランザクションの scriptPubKey
+    scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_scriptBC.to_sha256}")
     # HTLCロックトランザクションのP2WSHアドレス
     p2wshaddr = scriptPubKey_p2wsh.to_addr
     # アンロックの対象となるUTXO のvout
@@ -526,18 +701,18 @@ def unlock_HTLC_transaction(secret, redeem_script_asm, htcl_lockTx_txid, keyBob,
     # トランザクションテンプレートの生成
     tx = Bitcoin::Tx.new
     # inputの作成
-    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(htcl_lockTx_txid, htcl_lockTx_vout))
+    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(lockTx_txidBC, htcl_lockTx_vout))
     # 報酬用のP2WPKH outputの作成
-    tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(keyBob.to_p2wpkh))
+    tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(key.to_p2wpkh))
     # sighashを作成
-    sighash = tx.sighash_for_input(0, redeem_script, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
+    sighash = tx.sighash_for_input(0, redeem_scriptBC, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
     # SHIGHASH_TYPE ALLでBobが署名
-    sigBob = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
+    sigBob = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
     tx.in[0].script_witness.stack << sigBob
     # witness scriptの追加
     tx.in[0].script_witness.stack << secret
     tx.in[0].script_witness.stack << [1].pack("C")
-    tx.in[0].script_witness.stack << redeem_script.to_payload
+    tx.in[0].script_witness.stack << redeem_scriptBC.to_payload
     return tx
 end
 
@@ -546,7 +721,7 @@ end
 ### HTLC アンロックトランザクションの生成 (bitcoin)
 
 ```ruby
-unlock_tx = unlock_HTLC_transaction(secret, redeem_script_asm, htcl_lockTx_txid, keyBob, 0.00002)
+unlock_tx = unlock_HTLC_transaction(secret, redeem_scriptBC, lockTx_txidBC, keyAlice, 0.00002)
 ```
 
 ### HTLC アンロックトランザクションのブロードキャスト (bitcoin)
@@ -557,154 +732,6 @@ htcl_unlockTx_txid
 => 
 "4df0f17d418c1e913369e5cdf83c6f047a4156274a2336ffc282837187a30fd2"
 ```
-
-
-
-
-
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 7. Alice が秘密情報を見つける
-
-* Aliceは、ブロックチェーンをモニタする
-* 秘密情報のハッシュ値を含むHTLCアンロックトランザクションを見つけると
-* トランザクションから秘密情報を得る
-
-
-```ruby
-```
-
-
-## 8. 秘密情報を得たAliceがHTLCアンロックトランザクションを作成する
-
-* Alice がHTLCアンロックトランザクションをブロードキャストしてBobからのbitcoinの資金を得る
-
-
-* Carolから、秘密情報をもらう
-* Aliceから redeem script をもらう
-* Aliceから　HTLCロックトランザクションの トランザクションIDをもらう
-
-```ruby
-# 秘密情報
-secret='HTLC_test'
-```
-
-```ruby
-# redeem script
-redeem_script_asm = "OP_IF OP_SHA256 996bf59473947d9906275f427ecb318371514db2ffb8e9d8517b5e45cb65e357 OP_EQUALVERIFY 037344b60d92625fb2b1f903c959eae0c5ac07a98f4f5d89c00fb2cfafe36d51d3 OP_ELSE 1440 OP_CSV OP_DROP 021cbe42a46b34eded4242666648275f866c836257888607d611bce7eb85b15238 OP_ENDIF OP_CHECKSIG"
-
- # HTLCロックトランザクションの トランザクションID
-htcl_lockTx_txid = "1501924bac50fc8f66367179f4f669921e9e2eb273b0a642b43c7e9fc026fe7a"
-```
-
-```ruby
-def unlock_HTLC_transaction(secret, redeem_script_asm, htcl_lockTx_txid, keyBob, fee)
-    # redeem scriptの復元
-    redeem_script = Bitcoin::Script.from_string(redeem_script_asm)
-    # HTLCロックトランザクションを得る
-    htlc_tx = bitcoinRPC('decoderawtransaction',[ bitcoinRPC('getrawtransaction',[htcl_lockTx_txid])])
-    # HTLCロックトランザクションの scriptPubKey
-    scriptPubKey_p2wsh = Bitcoin::Script.from_string("0 #{redeem_script.to_sha256}")
-    # HTLCロックトランザクションのP2WSHアドレス
-    p2wshaddr = scriptPubKey_p2wsh.to_addr
-    # アンロックの対象となるUTXO のvout
-    htcl_lockTx_vout=0
-    # アンロックの対象となるUTXO のデポジット金額
-    deposit=htlc_tx["vout"][0]["value"]
-    # 報酬金額
-    reward = deposit-fee
-    # satoshi 変換
-    deposit_satoshi = (deposit * (10**8)).to_i
-    reward_satoshi = (reward* (10**8)).to_i
-    # トランザクションテンプレートの生成
-    tx = Bitcoin::Tx.new
-    # inputの作成
-    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(htcl_lockTx_txid, htcl_lockTx_vout))
-    # 報酬用のP2WPKH outputの作成
-    tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(keyBob.to_p2wpkh))
-    # sighashを作成
-    sighash = tx.sighash_for_input(0, redeem_script, sig_version: :witness_v0, amount: deposit_satoshi, hash_type: Bitcoin::SIGHASH_TYPE[:all])
-    # SHIGHASH_TYPE ALLでBobが署名
-    sigBob = keyBob.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
-    tx.in[0].script_witness.stack << sigBob
-    # witness scriptの追加
-    tx.in[0].script_witness.stack << secret
-    tx.in[0].script_witness.stack << [1].pack("C")
-    tx.in[0].script_witness.stack << redeem_script.to_payload
-    return tx
-end
-
-```
-
-### HTLC アンロックトランザクションの生成
-
-```ruby
-unlock_tx = unlock_HTLC_transaction(secret, redeem_script_asm, htcl_lockTx_txid, keyBob, 0.00002)
-```
-
-### HTLC アンロックトランザクションのブロードキャスト
-
-```ruby
-htcl_unlockTx_txid = bitcoinRPC('sendrawtransaction',[unlock_tx.to_hex])
-htcl_unlockTx_txid
-=> 
-"4df0f17d418c1e913369e5cdf83c6f047a4156274a2336ffc282837187a30fd2"
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
