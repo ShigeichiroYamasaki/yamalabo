@@ -1,6 +1,6 @@
 # Tapyrus と Bitcoin の間でアトミックスワップ
 
-最終更新 2022/08/05 Shigeichiro Yamasaki
+最終更新 2022/08/06 Shigeichiro Yamasaki
 
 * Tapyrus側のトークンは、TPCとします
 * ストーリーは、Alice が所持している （デポジットしている）TPCを Bobが bitcoin で購入するというものです。
