@@ -1,6 +1,6 @@
 # tapyrusrbでHTLC
 
-最終更新 2022/08/12 Shigeichiro Yamasaki
+最終更新 2022/09/04 Shigeichiro Yamasaki
 
 tapyrusrb を使ってP2SH の送金と受領を行うトランザクションを作成する
 
@@ -10,12 +10,12 @@ tapyrusrb を使ってP2SH の送金と受領を行うトランザクション�
 ### HTLCのunlocking script
 
 ```
-HTLC の scriptSig
+        [HTLC の scriptSig]
 <Bobの署名> 
 <Secret> 
 OP_TRUE
 ------------連接--------------
-HTLCの redeem script
+       [HTLCの redeem script] 
 OP_IF
     OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY 
     <Bobの公開鍵>
@@ -72,17 +72,6 @@ keyBobTP=Tapyrus::Key.from_wif(privBobTP)
 pubkeyBobTP= keyBobTP.pubkey
 ```
 
-### UTXOの準備
-
-```ruby
-# Aliceに送金しておく (0.0002)
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0002])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0002])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0002])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0002])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0002])
-```
-
 
 ### 秘密情報
 
@@ -105,7 +94,6 @@ secret_hash=Tapyrus.sha256(secret)
 ts=Tapyrus::Script.new << secret.bth << OP_SHA256 << secret_hash << OP_EQUAL
 ts.run
 # => true
-
 # 失敗するケース
 ts2=Tapyrus::Script.new << secret << OP_SHA256 << secret_hash << OP_EQUAL
 ts2.run
@@ -133,9 +121,7 @@ Alice => Bob の場合
 OP_IF OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY <Bobの公開鍵> OP_ELSE <locktime> OP_CSV OP_DROP <Aliceの公開鍵> OP_ENDIF OP_CHECKSIG
 ```
 
-
-
-### HTLC Lock トランザクション構築送金メソッド
+### HTLC Lock トランザクション構築と送金メソッド
 
 ```ruby
 # secret_hash 秘密情報のハッシュ値
@@ -218,8 +204,24 @@ def make_inputsTP(tx, utxos)
     }
     return tx
 end
-# 実行
+```
+ 
+HTLCトランザクションの構築と送金の実行
+ 
+```ruby
 htlc_lock_txidTP, redeem_scriptTP, p2shaddrTP = send_HTLC_lock_txTP(secret, pubkeyAliceTP, addrAliceTP, pubkeyBobTP, 0.0003, 0.00002, 10)
+
+# HTLCロックトランザクションのトランザクションID
+htlc_lock_txidTP
+=> "9990ac521b697b520eb8d452d0677a385836394eb5acc637958a447c75088431"
+
+# redeem スクリプト
+redeem_scriptTP
+=> "OP_IF OP_SHA256 1d5cfdecd0 OP_EQUALVERIFY 028888d55bd3ad9cee9367b05af1603f34d3350163283374ae13d6c5a05ff13155 OP_ELSE 1440 OP_CSV OP_DROP 023ba7c325ab141a2575d8e18130e94ded9057dd2dc4c0e4acc4423451cf52f6c8 OP_ENDIF OP_CHECKSIG"
+
+# P2SHアドレス
+p2shaddrTP
+=> "3HZ45GVSncJFU8zHQLJxJUCWFpXS3Wk73L"
 ```
 
 ## HTLC アンロックトランザクションの構成
@@ -227,9 +229,9 @@ htlc_lock_txidTP, redeem_scriptTP, p2shaddrTP = send_HTLC_lock_txTP(secret, pubk
 
 ### アンロックのためにBobが知っている（べき）情報
 
-* secret   : 秘密情報 <Secret> (Carolから開示される）
+* secret   : 秘密情報 <Secret> (Aliceからもらう）
 * redeem_scriptTP  : redeem script (Aliceからもらう）
-* htlc_lock_txidTP  : HTLCロックトランザクションの トランザクションID (Aliceからもらう）
+* `htlc_lock_txidTP`  : HTLCロックトランザクションの トランザクションID (Aliceからもらう）
 * fee=0.00002
 
 ### HTLC unlock トランザクション生成メソッド
@@ -258,17 +260,34 @@ def htlc_unlockTP(htlc_lock_txidTP, secret, redeem_scriptTP , addrRSV, keyRSV, f
     signature = keyRSV.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
     tx.in[0].script_sig << signature
     tx.in[0].script_sig << secret.htb
-    tx.in[0].script_sig << [1].pack("C")
-    tx.in[0].script_sig << redeem_script.to_payload
-    return tx
+    tx.in[0].script_sig << Tapyrus::Opcodes::OP_1
+    tx.in[0].script_sig << redeem_script
+    # スクリプトデバッグ用
+    scriptSig=Tapyrus::Script.new
+    scriptSig << signature 
+    scriptSig << secret.htb 
+    scriptSig << Tapyrus::Opcodes::OP_1 
+    scriptSig << redeem_script
+    return [tx, scriptSig, scriptPubKey, redeem_script,signature]
 end
 # 実行
-tx = htlc_unlockTP(htlc_lock_txidTP, secret, redeem_scriptTP , addrBobTP, keyBobTP, 0.00002)
+tx, scriptSig, scriptPubKey, redeem_script,signature = htlc_unlockTP(htlc_lock_txidTP, secret, redeem_scriptTP , addrBobTP, keyBobTP, 0.00002)
 ```
-### unlocking script の確認
+
+### スクリプトのチェック
 
 ```ruby
-tx.inputs[0].script_sig.run
+
+script_pubkey = Tapyrus::Script.to_p2sh(htlc_lock_txidTP)
+
+
+
+tx_checker = Tapyrus::TxChecker.new(tx: tx, input_index: 0, amount: 0.0003)
+interpreter = Tapyrus::ScriptInterpreter.new(flags: Tapyrus::STANDARD_SCRIPT_VERIFY_FLAGS, checker: tx_checker)
+interpreter.verify_script(script_sig, script_pubkey)
+
+
+ts.run
 => true
 ```
 

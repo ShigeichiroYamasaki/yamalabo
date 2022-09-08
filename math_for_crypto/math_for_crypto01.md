@@ -173,7 +173,7 @@ def pow_prime(p,lim):
 #100未満の素数のリスト
 primes=[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
 
-#100未満の素数のリスト
+#100未満の素数のべき乗のリスト
 power_prime = sorted(sum(list(map(lambda x: pow_prime(x,100), primes)),[]))
 
 => [2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41, 43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97]
@@ -198,7 +198,7 @@ end
 #100未満の素数のリスト
 primes=[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
 
-# それぞれの和集合を作成してソートする
+#100未満の素数のべき乗のリスト
 power_prime = primes.map{|p|pow_prime(p,100)}.flatten.sort
 
 => [2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41, 43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97]
@@ -206,8 +206,8 @@ power_prime = primes.map{|p|pow_prime(p,100)}.flatten.sort
 
 #### javascript
 
-```ruby
-# lim未満の素数の冪乗
+```javascript
+// lim未満の素数の冪乗
 function pow_prime(p,lim) {
   let list=[];
   let e=1;
@@ -220,10 +220,10 @@ function pow_prime(p,lim) {
   return list
 }
 
-#100未満の素数のリスト
+// 100未満の素数のリスト
 let primes=[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
 
-# それぞれの和集合を作成してソートする（★javaScriptのsort()は，辞書順序が基本）
+// 100未満の素数のべき乗のリスト（★javaScriptのsort()は，辞書順序が基本）
 let power_prime = primes.map(p=>pow_prime(p,100)).flat().sort((a, b) => a - b);
 
 => [2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41, 43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97]
@@ -288,7 +288,7 @@ end
 
 ```
 
-メモ化を利用した高速化
+Ruby でメモ化を利用した高速化
 
 ```ruby
 def combi_memo(memo,n,r)
@@ -306,9 +306,7 @@ end
 memo={}
 
 (0..100).map{|n|p (0..n).map{|r|combi_memo(memo,n,r)}}
-
 ```
-
 
 #### javascript
 
@@ -352,16 +350,12 @@ range(10).map(n => range(n+1).map(r => combi(n,r)))
 
 ```
 
-
-
-
 ### 課題
 
 縦棒３本のあみだくじを一つ作成します。それをfとします。
 （どのように横線を書いてもいいです）
 同一のf を6回合成したもの f○f○f○f○f○f を作成してください
  f○f○f○f○f○f ＝ e　となることを確認してください 
- 
 
 #### python
 
@@ -412,7 +406,6 @@ f4(f4(f4(f4(f4(f4(a))))))
 
 f5(f5(f5(f5(f5(f5(a))))))
 => ["a", "b", "c"]
-
 ```
 
 #### Ruby
@@ -449,10 +442,9 @@ f5(f5(f5(f5(f5(f5(a))))))
 
 ```
 
-
 #### javascript
 
-```ruby
+```javascript
 const f1=(a)=> [a[0],a[2],a[1]];
 const f2=(a)=> [a[1],a[0],a[2]];
 const f3=(a)=> [a[1],a[2],a[0]];
@@ -483,7 +475,6 @@ f5(f5(f5(f5(f5(f5(a))))))
 => ["a", "b", "c"]
 
 ```
-
 	
 ## 02　線形代数
 
@@ -512,23 +503,21 @@ k=10
 
 # ベクトルの話
 def vector_sum(a,b):
-    return(list(map(sum,zip(a,b)))
+    return list(map(sum,zip(a,b))
 
 # ベクトルの差
 def vector_diff(a,b):
     c=map(lambda x: -x, b)
-    return(list(map(sum,zip(a,c))))
+    return list(map(sum,zip(a,c)))
 
 # ベクトルのスカラー倍
 def vector_scalar(k,a):
-    return(list(map(lambda x: k*x, a)))
+    return list(map(lambda x: k*x, a))
 
 vector_sum(a,b)
 vector_diff(a,b)
 vector_scalar(k,a)
-
 ```
-
 
 #### Ruby
 
@@ -559,7 +548,6 @@ end
 vector_sum(a,b)
 vector_diff(a,b)
 vector_scalar(k,a)
-
 ```
 
 ### 行列の転置
