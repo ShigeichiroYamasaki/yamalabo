@@ -509,7 +509,7 @@ def vector_sum(a,b):
 # ベクトルの差
 def vector_diff(a,b):
     c=map(lambda x: -x, b)
-    return list(map(sum,zip(a,c)))
+    return vector_sum(a,c)
 
 # ベクトルのスカラー倍
 def vector_scalar(k,a):
@@ -533,11 +533,11 @@ def vector_sum(a,b)
 end 
 
 def vector_diff(a,b)
-	a.zip(b).map {|x,y|	x-y}
+	a.zip(b).map {|x,y|x-y}
 end 
 
 def vector_scalar(k,a)
-	a.map {|x|	k*x}
+	a.map {|x|k*x}
 end 
 
 vector_sum(a,b)
