@@ -529,11 +529,11 @@ b=[6,2,-9,3,1,7,2,9]
 k=10
 
 def vector_sum(a,b)
-	a.zip(b).map {|x,y|x+y}
+	a.zip(b).map{|x,y|x+y}
 end 
 
 def vector_diff(a,b)
-	a.zip(b).map {|x,y|x-y}
+	a.zip(b).map{|x,y|x-y}
 end 
 
 def vector_scalar(k,a)
