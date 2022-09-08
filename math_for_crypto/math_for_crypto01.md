@@ -121,6 +121,7 @@ factR(50)
 
 
 javascript の無限多倍長計算
+（整数の最後に n をつける．普通の整数との混在は許されない）
 
 ```javascript
 function factB(n) {
