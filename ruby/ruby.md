@@ -1,6 +1,6 @@
 # Ruby インストール方法
 
-最終更新　2022/07/20 Shigeichiro Yamasaki
+最終更新　2022/10/26 Shigeichiro Yamasaki
 
 推奨バージョン変更
 Ruby 2.7.5 -> 3.1.2
@@ -41,7 +41,7 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 brew update
 brew upgrade
 
-brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl
+brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl rbenv
 ```
 
 #### rbenvのインストール

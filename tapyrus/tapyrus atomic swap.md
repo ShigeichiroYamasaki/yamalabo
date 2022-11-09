@@ -1,6 +1,6 @@
 # Tapyrus と Bitcoin の間でアトミックスワップ
 
-最終更新 2022/08/08 Shigeichiro Yamasaki
+最終更新 2022/11/09 Shigeichiro Yamasaki
 
 * Tapyrus側のトークンは、TPCとします（ほかのトークンでもOK)
 * Alice の TPCを Bobが bitcoin で購入する。
@@ -16,7 +16,7 @@
 
 ![](./images/tapyrus-swap01.png)
 
-### 主体ごとに2つのターミナルが必要なので合計４つのターミナルで作業
+### 主体ごとにターミナルが必要なので2つのターミナルで作業
 
 AliceもBobも、Tapyrus と bitcoin　の双方に主体を持つ必要があります。
 それぞれ次のように名付けます
@@ -26,19 +26,36 @@ AliceもBobも、Tapyrus と bitcoin　の双方に主体を持つ必要があ�
 |Alice| AliceTP|AliceBC|
 |Bob|  BobTP|BobBC|
 
-これを別ターミナルで実施するので、４つのターミナルでコピー、ペーストが必要となる
 
-### レガシーワレットの作成
+### bitcoin のレガシーワレットの作成
+
+最初に作成したとき
 
 ```bash
-bitcoin-core.cli -named createwallet wallet_name=＜ワレット名＞ descriptors=false
+bitcoin-core.cli -named createwallet wallet_name=alice descriptors=false
 ```
+
+```bash
+bitcoin-core.cli -named createwallet wallet_name=bob descriptors=false
+```
+
+再起動後
+
+
+```bash
+bitcoin-core.cli loadwallet ~/snap/bitcoin-core/common/.bitcoin/signet/alice
+```
+
+```bash 
+bitcoin-core.cli loadwallet ~/snap/bitcoin-core/common/.bitcoin/signet/bob
+```
+
 
 ### test用コインの入手
 
 tapyrus , bitcoin ともに faucet からテスト用コインを入手しておきます
 
-## 1.1 AliceTP の準備(Tapyrus)
+## 1.1 AliceTP AliceBCの準備(Tapyrus)(Bitcoin)
 
 AliceTP用ターミナルで実行
 
@@ -47,12 +64,9 @@ require 'tapyrus'
 require 'json'
 include Tapyrus
 include Tapyrus::Opcodes
-
 Tapyrus.chain_params = :prod
-
 # tapyrus-cli コマンドのフルパス
 Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
-
 # RPC
 def tapyrusRPC(method,params)
     r=`#{Tapyrus_cli} #{method} #{params.join(' ')}`.chomp
@@ -62,30 +76,54 @@ def tapyrusRPC(method,params)
         return r
     end
 end
-
 # Aliceのアドレス生成
 addrAliceTP = tapyrusRPC("getnewaddress", [])
-
 # Aliceの秘密鍵
 privAliceTP = tapyrusRPC("dumpprivkey", [addrAliceTP])
-
 # Aliceの鍵オブジェクト(WIF形式の秘密鍵から生成）
 keyAliceTP=Tapyrus::Key.from_wif(privAliceTP)
-
 # Aliceの公開鍵
 pubkeyAliceTP = keyAliceTP.pubkey
-
-# Aliceに送金してUTXOを用意する
+###########################################
+require 'bitcoin'
+require 'net/http'
+require 'json'
+include Bitcoin::Opcodes
+Bitcoin.chain_params = :signet
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
+# Aliceのアドレス生成
+addrAliceBC = bitcoinRPC("getnewaddress", [])
+# Aliceの秘密鍵
+privAliceBC = bitcoinRPC("dumpprivkey", [addrAliceBC])
+# Aliceの鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyAliceBC = Bitcoin::Key.from_wif(privAliceBC)
+# Bobの公開鍵
+pubkeyAliceBC = keyAliceBC.pubkey
+######################################################
+# AliceにTPC送金してUTXOを用意する
 tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0003])
 tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0004])
 tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0005])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0006])
-tapyrusRPC('sendtoaddress',[addrAliceTP, 0.0007])
-
+# AliceにBTC送金しておく (0.0002)のUTXOを4個
+bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0003])
+bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0004])
+bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0005])
 # 10分後（マイニングされるのを待つ）
 ```
 
-## 1.2 BobTP の準備(Tapyrus)
+## 1.2 BobTP,BobBC の準備(Tapyrus)(Bitcoin)
 
 BobTP用ターミナルで実行
 
@@ -94,12 +132,9 @@ require 'tapyrus'
 require 'json'
 include Tapyrus
 include Tapyrus::Opcodes
-
 Tapyrus.chain_params = :prod
-
 # tapyrus-cli コマンドのフルパス
 Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
-
 # RPC
 def tapyrusRPC(method,params)
     r=`#{Tapyrus_cli} #{method} #{params.join(' ')}`.chomp
@@ -109,230 +144,142 @@ def tapyrusRPC(method,params)
         return r
     end
 end
-
 # Bobのアドレス生成
 addrBobTP = tapyrusRPC("getnewaddress", [])
-
 # Bobの秘密鍵
 privBobTP = tapyrusRPC("dumpprivkey", [addrBobTP])
-
 # Bobの鍵オブジェクト(WIF形式の秘密鍵から生成）
 keyBobTP=Tapyrus::Key.from_wif(privBobTP)
-
 # Bobの公開鍵
 pubkeyBobTP = keyBobTP.pubkey
-
-# Bobに送金してUTXOを用意する
+#####################################################
+require 'bitcoin'
+require 'net/http'
+require 'json'
+include Bitcoin::Opcodes
+Bitcoin.chain_params = :signet
+HOST="localhost"
+PORT=38332          # mainnetの場合は 8332
+RPCUSER="hoge"      # bitcoin core RPCユーザ名
+RPCPASSWORD="hoge"  # bitcoin core パスワード
+# bitcoin core RPC を利用するメソッド
+def bitcoinRPC(method, params)
+    http = Net::HTTP.new(HOST, PORT)
+    request = Net::HTTP::Post.new('/')
+    request.basic_auth(RPCUSER, RPCPASSWORD)
+    request.content_type = 'application/json'
+    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
+    JSON.parse(http.request(request).body)["result"]
+end
+# Bobのアドレス生成
+addrBobBC = bitcoinRPC("getnewaddress", [])
+# Bobの秘密鍵
+privBobBC = bitcoinRPC("dumpprivkey", [addrBobBC])
+# Bobの鍵オブジェクト(WIF形式の秘密鍵から生成）
+keyBobBC = Bitcoin::Key.from_wif(privBobBC)
+# Bobの公開鍵
+pubkeyBobBC = keyBobBC.pubkey
+##########################################
+# BobにTPC を送金してUTXOを用意する
 tapyrusRPC('sendtoaddress',[addrBobTP, 0.0003])
 tapyrusRPC('sendtoaddress',[addrBobTP, 0.0004])
 tapyrusRPC('sendtoaddress',[addrBobTP, 0.0005])
-tapyrusRPC('sendtoaddress',[addrBobTP, 0.0006])
-tapyrusRPC('sendtoaddress',[addrBobTP, 0.0007])
-
 # 10分後（マイニングされるのを待つ）
-```
-
-## 2.1 AliceBCの準備(bitcoin)
-
-Bob用ターミナルで実行
-
-```ruby
-require 'bitcoin'
-require 'net/http'
-require 'json'
-include Bitcoin::Opcodes
-Bitcoin.chain_params = :signet
-
-HOST="localhost"
-PORT=38332          # mainnetの場合は 8332
-RPCUSER="hoge"      # bitcoin core RPCユーザ名
-RPCPASSWORD="hoge"  # bitcoin core パスワード
-
-# bitcoin core RPC を利用するメソッド
-def bitcoinRPC(method, params)
-    http = Net::HTTP.new(HOST, PORT)
-    request = Net::HTTP::Post.new('/')
-    request.basic_auth(RPCUSER, RPCPASSWORD)
-    request.content_type = 'application/json'
-    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
-    JSON.parse(http.request(request).body)["result"]
-end
-
-# Bobのアドレス生成
-addrAliceBC = bitcoinRPC("getnewaddress", [])
-
-# Bobの秘密鍵
-privAliceBC = bitcoinRPC("dumpprivkey", [addrAliceBC])
-
-# Bobの鍵オブジェクト(WIF形式の秘密鍵から生成）
-keyAliceBC = Bitcoin::Key.from_wif(privAliceBC)
-
-# Bobの公開鍵
-pubkeyAliceBC = keyAliceBC.pubkey
-
-
-# Bobに送金しておく (0.0002)のUTXOを4個
-bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0003])
-bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0004])
-bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0005])
-bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0006])
-bitcoinRPC('sendtoaddress',[addrAliceBC, 0.0007])
-
-# 10分後（マイニングされるのを待つ）
-```
-
-
-## 2.2 BobBCの準備(bitcoin)
-
-Bob用ターミナルで実行
-
-```ruby
-require 'bitcoin'
-require 'net/http'
-require 'json'
-include Bitcoin::Opcodes
-
-Bitcoin.chain_params = :signet
-
-HOST="localhost"
-PORT=38332          # mainnetの場合は 8332
-RPCUSER="hoge"      # bitcoin core RPCユーザ名
-RPCPASSWORD="hoge"  # bitcoin core パスワード
-
-# bitcoin core RPC を利用するメソッド
-def bitcoinRPC(method, params)
-    http = Net::HTTP.new(HOST, PORT)
-    request = Net::HTTP::Post.new('/')
-    request.basic_auth(RPCUSER, RPCPASSWORD)
-    request.content_type = 'application/json'
-    request.body = { method: method, params: params, id: 'jsonrpc' }.to_json
-    JSON.parse(http.request(request).body)["result"]
-end
-
-# Bobのアドレス生成
-addrBobBC = bitcoinRPC("getnewaddress", [])
-
-# Bobの秘密鍵
-privBobBC = bitcoinRPC("dumpprivkey", [addrBobBC])
-
-# Bobの鍵オブジェクト(WIF形式の秘密鍵から生成）
-keyBobBC = Bitcoin::Key.from_wif(privBobBC)
-
-# Bobの公開鍵
-pubkeyBobBC = keyBobBC.pubkey
-
-
-# Bobに送金しておく (0.0002)のUTXOを4個
+# BobにBTC送金しておく (0.0002)のUTXOを4個
 bitcoinRPC('sendtoaddress',[addrBobBC, 0.0003])
 bitcoinRPC('sendtoaddress',[addrBobBC, 0.0004])
 bitcoinRPC('sendtoaddress',[addrBobBC, 0.0005])
-bitcoinRPC('sendtoaddress',[addrBobBC, 0.0006])
-bitcoinRPC('sendtoaddress',[addrBobBC, 0.0007])
-
 # 10分後（マイニングされるのを待つ）
 ```
 
-## 3. BobがAliceに秘密情報のハッシュ値をおしえる (bitcoin) BobBC
+
+## 2. BobがAliceに秘密情報のハッシュ値をおしえる (bitcoin) BobBC
 
 * Bobが秘密情報を生成する →　ここでは　'DAO24hChallenge'　とします
 * Bobが秘密情報のハッシュ値を生成して、Aliceに伝える
 
-BobBC
+#### Bobのターミナル
 
 ```ruby
 # 秘密情報
 secret = 'DAO24hChallenge'
 # 秘密情報のハッシュ値
 secret_hash=Bitcoin.sha256(secret).bth
-=> "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+# Aliceに伝える秘密情報のハッシュ値を代入文の文字列として生成
+"secret_hash = '#{secret_hash}'"
+=> "secret_hash = 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
 ```
 
-BobTP
+#### Aliceのターミナル
+
+代入文の文字列をペーストして実行する
 
 ```ruby
-secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+secret_hash = '23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15'
 ```
 
-AliceBC
+## 3. 公開鍵を相互に伝える
+
+### 3.1 Bobの公開鍵をAliceに伝える
+
+#### Bobのターミナル
 
 ```ruby
-secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+# Bobの公開鍵の代入文を文字列として生成する
+"pubkeyBobBC = '#{pubkeyBobBC}'"
+=> "pubkeyBobBC = '023b71642baecc3d01d1b1e1c87dbab4d9b0bfa80a794ac0a17dc2c5530465afa6'"
+"pubkeyBobTP = '#{pubkeyBobTP}'"
+=> "pubkeyBobTP = '03e209e05bc3f8078ff4821a6c1a701abe6cee6e5b09453ab5798f182132c5997b'"
 ```
 
-AliceTP
+#### Aliceのターミナル
+
+代入文を実行する
 
 ```ruby
-secret_hash = "23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15"
+pubkeyBobBC = '023b71642baecc3d01d1b1e1c87dbab4d9b0bfa80a794ac0a17dc2c5530465afa6'
+pubkeyBobTP = '03e209e05bc3f8078ff4821a6c1a701abe6cee6e5b09453ab5798f182132c5997b'
 ```
 
-## 4. Bobの公開鍵をAliceに伝え、Aliceの公開鍵をBobに伝える
+### 3.2 Aliceの公開鍵をBobに伝える
 
-(bitcoin -> bitcoin)
-
-BobBC
+#### Aliceのターミナル
 
 ```ruby
-# Bobの公開鍵
+"pubkeyAliceBC = '#{pubkeyAliceBC}'"
+=> "pubkeyAliceBC = '023ec41d7ea7480557034a27cb9824860ddd011291b7f58261f9491637894c45d5'"
+"pubkeyAliceTP = '#{pubkeyAliceTP}'"
+=> "pubkeyAliceTP = '03036f8905f70850866fe0843a1823aaba1af127b4f0ac4fb7df684bc8e18b2839'"
+```
+
+
+### Bobのターミナル
+
+代入文を実行する
+
+```ruby
+pubkeyAliceBC = '023ec41d7ea7480557034a27cb9824860ddd011291b7f58261f9491637894c45d5'
+pubkeyAliceTP = '03036f8905f70850866fe0843a1823aaba1af127b4f0ac4fb7df684bc8e18b2839'
+```
+
+### 3.3 公開鍵の確認
+
+#### Alice, Bobの両方のターミナルで
+
+４つの公開鍵が登録されていることを確認する
+
+```ruby
 pubkeyBobBC
-=> "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
-```
-
-AliceBC
-
-```ruby
-pubkeyBobBC = "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
-
-# Aliceの公開鍵
-pubkeyAliceBC
-=> "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
-```
-
-BobBC
-
-```ruby
-pubkeyAliceBC = "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
-```
-
-(Tapyrus -> Tapyrus)
-
-BobTP
-
-```ruby
-# Bobの公開鍵
 pubkeyBobTP
-=> "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
-```
-
-AliceTP
-
-```ruby
-pubkeyBobTP = "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
-
-# Aliceの公開鍵
 pubkeyAliceTP
-=> "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
+pubkeyAliceBC
 ```
 
-BobTP
+## 4. Bob が Aliceへ bitcoin を送金しようとする (bitcoin) BobBC
 
-```ruby
-pubkeyAliceTP = "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
-```
+### 4.1  HTLC ロックトランザクション作成メソッド　(bitcoin)
 
-公開鍵の確認
-
-```ruby
-pubkeyBobBC = "03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272"
-pubkeyBobTP = "03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73"
-pubkeyAliceTP = "02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b"
-pubkeyAliceBC = "03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480"
-```
-
-## 5. Bob は Aliceへ bitcoin を送金しようとする (bitcoin) BobBC
-
-### 5.1  HTLC ロックトランザクション作成メソッド　(bitcoin)
-
-BobBC
+#### Bobのターミナルから
 
 ```ruby
 # key　鍵オブジェクト 
@@ -341,17 +288,15 @@ BobBC
 # deposit HTLCでロックする資金の金額
 # fee　手数料
 # lockDays ロック時間
-
 def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays)
     balance = bitcoinRPC('getbalance',[])
     utxos=bitcoinRPC('listunspent',[]).select{|x| x["address"]==key.to_p2wpkh}
     unless (deposit > balance) or (utxos == []) then
-        # AliceのUTXOと残高を確認（とりあえず最初の Aliceのアドレス宛のUTXOを利用することにする）
+        # BobのUTXOと残高を確認（とりあえず最初の Bobのアドレス宛のUTXOを利用することにする）
         utxoAmount = utxos[0]["amount"]
         utxoVout = utxos[0]["vout"]
         utxoTxid = utxos[0]["txid"]
         utxoScriptPubKey = utxos[0]["scriptPubKey"]
-
         # <ロックするブロック数> 10日間のブロック数（リトルエンディアン）
         locktime = (6*24*lockDays).to_bn.to_s(2).reverse.bth
         # redeem script
@@ -378,7 +323,7 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
         utxo_scriptPubKey = Bitcoin::Script.parse_from_payload(utxoScriptPubKey.htb)
         # sighashを作成
         sighash = tx.sighash_for_input(0, utxo_scriptPubKey, sig_version: :witness_v0, amount: utxoAmount_satoshi)
-        # Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
+        # Bobの秘密鍵でHTLCロックトランザクションの署名を作成する
         signature = key.sign(sighash) + [Bitcoin::SIGHASH_TYPE[:all]].pack('C')
         # witness 領域にBobのsighash へ署名をプッシュする
         tx.in[0].script_witness.stack << signature
@@ -391,9 +336,9 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
 end
 ```
 
-### 5.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (bitcoin) 
+### 4.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (bitcoin) 
 
-BobBC
+#### Bobのターミナルから
 
 ```ruby
 # HTLC ロックトランザクションの生成
@@ -404,40 +349,41 @@ redeem_scriptBC.to_h[:asm]
 => "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03dfce2e185286fad66da7d6426777f26e6a3d805ae668f8e6eb76cc93dfad4480 OP_ELSE 1440 OP_CSV OP_DROP 03ba74b5ee733f39e22c84f1b9c07eb11ad68ab73480012de950b40510b7625272 OP_ENDIF OP_CHECKSIG"            
 ```
 
-### 5.3 HTLC ロックトランザクションのブロードキャスト (bitcoin) 
+### 4.3 HTLC ロックトランザクションのブロードキャスト (bitcoin) 
 
-BobBC
+#### Bobのターミナルから
 
 ```ruby
 # HTLC ロックトランザクションのブロードキャスト 
 lockTx_txidBC = bitcoinRPC('sendrawtransaction',[lockTx.to_hex])
 
-# HTLCロックトランザクションのトランザクションID
-lockTx_txidBC 
-=> 
-"bb5ac459a1a4157b08ff32fa27927eeacdbd2d5f816bbb4dffd7e3a8f6f94902"
+# Alice にわたすHTLCロックトランザクションのトランザクションIDの代入文の文字列
+"lockTx_txidBC = '#{lockTx_txidBC}'"
+
+# Alice にわたすredeem_scriptの代入文の文字列
+"redeem_scriptBC_asm = '#{redeem_scriptBC.to_h[:asm]}'"
 ```
 
+### 4.4 BobはAlice に redeem_scriptをトランザクションIDを渡す (bitcoin)
 
-### 5.4 BobはAlice に redeem_scriptとトランザクションIDを渡す (bitcoin)
-
-AliceBC
+#### Aliceのターミナルから
 
 ```ruby
-# redeem_scriptのasm文字列
-redeem_scriptBC_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 029a0d485aad639366dae75ba75e4c9aefe6611060fe4da9a605e32e468c1908b1 OP_ELSE 1440 OP_CSV OP_DROP 02bc8b4919cb8e75996a2e7c9bb7c953d48caa7c7b4c3cb70ad04310c30f504754 OP_ENDIF OP_CHECKSIG"
+# HTLCロックトランザクションのトランザクションIDの代入文を実行
+lockTx_txidBC = 'c4d4775ca5d343b358ef55f7b95004d8e946f12b69ee5c8e90da29954e01317c'
+
+# redeem_scriptのasm文字列の代入文を実行
+redeem_scriptBC_asm = 'OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 023ec41d7ea7480557034a27cb9824860ddd011291b7f58261f9491637894c45d5 OP_ELSE 1440 OP_CSV OP_DROP 023b71642baecc3d01d1b1e1c87dbab4d9b0bfa80a794ac0a17dc2c5530465afa6 OP_ENDIF OP_CHECKSIG'
+
 # redeem_scriptの復元
 redeem_scriptBC = Bitcoin::Script.from_string(redeem_scriptBC_asm)
-
-# HTLCロックトランザクションのトランザクションID
-lockTx_txidBC = "bb5ac459a1a4157b08ff32fa27927eeacdbd2d5f816bbb4dffd7e3a8f6f94902"
 ```
 
-## 6. Alice からBobに TPC を送金しようとする (Tapyrus) 
+## 5. Alice からBobに TPC を送金しようとする (Tapyrus) 
 
-### 6.1  HTLC ロックトランザクション作成メソッド (Tapyrus)
+### 5.1  HTLC ロックトランザクション作成メソッド (Tapyrus)
 
-AliceTP
+#### Aliceのターミナルから実行
 
 ```ruby
 # key　鍵オブジェクト
@@ -447,7 +393,6 @@ AliceTP
 # fee　手数料
 # lockDays ロック時間
 # お釣り用アドレス
-
 def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDays)
     balance = tapyrusRPC('getbalance',[])
     utxos= tapyrusRPC('listunspent',[]).select{|x| x["address"]==key.to_p2pkh}
@@ -482,7 +427,8 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
         # UTXOのロックを解除するために、UTXOのScript Public key を取得
         utxo_scriptPubKey = Tapyrus::Script.parse_from_payload(utxoScriptPubKey.htb)
         # sighashを作成
-        sighash = tx.sighash_for_input(0, utxo_scriptPubKey, amount: utxoAmount_satoshi)
+        sighash = tx.sighash_for_input(0, utxo_scriptPubKey)
+    #    sighash = tx.sighash_for_input(0, utxo_scriptPubKey, amount: utxoAmount_satoshi)
         # Aliceの秘密鍵でHTLCロックトランザクションの署名を作成する
         signature = key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
         # script_sig 領域にAliceのsighash へ署名をプッシュする
@@ -497,22 +443,23 @@ def create_HTCL_lock_transaction(key, secret_hash, pubkey, deposit, fee, lockDay
 end
 ```
 
-### 6.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (tapyrus)
+### 5.2 HTLC ロックトランザクションの生成とredeem_scriptの生成 (tapyrus)
 
-AliceTP
+#### Aliceのターミナルから実行
 
 ```ruby
 # HTLC ロックトランザクションの生成
-lockTx, redeem_scriptTP  = create_HTCL_lock_transaction(keyAliceTP, secret_hash, pubkeyBobTP, 0.0005, 0.00002, 10)
+lockTx, redeem_scriptTP  = create_HTCL_lock_transaction(keyAliceTP, secret_hash, pubkeyBobTP, 0.0001, 0.00002, 10)
 
 # redeem_script
 redeem_scriptTP.to_h[:asm]
 => "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73 OP_ELSE 1440 OP_CSV OP_DROP 02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b OP_ENDIF OP_CHECKSIG"           
 ```
 
-### 6.3 HTLC ロックトランザクションのブロードキャスト (tapyrus)
+### 5.3 HTLC ロックトランザクションのブロードキャスト (tapyrus)
 
-AliceTP
+
+#### Aliceのターミナルから実行
 
 ```ruby
 # HTLC ロックトランザクションのブロードキャスト
@@ -522,11 +469,27 @@ lockTx_txidTP = tapyrusRPC('sendrawtransaction',[lockTx.to_hex])
 
 ### 6.4 Alice はBob に redeem_scriptとトランザクションIDを渡す (Tapyrus)
 
-BobTP
+#### Aliceのターミナルから実行
+
+代入文の文字列の生成
 
 ```ruby
-# redeem_scriptのasm文字列
-redeem_scriptTP_asm = "OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03efdd1fee448d2dff78fd1eff959c28c36138c4eb2cfe3291d9a0fd2c104b9a73 OP_ELSE 1440 OP_CSV OP_DROP 02fc0056c8e097547608eab61e2effc3264f4444f80e2e9e6d834f3f8ac631736b OP_ENDIF OP_CHECKSIG"
+# redeem_scriptの代入文
+"redeem_scriptTP_asm ='#{redeem_scriptTP.to_h[:asm]}'"
+# HTLC ロックトランザクションIDの代入文
+"lockTx_txidTP = '#{lockTx_txidTP}'"
+```
+
+#### Bobのターミナルから実行
+
+代入文を実行
+
+```ruby
+# HTLC ロックトランザクションIDの代入文の実行
+lockTx_txidTP = '3811e10a969604d09c1196f55323b51617a3f23d824c5654af21ea29f13f4784'
+#  redeem_scriptの代入文の実行
+redeem_scriptTP_asm ='OP_IF OP_SHA256 23ecad109469e17c8b4dcaaacbd0d71ef9841bac75d8f21917c1b038e1602c15 OP_EQUALVERIFY 03e209e05bc3f8078ff4821a6c1a701abe6cee6e5b09453ab5798f182132c5997b OP_ELSE 1440 OP_CSV OP_DROP 03036f8905f70850866fe0843a1823aaba1af127b4f0ac4fb7df684bc8e18b2839 OP_ENDIF OP_CHECKSIG'
+
 
 # redeem_scriptの復元
 redeem_scriptTP = Bitcoin::Script.from_string(redeem_scriptTP_asm)
@@ -536,19 +499,17 @@ lockTx_txidTP = "15bf6dd6b33ee44f2011c73c2fa90e8fa0e5c1fa83a5f783ddef059b8efd80c
 ```
 
 
-## 7. Bobが秘密情報を使って AliceのHTLCロックトランザクションをアンロックする (Tapyrus)
+## 6. Bobが秘密情報を使って AliceのHTLCロックトランザクションをアンロックする (Tapyrus)
 
-### 7.1 HTLCアンロックトランザクション作成メソッド(Tapyrus)
+### 6.1 HTLCアンロックトランザクション作成メソッド(Tapyrus)
 
-BobTP
+#### Bobのターミナルから実行
 
 ```ruby
 # 秘密情報（Bobは知っている）
 secret
-
 # redeem_script
 redeem_scriptTP
-
 # HTLCロックトランザクションの トランザクションID
 lockTx_txidTP
 ```
@@ -570,11 +531,10 @@ def unlock_HTLC_transaction(secret, redeem_scriptTP, lockTx_txidTP, key, fee)
     # satoshi 変換
     deposit_satoshi = (deposit * (10**8)).to_i
     reward_satoshi = (reward* (10**8)).to_i
-    
     # トランザクションテンプレートの生成
     tx = Bitcoin::Tx.new
     # inputの作成
-    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(lockTx_txid, lockTx_vout))
+    tx.in << Bitcoin::TxIn.new(out_point: Bitcoin::OutPoint.from_txid(lockTx_txidTP, lockTx_vout))
     # 報酬用のP2WPKH outputの作成
     tx.out << Bitcoin::TxOut.new(value: reward_satoshi, script_pubkey: Bitcoin::Script.parse_from_addr(key.to_p2wpkh))
     # sighashを作成
@@ -589,12 +549,12 @@ def unlock_HTLC_transaction(secret, redeem_scriptTP, lockTx_txidTP, key, fee)
 end
 ```
 
-### 7.2 BobがHTLC アンロックトランザクションの生成 (Tapyrus)
+### 6.2 BobがHTLC アンロックトランザクションの生成 (Tapyrus)
 
-BobTP
+#### Bobのターミナルから実行
 
 ```ruby
-unlock_tx = unlock_HTLC_transaction(secret,redeem_scriptTP, lockTx_txid, keyBobTP, 0.00002)
+unlock_tx = unlock_HTLC_transaction(secret,redeem_scriptTP, lockTx_txidTP, keyBobTP, 0.00002)
 ```
 
 ### 7.3 BobがHTLC アンロックトランザクションをブロードキャスト (Tapyrus)

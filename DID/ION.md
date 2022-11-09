@@ -1,6 +1,6 @@
 # ION(アイオン）のインストール
 
-最終更新　2022/07/31 Shigeichiro Yamasaki
+最終更新　2022/10/11 Shigeichiro Yamasaki
 
 DID（Decentralized Identifier）の実装の一つであるIONのインストール
 

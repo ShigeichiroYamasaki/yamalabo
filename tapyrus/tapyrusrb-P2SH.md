@@ -80,6 +80,8 @@ pubkeyBobTP= keyBobTP.pubkey
 
 この説明では　"HTLC_test"　とします。
 
+#### Bob
+
 ```ruby
 secret='HTLC_test'
 secret_hash=Tapyrus.sha256(secret)
@@ -102,15 +104,23 @@ ts2.run
 
 ### AliceとBobの情報交換
 
-Alice, Bob
+BobからAliceへ
 
+#### Bob
 ```ruby
 # Bobの公開鍵 => Alice
-"pubkeyBobTP=#{pubkeyBobTP}"
-# Aliceの公開鍵 => Bob
-"pubkeyAliceTP =#{pubkeyAliceTP}"
+puts "pubkeyBobTP='#{pubkeyBobTP}'"
 # 秘密情報のハッシュ値=> Bob
-"secret_hash =#{secret_hash}"
+puts "secret_hash ='#{secret_hash.bth}'"
+```
+
+Alice からBobへ
+
+#### Alice
+
+```ruby
+# Aliceの公開鍵 => Bob
+puts "pubkeyAliceTP ='#{pubkeyAliceTP}'"
 ```
 
 ### HTLC のredeem script(Alice)
