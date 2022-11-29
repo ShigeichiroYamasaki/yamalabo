@@ -1,9 +1,9 @@
 # Ruby インストール方法
 
-最終更新　2022/10/26 Shigeichiro Yamasaki
+最終更新　2022/11/25 Shigeichiro Yamasaki
 
 推奨バージョン変更
-Ruby 2.7.5 -> 3.1.2
+3.1.3
 
 ## MacOSXでのインストール
 
@@ -78,15 +78,15 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 rbenv install -l
 
 
-2.6.10
-2.7.5
-3.0.4
-3.1.2
-jruby-9.3.4.0
-mruby-3.0.0
+2.7.7
+3.0.5
+3.1.3
+jruby-9.4.0.0
+mruby-3.1.0
+picoruby-3.0.0
 rbx-5.0
-truffleruby-22.0.0.2
-truffleruby+graalvm-22.0.0.2
+truffleruby-22.3.0
+truffleruby+graalvm-22.3.0
 
 Only latest stable releases for each Ruby implementation are shown.
 Use 'rbenv install --list-all / -L' to show all local versions.
@@ -97,6 +97,8 @@ Use 'rbenv install --list-all / -L' to show all local versions.
 ```bash
 rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+
+rbenv install -l
 ```
 
 ### Rubyのインストール
@@ -107,7 +109,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.1.2
+rbenv install 3.1.3
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -116,7 +118,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.1.2
+rbenv global 3.1.3
 source .zshrc 
 ```
 
@@ -165,15 +167,15 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 rbenv install -l
 
 
-2.6.10
-2.7.5
-3.0.4
-3.1.2
-jruby-9.3.4.0
-mruby-3.0.0
+2.7.7
+3.0.5
+3.1.3
+jruby-9.4.0.0
+mruby-3.1.0
+picoruby-3.0.0
 rbx-5.0
-truffleruby-22.1.0
-truffleruby+graalvm-22.1.0
+truffleruby-22.3.0
+truffleruby+graalvm-22.3.0
 
 Only latest stable releases for each Ruby implementation are shown.
 Use 'rbenv install --list-all / -L' to show all local versions.
@@ -193,7 +195,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.1.2
+rbenv install 3.1.3
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -202,7 +204,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.1.2
+rbenv global 3.1.3
 source .bashrc 
 ```
 
