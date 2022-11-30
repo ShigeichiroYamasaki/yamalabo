@@ -1,6 +1,6 @@
 # tapyrusrb
 
-最終更新 2022/08/05 Shigeichiro Yamasaki
+最終更新 2022/11/30 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 
@@ -68,6 +68,40 @@ def tapyrusRPC(method,params)
 end
 ```
 
+### テスト用アカウントの作成
+
+```ruby
+# テスト用アカウントと鍵
+mnemonic = Tapyrus::Mnemonic.new('english')
+word_list =["ozone", "bounce", "hurdle", "weird", "token", "exclude", "remember", "swear", "knife", "bitter", "blossom", "horn", "repair", "aspect", "girl", "merit", "palace", "boring", "pottery", "relax", "sunset", "lucky", "elephant", "ticket"]
+seed = mnemonic.to_seed(word_list)
+master_key = Tapyrus::ExtKey.generate_master(seed)
+# derive path 'm/0H'
+key = master_key.derive(0, true)
+#  鍵オブジェクト
+keyAlice = key.derive(1)
+keyBob   = key.derive(2)
+keyCarol = key.derive(3)
+keyDavid = key.derive(4)
+# テスト用の秘密鍵
+priv_alice = keyAlice.priv
+priv_bob   = keyBob.priv
+priv_carol = keyCarol.priv
+priv_david = keyDavid.priv
+## アドレス
+alice = keyAlice.addr
+bob   = keyBob.addr
+carol = keyCarol.addr
+david = keyDavid.addr
+# 公開鍵
+pub_alice = keyAlice.pub
+pub_bob   = keyBob.pub
+pub_carol = keyCarol.pub
+pub_david = keyDavid.pub
+```
+
+
+
 ### 実行確認
 
 ```ruby
@@ -78,9 +112,6 @@ utxos = tapyrusRPC('listunspent',[])
 => 
 [{"txid"=>"47556d8f51fd5bc5d39eb0d50fd881fd26b0351c8ec39f094a8c6a5966080b27",
 ...
-
-alice = tapyrusRPC('getnewaddress',['alice'])
-=> "1Aq7soZtCEuaHkjExL9kTWQPsJGW1REb8e"
 
 txid = tapyrusRPC('sendtoaddress',[alice, 0.001])
 => "aa5b4c6607d4a33e0d2ece8d27ba29c3bca4ee387c67bd6c91aa758dd8b131b5"
@@ -265,11 +296,11 @@ c=colors
 カラー付きアドレスを生成する
 
 ```ruby
-addrNRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[1]])
+addrNRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",color1])
 => "vt8xz9MePQj3DrCR4xCBU2E1N64mRHRreSX7t6b4g9FzVMRhyG6KarYNkgtg8FhVTpHLBpcspNsNAP"
-addrNFT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[2]])
+addrNFT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",color2])
 => "vw6aD8hZXoNBBLWRehHPBS3QtWZQ2oscdyTD9gucbuS2Wndq61srxpaoHz3fBVeWJcum6GPvis3mbW"
-addrRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",c[4]])
+addrRT1 = tapyrusRPC('getnewaddress',["user#{rand(10000)}",color3])
 => "vgt1L6fTUm1wjKsbo1Gkipbp74nveakeTRaAMgzwu6VUJapbi7nTb9mwH5vcm4HCDCaDqmp59PB6ke"
 ```
 
@@ -293,3 +324,114 @@ tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt2])])
 tapyrusRPC('decoderawtransaction',[tapyrusRPC('getrawtransaction',[tt3])])
 ```
 
+###  Tapyrus送金プログラム
+
+```ruby
+#  Tapyrus送金メソッド
+# 送金先アドレス、送金金額，おつりアドレス
+def send_tapyrus(addr, amount, addr_change)
+    # 所持金残高を確認
+    balance = tapyrusRPC('getbalance', [])
+    if balance < (amount+FEE) then
+        puts "error (残高不足)"
+    else
+        # 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+        utxos = consuming_utxos(amount+FEE)
+        # 送金に使用するUTXOの総額
+        fund = utxos.map{|utxo|utxo["amount"]}.sum
+        # UTXOの総額 - 送金金額 - 手数料 = おつり
+        change = fund-amount-FEE
+        # トランザクションの構成（P2WPKH)
+        tx = p2pkh_transaction(addr, amount, utxos, change, addr_change)
+        # トランザクションへの署名
+        tx = sign_inputs(utxos, tx)
+        # ビットコインネットワークへのデプロイ
+        return tapyrusRPC('sendrawtransaction', [tx.to_hex])
+    end
+end
+# P2PKHトランザクションの構成
+def p2pkh_transaction(addr,amount, utxos, change, addr_change)
+    # トランザクションのテンプレートの生成
+    tx = Tapyrus::Tx.new
+    # トランザクションのinputの構成
+    tx = tx_inputs(tx,utxos)
+    # トランザクションのoutputの構成
+    tx = tx_outputs(tx,amount, addr, change, addr_change)
+    return tx
+end
+# トランザクションのinputの構成
+def tx_inputs(tx, utxos)
+    utxos.each{|utxo|
+        # UTXOをinputから参照するための txid と vout としてエンコードする
+        outpoint = Tapyrus::OutPoint.from_txid(utxo["txid"], utxo["vout"])
+        # エンコードした参照をトランザクションのinputに埋め込む
+        tx.in << Tapyrus::TxIn.new(out_point: outpoint)
+    }
+    return tx
+end
+# トランザクションのoutputの構成
+def tx_outputs(tx,amount, addr, change, addr_change)
+    # 送金用outputの構成
+    # 金額を satoshiの整数に変換
+    amount_satoshi = (amount*(10**8)).to_i
+    # ビットコインアドレスから p2pkhのscript_pubkey を生成
+    scriptPubKey0 = Tapyrus::Script.parse_from_addr(addr)
+    # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: amount_satoshi , script_pubkey: scriptPubKey0)
+    # おつり用outputの構成
+    # 金額を satoshiの整数に変換
+    change_satoshi =  (change*(10**8)).to_i
+    # ビットコインアドレスから p2wpkhのscript_pubkey を生成
+    scriptPubKey1 = Tapyrus::Script.parse_from_addr(addr_change)
+    # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: change_satoshi, script_pubkey: scriptPubKey1)
+    return tx
+end
+# トランザクションへの署名
+def sign_inputs(utxos, tx)
+    utxos.each.with_index{|utxo,index|
+        # UTXOのscriptPubKey をオブジェクト化する
+        script_pubkey = Tapyrus::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+        # scriptPubKey の送金先アドレス
+        myaddr = script_pubkey.to_addr
+        # UTXOの送付先アドレスの秘密鍵（署名鍵）
+        priv = tapyrusRPC('dumpprivkey', [myaddr])
+        # 署名鍵オブジェクト
+        key = Tapyrus::Key.from_wif(priv)
+        # UTXOの金額
+        satoshi = (utxo["amount"]*(10**8)).to_i
+        case script_pubkey.type
+        when "pubkeyhash"   # UTXOがP2PKHタイプ
+            # トランザクションのハッシュ値を計算
+            sighash = tx.sighash_for_input(index, script_pubkey)
+            # トランザクションへの署名＋署名タイプ情報を付加
+            sig = key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+            # inputへの署名の追加
+            tx.in[index].script_sig << sig
+            # inputへの公開鍵の追加
+            tx.in[index].script_sig << key.pubkey.htb
+        end
+    }
+    return tx
+end
+# 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+def consuming_utxos(amount)
+    # ワレットの未使用のUTXOの一覧を得る
+    unspent = tapyrusRPC('listunspent', [])
+    # 消費可能状態のUTXOの選定
+    spendable_utxos = unspent.select{|t|t["spendable"]==true}
+    # UTXOを金額で昇順にソートする
+    sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
+    # 少額のUTXOから集めて，指定金額を上回るぎりぎりのUTXOのリストを作成する
+    utxos=[]
+    begin
+        utxos << sorted_utxos.shift
+        balance = utxos.reduce(0){|s,t|s+=t["amount"]}
+    end until balance >= amount
+    return utxos
+end
+# 送金のテスト 
+# 送金の実行。実行結果はトランザクションID
+txid = send_tapyrus(bob, 0.0001, alice)
+
+```
