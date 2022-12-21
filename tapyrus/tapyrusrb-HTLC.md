@@ -1,0 +1,481 @@
+# tapyrusrbでHTLC
+
+最終更新 2022/12/21 Shigeichiro Yamasaki
+
+tapyrusrb を使ってP2SH の送金と受領を行うトランザクションを作成する
+
+スクリプトとしては、HTLCを使う
+
+
+### HTLCのunlocking script
+
+```
+        [HTLC の scriptSig]
+<Bobの署名> 
+<Secret> 
+OP_TRUE
+------------連接--------------
+       [HTLCの redeem script] 
+OP_IF
+    OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY 
+    <Bobの公開鍵>
+OP_ELSE
+    <ロックするブロック数> OP_CSV 
+    OP_DROP  
+    <Aliceの公開鍵>
+OP_ENDIF
+OP_CHECKSIG
+```
+
+### Tapyrus RPC
+
+```ruby
+#  共通部分
+require 'tapyrus'
+require 'json'
+require "open3"
+
+include Tapyrus
+include Tapyrus::Opcodes
+FEE = 0.00002       # 手数料
+
+Tapyrus.chain_params = :prod
+
+# tapyrus-cli コマンドのフルパス
+Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
+
+# RPC
+def tapyrusRPC(method,params)
+    r=Open3.capture3("#{Tapyrus_cli} #{method} #{params.join(' ')}")
+    if r[1] == "" then
+        begin
+            return JSON.parse(r[0])
+        rescue JSON::ParserError
+            return r[0]
+        end
+    else
+        return r[1] # エラーメッセージ
+    end
+end
+```
+
+### テスト用アカウントの作成
+
+```ruby
+# テスト用アカウントと鍵
+
+mnemonic = Tapyrus::Mnemonic.new('english')
+word_list =["ozone", "bounce", "hurdle", "weird", "token", "exclude", "remember", "swear", "knife", "bitter", "blossom", "horn", "repair", "aspect", "girl", "merit", "palace", "boring", "pottery", "relax", "sunset", "lucky", "elephant", "ticket"]
+seed = mnemonic.to_seed(word_list)
+master_key = Tapyrus::ExtKey.generate_master(seed)
+# derive path 'm/0H'
+key = master_key.derive(0, true)
+#  鍵オブジェクト
+keyAlice = key.derive(1)
+keyBob   = key.derive(2)
+keyCarol = key.derive(3)
+keyDavid = key.derive(4)
+# テスト用の秘密鍵
+priv_alice = keyAlice.priv
+priv_bob   = keyBob.priv
+priv_carol = keyCarol.priv
+priv_david = keyDavid.priv
+## アドレス
+alice = keyAlice.addr
+bob   = keyBob.addr
+carol = keyCarol.addr
+david = keyDavid.addr
+# 公開鍵
+pub_alice = keyAlice.pub
+pub_bob   = keyBob.pub
+pub_carol = keyCarol.pub
+pub_david = keyDavid.pub
+```
+
+### トランザクション構成の基本部分
+
+```ruby
+#####################
+# 基本
+#
+# 送金先アドレス、送金金額，おつりアドレス
+def send_tapyrus(addr, amount, addr_change)
+    # 所持金残高を確認
+    balance = tapyrusRPC('getbalance', [])
+    if balance < (amount+FEE) then
+        puts "error (残高不足)"
+    else
+        # 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+        utxos = consuming_utxos(amount+FEE)
+        # 送金に使用するUTXOの総額
+        fund = utxos.map{|utxo|utxo["amount"]}.sum
+        # UTXOの総額 - 送金金額 - 手数料 = おつり
+        change = fund-amount-FEE
+        # トランザクションの構成（P2PKH)
+        tx = p2pkh_tx(addr, amount, utxos, change, addr_change)
+        # トランザクションへの署名
+        tx = sign_inputs(utxos, tx)
+        # ビットコインネットワークへのデプロイ
+        return tapyrusRPC('sendrawtransaction', [tx.to_hex])
+    end
+end
+
+# 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+def consuming_utxos(amount)
+    # ワレットの未使用のUTXOの一覧を得る
+    unspent = tapyrusRPC('listunspent', [])
+    # 消費可能状態のUTXOの選定
+    spendable_utxos = unspent.select{|t|t["spendable"]==true}
+    # UTXOを金額で昇順にソートする
+    sorted_utxos = spendable_utxos.sort_by{|x|x["amount"]}
+    # 少額のUTXOから集めて，指定金額を上回るぎりぎりのUTXOのリストを作成する
+    utxos=[]
+    begin
+        utxos << sorted_utxos.shift
+        balance = utxos.reduce(0){|s,t|s+=t["amount"]}
+    end until balance >= amount
+    return utxos
+end
+
+# トランザクションのinputの構成
+def tx_inputs(tx, utxos)
+    utxos.each{|utxo|
+        # UTXOをinputから参照するための txid と vout としてエンコードする
+        outpoint = Tapyrus::OutPoint.from_txid(utxo["txid"], utxo["vout"])
+        # エンコードした参照をトランザクションのinputに埋め込む
+        tx.in << Tapyrus::TxIn.new(out_point: outpoint)
+    }
+    return tx
+end
+
+# トランザクションのoutputの構成
+def tx_outputs(tx,amount, addr, change, addr_change)
+    # 送金用outputの構成
+    # 金額を satoshiの整数に変換
+    amount_satoshi = (amount*(10**8)).to_i
+    # ビットコインアドレスから p2pkhのscript_pubkey を生成
+    scriptPubKey0 = Tapyrus::Script.parse_from_addr(addr)
+    # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: amount_satoshi , script_pubkey: scriptPubKey0)
+    # おつり用outputの構成
+    # 金額を satoshiの整数に変換
+    change_satoshi =  (change*(10**8)).to_i
+    # ビットコインアドレスから p2wpkhのscript_pubkey を生成
+    scriptPubKey1 = Tapyrus::Script.parse_from_addr(addr_change)
+    # エンコードしたscript_pubkeyをトランザクションのoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: change_satoshi, script_pubkey: scriptPubKey1)
+    return tx
+end
+
+# P2PKHトランザクションの構成
+def p2pkh_tx(addr,amount, utxos, change, addr_change)
+    # トランザクションのテンプレートの生成
+    tx = Tapyrus::Tx.new
+    # トランザクションのinputの構成
+    tx = tx_inputs(tx,utxos)
+    # トランザクションのoutputの構成
+    tx = tx_outputs(tx,amount, addr, change, addr_change)
+    return tx
+end
+
+# トランザクションへの署名
+def sign_inputs(utxos, tx)
+    utxos.each.with_index{|utxo,index|
+        # UTXOのscriptPubKey をオブジェクト化する
+        script_pubkey = Tapyrus::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+        # scriptPubKey の送金先アドレス
+        myaddr = script_pubkey.to_addr
+        # UTXOの送付先アドレスの秘密鍵（署名鍵）
+        priv = tapyrusRPC('dumpprivkey', [myaddr]).chomp
+        # 署名鍵オブジェクト
+        key = Tapyrus::Key.from_wif(priv)
+        # UTXOの金額
+        satoshi = (utxo["amount"]*(10**8)).to_i
+        case script_pubkey.type
+        when "pubkeyhash"   # UTXOがP2PKHタイプ
+            # トランザクションのハッシュ値を計算
+            sighash = tx.sighash_for_input(index, script_pubkey)
+            # トランザクションへの署名＋署名タイプ情報を付加
+            sig = key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+            # inputへの署名の追加
+            tx.in[index].script_sig << sig
+            # inputへの公開鍵の追加
+            tx.in[index].script_sig << key.pubkey.htb
+        end
+    }
+    return tx
+end
+```
+
+送金テスト
+
+```ruby
+txid = send_tapyrus(bob, 0.0001, alice)
+```
+
+### 秘密情報
+
+`<Secret>` ：秘密情報
+`<Secretのハッシュ値> `: 秘密情報のハッシュ値
+
+この説明では　"HTLC_test"　とします。
+
+#### Bob
+
+```ruby
+secret='HTLC_test'
+secret_hash=Tapyrus.sha256(secret)
+```
+
+#### script処理のテスト(OP_SHA256の検証)
+
+★注意！　secret.bth　のように .bth メソッドで 16進数化しないといけません
+
+```ruby
+# scriptのテスト
+ts=Tapyrus::Script.new << secret.bth << OP_SHA256 << secret_hash << OP_EQUAL
+ts.run
+# => true
+# 失敗するケース
+ts2=Tapyrus::Script.new << secret << OP_SHA256 << secret_hash << OP_EQUAL
+ts2.run
+# => false
+```
+
+### AliceとBobの情報交換
+
+BobからAliceへ
+
+#### Bob
+```ruby
+# Bobの公開鍵 => Alice
+puts "pub_bob='#{pub_bob}'"
+# 秘密情報のハッシュ値=> Bob
+puts "secret_hash ='#{secret_hash.bth}'"
+```
+
+Alice からBobへ
+
+#### Alice
+
+```ruby
+# Aliceの公開鍵 => Bob
+puts "pub_alice ='#{pub_alice}'"
+```
+
+### HTLC のredeem script(Alice)
+
+Alice => Bob の場合
+
+```
+OP_IF OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY <Bobの公開鍵> OP_ELSE <locktime> OP_CSV OP_DROP <Aliceの公開鍵> OP_ENDIF OP_CHECKSIG
+```
+
+### HTLC Lock トランザクション構築と送金メソッド
+
+```ruby
+# secret_hash 秘密情報のハッシュ値
+# pub_sender 送金者の公開鍵
+# addr_sender 送金者のアドレス
+# pub_receiver 受領者の公開鍵
+# lock_days　ロックする日数
+
+
+
+def send_htlc(amount, addr_change, secret_hash, pub_sender, addr_sender, pub_receiver, lock_days)
+    # 所持金残高を確認
+    balance = tapyrusRPC('getbalance', [])
+    if balance < (amount+FEE) then
+        puts "error (残高不足)"
+    else
+        # 送金金額＋手数料をぎりぎり上回るUTXOリストの作成
+        utxos = consuming_utxos(amount+FEE)
+        # 送金に使用するUTXOの総額
+        fund = utxos.map{|utxo|utxo["amount"]}.sum
+        # UTXOの総額 - 送金金額 - 手数料 = おつり
+        change = fund-amount-FEE
+        # redeem scriptの生成
+        locktime = (6*24*lock_days).to_bn.to_s(2).reverse.bth
+        redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash.bth << OP_EQUALVERIFY << pub_receiver << OP_ELSE << locktime << OP_CSV << OP_DROP << pub_sender << OP_ENDIF << OP_CHECKSIG
+        # トランザクションの構成（P2SH)
+        tx = p2sh_tx(utxos, amount, redeem_script, addr_change)
+        # トランザクションへの署名
+        tx = sign_inputs(utxos, tx)
+        # トランザクションのデプロイ
+        txid = tapyrusRPC('sendrawtransaction',[tx.to_hex])
+        # p2shトランザクションのアンロックに必要な情報の出力
+        return tx, txid.chomp, redeem_script.to_hex
+    end
+end
+
+
+# p2sh 未署名トランザクションの構成
+def p2sh_tx(utxos, amount, redeem_script, addr_change)
+    # おつり = UTXOの総額 - 送金金額 - 手数料
+    change = (utxos.map{|utxo|utxo["amount"]}.sum)-amount-FEE
+    # トランザクションのスケルトン
+    tx = Tapyrus::Tx.new
+    # トランザクションのinputの構成
+    tx = tx_inputs(tx,utxos)
+    # P2SHトランザクションのoutputの構成
+    tx = p2sh_outputs(tx, amount, redeem_script, change, addr_change)
+    return tx
+end
+
+
+# p2shトランザクションのoutputの構成
+def p2sh_outputs(tx, amount, redeem_script, change, addr_change)
+    # satoshi変換
+    change_satoshi = (change*(10**8)).to_i
+    amount_satoshi = (amount*(10**8)).to_i
+    # redeem_script を p2shアドレスに変換する
+    p2sh_addr = redeem_script.to_p2sh.addresses[0]
+    #  p2shアドレスからscript pubkey を生成
+    scriptPubKey0 = Tapyrus::Script.parse_from_addr(p2sh_addr)
+    # 作成したscript pubkey outputに設定する
+    tx.out << Tapyrus::TxOut.new(value: amount_satoshi, script_pubkey: scriptPubKey0)
+    # おつり用script pub key の構成(P2PKH)
+    scriptPubKey1 = Tapyrus::Script.parse_from_addr(addr_change)
+    # おつり用のoutput
+    tx.out << Tapyrus::TxOut.new(value: change_satoshi, script_pubkey: scriptPubKey1)
+    return tx
+end
+```
+
+HTCLトランザクションの送金テスト
+
+```ruby
+amount=0.001
+addr_change=bob
+secret='HTLC_test'
+secret_hash=Tapyrus.sha256(secret)
+pub_sender = pub_alice
+addr_sender = alice
+pub_receiver = pub_bob
+lock_days =10
+
+htlc_tx, htlc_txid, redeem_script_hex = send_htlc(amount, addr_change, secret_hash, pub_sender, addr_sender, pub_receiver, lock_days)
+```
+
+
+## HTLC アンロックトランザクションの構成
+
+
+共通部分
+
+```ruby
+#  共通部分
+require 'tapyrus'
+require 'json'
+require "open3"
+
+include Tapyrus
+include Tapyrus::Opcodes
+FEE = 0.00002       # 手数料
+
+Tapyrus.chain_params = :prod
+
+# tapyrus-cli コマンドのフルパス
+Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
+
+# RPC
+def tapyrusRPC(method,params)
+    r=Open3.capture3("#{Tapyrus_cli} #{method} #{params.join(' ')}")
+    if r[1] == "" then
+        begin
+            return JSON.parse(r[0])
+        rescue JSON::ParserError
+            return r[0]
+        end
+    else
+        return r[1]
+    end
+end
+##################################
+# テスト用アカウントと鍵
+mnemonic = Tapyrus::Mnemonic.new('english')
+word_list =["ozone", "bounce", "hurdle", "weird", "token", "exclude", "remember", "swear", "knife", "bitter", "blossom", "horn", "repair", "aspect", "girl", "merit", "palace", "boring", "pottery", "relax", "sunset", "lucky", "elephant", "ticket"]
+seed = mnemonic.to_seed(word_list)
+master_key = Tapyrus::ExtKey.generate_master(seed)
+# derive path 'm/0H'
+key = master_key.derive(0, true)
+#  鍵オブジェクト
+keyAlice = key.derive(1)
+keyBob   = key.derive(2)
+keyCarol = key.derive(3)
+keyDavid = key.derive(4)
+# テスト用の秘密鍵
+priv_alice = keyAlice.priv
+priv_bob   = keyBob.priv
+priv_carol = keyCarol.priv
+priv_david = keyDavid.priv
+## アドレス
+alice = keyAlice.addr
+bob   = keyBob.addr
+carol = keyCarol.addr
+david = keyDavid.addr
+# 公開鍵
+pub_alice = keyAlice.pub
+pub_bob   = keyBob.pub
+pub_carol = keyCarol.pub
+pub_david = keyDavid.pub
+
+```
+
+### アンロックのためにBobが知っている（べき）情報
+
+* secret   : 秘密情報 <Secret> (Aliceからもらう）
+* `redeem_script_hex`  : redeem script (Aliceからもらう）
+* `htlc_txid`  : HTLCロックトランザクションの トランザクションID (Aliceからもらう）
+
+```ruby
+#  アンロックする主体に渡す情報を代入文の文字列にしたもの
+# p2sh でロックされたトランザクションのtxid
+htlc_txid 
+# redeem script の16進数形式
+redeem_script_hex
+# アンロックした資金は addr = bob に送金するものとする
+
+def unlock_htlc(htlc_txid, redeem_script_hex, addr, key, secret)
+    # 16進数形式redeem script の復元
+    redeem_script = Tapyrus::Script.parse_from_payload(redeem_script_hex.htb)
+    # アンロック対象トランザクションとUTXOを確定する
+    locked_tx = Tapyrus::Tx.parse_from_payload(tapyrusRPC('getrawtransaction',[htlc_txid]).htb)
+    # ロックされているUTXO  0がp2shであることがわかっている
+    p2sh_utxo = locked_tx.out[0]
+    utxo_value = p2sh_utxo.value    # この金額の単位は satoshi
+    # P2SH のUTXOのoutpoint
+    outpoint = Tapyrus::OutPoint.from_txid(htlc_txid, 0)
+    # アンロックトランザクションの構成（送金先はaliceとする）
+    tx = Tapyrus::Tx.new
+    # inputの構成
+    # P2SH のoutputをinputにする
+    tx.in <<  Tapyrus::TxIn.new(out_point: outpoint)
+    #output の構成 (P2PKH) アドレスへ送金
+    scriptPubKey0 = Tapyrus::Script.parse_from_addr(addr)
+    # script_pubkey0をトランザクションのoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: utxo_value-(FEE*(10**8)).to_i , script_pubkey: scriptPubKey0)
+    # アンロックトランザクションの署名対象のハッシュ値 sighash
+    sighash = tx.sighash_for_input(0, redeem_script, hash_type: Tapyrus::SIGHASH_TYPE[:all])
+    # scriptsig の追加
+    sig = key.key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+    tx.in[0].script_sig << sig
+    tx.in[0].script_sig << secret.bth
+    tx.in[0].script_sig << OP_1
+    tx.in[0].script_sig << redeem_script.to_payload
+    # 署名したトランザクションをブロードキャストする
+    p2sh_txid = tapyrusRPC('sendrawtransaction', [tx.to_hex])
+    return p2sh_txid, tx
+end
+```
+
+
+### HTLC アンロック
+
+```ruby
+addr = bob
+key = keyBob
+secret='HTLC_test'
+
+unlock_htlc_txid, unlock_htlc_tx = unlock_htlc(htlc_txid, redeem_script_hex, addr, key, secret)      
+```

@@ -1,6 +1,6 @@
 # tapyrusrb
 
-最終更新 2022/11/30 Shigeichiro Yamasaki
+最終更新 2022/12/20 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 
@@ -49,9 +49,11 @@ gem install tapyrus
 ```ruby
 require 'tapyrus'
 require 'json'
+require "open3"
+
 include Tapyrus
 include Tapyrus::Opcodes
-
+FEE = 0.00002       # 手数料
 Tapyrus.chain_params = :prod
 
 # tapyrus-cli コマンドのフルパス
@@ -59,11 +61,15 @@ Tapyrus_cli ='~/tapyrus-core-0.5.1/bin/tapyrus-cli'
 
 # RPC
 def tapyrusRPC(method,params)
-    r=`#{Tapyrus_cli} #{method} #{params.join(' ')}`.chomp
-    begin
-        return JSON.parse(r)
-    rescue JSON::ParserError
-        return r
+    r=Open3.capture3("#{Tapyrus_cli} #{method} #{params.join(' ')}")
+    if r[1] == "" then
+        begin
+            return JSON.parse(r[0])
+        rescue JSON::ParserError
+            return r[0]
+        end
+    else
+        return r[1]
     end
 end
 ```
@@ -243,7 +249,7 @@ nfts = tapyrusRPC('listunspent',[]).select{|x|x["token"]==color2}
 ```ruby
 def mint_RT(amount)
     tpcs = tapyrusRPC('listunspent',[]).select{|x|x["token"]=="TPC"}
-    # NFTの発行
+    # RTの発行
     rt = tapyrusRPC('issuetoken',[1, amount, tpcs[0]["scriptPubKey"]])
 end
 
@@ -341,8 +347,8 @@ def send_tapyrus(addr, amount, addr_change)
         fund = utxos.map{|utxo|utxo["amount"]}.sum
         # UTXOの総額 - 送金金額 - 手数料 = おつり
         change = fund-amount-FEE
-        # トランザクションの構成（P2WPKH)
-        tx = p2pkh_transaction(addr, amount, utxos, change, addr_change)
+        # トランザクションの構成（P2PKH)
+        tx = p2pkh_tx(addr, amount, utxos, change, addr_change)
         # トランザクションへの署名
         tx = sign_inputs(utxos, tx)
         # ビットコインネットワークへのデプロイ
@@ -350,7 +356,7 @@ def send_tapyrus(addr, amount, addr_change)
     end
 end
 # P2PKHトランザクションの構成
-def p2pkh_transaction(addr,amount, utxos, change, addr_change)
+def p2pkh_tx(addr,amount, utxos, change, addr_change)
     # トランザクションのテンプレートの生成
     tx = Tapyrus::Tx.new
     # トランザクションのinputの構成
@@ -395,7 +401,7 @@ def sign_inputs(utxos, tx)
         # scriptPubKey の送金先アドレス
         myaddr = script_pubkey.to_addr
         # UTXOの送付先アドレスの秘密鍵（署名鍵）
-        priv = tapyrusRPC('dumpprivkey', [myaddr])
+        priv = tapyrusRPC('dumpprivkey', [myaddr]).chomp
         # 署名鍵オブジェクト
         key = Tapyrus::Key.from_wif(priv)
         # UTXOの金額
