@@ -4,21 +4,19 @@
 
 tapyrusrb を使ってP2SH の送金と受領を行うトランザクションを作成する
 
-スクリプトとしては、HTLCを使う
-
 
 ### HTLCのunlocking script
 
 ```
         [HTLC の scriptSig]
 <Bobの署名> 
+<Bobの公開鍵>
 <Secret> 
 OP_TRUE
 ------------連接--------------
        [HTLCの redeem script] 
 OP_IF
     OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY 
-    <Bobの公開鍵>
 OP_ELSE
     <ロックするブロック数> OP_CSV 
     OP_DROP  
@@ -26,6 +24,7 @@ OP_ELSE
 OP_ENDIF
 OP_CHECKSIG
 ```
+
 
 ### Tapyrus RPC
 
@@ -210,7 +209,7 @@ end
 送金テスト
 
 ```ruby
-txid = send_tapyrus(bob, 0.0001, alice)
+txid = send_tapyrus(bob, 0.0001, alice).chomp
 ```
 
 ### 秘密情報
@@ -404,23 +403,44 @@ keyAlice = key.derive(1)
 keyBob   = key.derive(2)
 keyCarol = key.derive(3)
 keyDavid = key.derive(4)
+keyErza  = key.derive(5)
+keyFranck = key.derive(6)
+
 # テスト用の秘密鍵
 priv_alice = keyAlice.priv
 priv_bob   = keyBob.priv
 priv_carol = keyCarol.priv
-priv_david = keyDavid.priv
+priv_erza  = keyErza.priv
+priv_franck = keyFranck.priv
+
 ## アドレス
 alice = keyAlice.addr
 bob   = keyBob.addr
 carol = keyCarol.addr
 david = keyDavid.addr
+erza  = keyErza.addr
+franck = keyFranck.addr
+
 # 公開鍵
 pub_alice = keyAlice.pub
 pub_bob   = keyBob.pub
 pub_carol = keyCarol.pub
 pub_david = keyDavid.pub
-
+pub_erza  = keyErza.pub
+pub_franck = keyFranck.pub
 ```
+
+### 自分のワレットの秘密鍵をインポートする
+
+```ruby
+tapyrusRPC('importprivkey',[keyAlice.key.to_wif])
+tapyrusRPC('importprivkey',[keyBob.key.to_wif])
+tapyrusRPC('importprivkey',[keyCarol.key.to_wif])
+tapyrusRPC('importprivkey',[keyDavid.key.to_wif])
+tapyrusRPC('importprivkey',[keyErza.key.to_wif])
+tapyrusRPC('importprivkey',[keyFranck.key.to_wif])
+```
+
 
 ### アンロックのためにBobが知っている（べき）情報
 

@@ -1,6 +1,6 @@
 # tapyrusrb
 
-最終更新 2022/12/20 Shigeichiro Yamasaki
+最終更新 2022/12/24 Shigeichiro Yamasaki
 
 Tapyrus API をRuby から操作する rubygemsの基本
 
@@ -89,23 +89,44 @@ keyAlice = key.derive(1)
 keyBob   = key.derive(2)
 keyCarol = key.derive(3)
 keyDavid = key.derive(4)
+keyErza  = key.derive(5)
+keyFranck = key.derive(6)
+
 # テスト用の秘密鍵
 priv_alice = keyAlice.priv
 priv_bob   = keyBob.priv
 priv_carol = keyCarol.priv
-priv_david = keyDavid.priv
+priv_erza  = keyErza.priv
+priv_franck = keyFranck.priv
+
 ## アドレス
 alice = keyAlice.addr
 bob   = keyBob.addr
 carol = keyCarol.addr
 david = keyDavid.addr
+erza  = keyErza.addr
+franck = keyFranck.addr
+
 # 公開鍵
 pub_alice = keyAlice.pub
 pub_bob   = keyBob.pub
 pub_carol = keyCarol.pub
 pub_david = keyDavid.pub
+pub_erza  = keyErza.pub
+pub_franck = keyFranck.pub
 ```
 
+### 自分のワレットの秘密鍵をインポートする
+
+```ruby
+tapyrusRPC('importprivkey',[keyAlice.key.to_wif])
+tapyrusRPC('importprivkey',[keyBob.key.to_wif])
+tapyrusRPC('importprivkey',[keyCarol.key.to_wif])
+tapyrusRPC('importprivkey',[keyDavid.key.to_wif])
+tapyrusRPC('importprivkey',[keyErza.key.to_wif])
+tapyrusRPC('importprivkey',[keyFranck.key.to_wif])
+
+```
 
 
 ### 実行確認
