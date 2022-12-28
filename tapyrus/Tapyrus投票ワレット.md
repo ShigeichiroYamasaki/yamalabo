@@ -322,7 +322,7 @@ txid = send_tapyrus(bob, 0.0001, alice).chomp
 
 
 
-### 修正版HTLCによる投票トークンのロック(TPC)
+### 修正版HTLCによるトークンのロック(TPC)
 
 ```ruby
 #####################################
@@ -474,159 +474,237 @@ unlock_htlc_txid, unlock_htlc_tx = unlock_htlc_au(htlc_txid, redeem_script_hex, 
 
 ## Non-Reissuable Token による投票トークンの発行
 
-#### Bobによる子鍵の生成
+tapyrus core のコマンドではなくtapyrusrb で構成する
+
+### NRTのカラーIDの生成
+
+トークンの生成には，まずカラーIDが必要となる．
+カラーIDは，それを生成するUTXOのscriptPubKey から生成される．
+
+
+###   NRT発行トランザクション(CP2PKH)
+
 
 ```ruby
-# トークン専用の鍵
-key_for_token = master_key.derive(1, true)
-```
-
-送金テストに使用したUTXOを利用する（したがって10分経過後に以下を実施）
-
-```ruby
-def mint_NRT(amount,txid)
-    # NRTの発行
-    nrt = tapyrusRPC('issuetoken',[2, amount, txid, 0])
+def issue_NRT(addr,token_amount)
+    # UTXOの中でタイプがTPCでかつpubkeyhashでamount が FEE*3 より大きいのものを選択
+    utxos = unspent = tapyrusRPC('listunspent', []).select{|txo|txo["token"]=="TPC" and Tapyrus::Script.parse_from_payload(txo["scriptPubKey"].htb).to_h[:type]=="pubkeyhash" and (txo["amount"] > (FEE*3))}
+    # UTXOのTDIDを一つ選ぶ（最も少額のもの）
+    utxo = utxos.sort_by{|x|x["amount"]}[0]
+    # トランザクションのoutpoint を一つ選ぶ
+    outpoint = Tapyrus::OutPoint.from_txid(utxo["txid"], utxo["vout"])
+    # outpoint からNRTを生成
+    color_id = Tapyrus::Color::ColorIdentifier.non_reissuable(outpoint)
+    # UTXO のamountからFEEを差し引いた金額を送金する
+    amount_satoshi = ((utxo["amount"] - FEE)*(10**8)).to_i
+    ctx = Tapyrus::Tx.new
+    ctx.in << Tapyrus::TxIn.new(out_point: outpoint)
+    p2pkh = Tapyrus::Script.parse_from_addr(addr)
+    cp2pkh = p2pkh.add_color(color_id)
+    # 通常のP2PKH output
+    ctx.out << Tapyrus::TxOut.new(value: amount_satoshi , script_pubkey: p2pkh)
+    # CP2PKH output
+    ctx.out << Tapyrus::TxOut.new(value: token_amount , script_pubkey: cp2pkh)
+    # 使用する UTXOの scriptPubKey
+    script_pubkey = Tapyrus::Script.parse_from_payload(utxo["scriptPubKey"].htb)
+    # 受領したワレット内の自分のアドレス
+    myaddr = script_pubkey.to_addr
+    # 受領したワレット内の自分のアドレスに対応する秘密鍵（署名鍵）
+    priv = tapyrusRPC('dumpprivkey', [myaddr]).chomp
+    # ワレットの署名鍵オブジェクト
+    key = Tapyrus::Key.from_wif(priv)
+    # トランザクションのハッシュ値
+    sighash = ctx.sighash_for_input(0, script_pubkey)
+    # トランザクションへの署名
+    sig = key.sign(sighash) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+    # インプットへの署名の埋め込み
+    ctx.in[0].script_sig << sig
+    # インプットへの受領したワレット内の自分のアドレスの公開鍵の埋め込み
+    ctx.in[0].script_sig << key.pubkey.htb
+    cp2sh_txid = tapyrusRPC('sendrawtransaction', [ctx.to_hex]).chomp
+    return cp2sh_txid, color_id
 end
 
-# TXID をひとつ
-txid = utxos.map{|x|x["txid"]}[0]
+# 送金先は alice として実行
+cp2sh_txid, color_id = issue_NRT(alice, 10000)
 
+ cp2sh_txid
+ 
+=> "2d617dddd4a8e6affc70a9efc6e1be701118ce0c9d2565c2ad457ce4ecc5c720"
 
-# 投票トークンを10000トークン発行
-nrt=mint_NRT(10000,txid)
+color_id
 
-# 投票トークンのカラー
-vtoken = nrt["color"]
-
-=> "c253f956581350856d63ddceb82c19ae27707b335309a5cfab76fa98b7cdfe2db2"
-```
-
-### 各メンバーによる自分のカラー付きアドレスの生成（投票トークン用）
-
-```ruby
-voter1 = tapyrusRPC('getnewaddress',["voter1", vtoken]).chomp
-
-=> "vq3m89LT4NxGMiKP1u1Qd5f9nJMmmmjBuKRTJjs9ySBr1ziGASUtczUB2znq8uWdpTejBYJPzvVzup"
-
-voter2 = tapyrusRPC('getnewaddress',["voter2", vtoken]).chomp
-
-=> "vq3m89LT4NxGMiKP1u1Qd5f9nJMmmmjBuKRTJjs9ySBr1uskeQhquz6hwQHrMZtEuC176V3mDaBeVV"
-```
-
-### カラー付きアドレスへ 1 トークン送付
-
-```ruby
-c_txid1 = tapyrusRPC('transfertoken',[voter1,1]).chomp
+=> #<Tapyrus::Color::ColorIdentifier:0x00007fb2c44984b8 @payload="x\xE0;T^\xBE\x82V\x1D\xA3\x1D\xE8\xE1\xF0\xDF/\x1C\xCDu\xB5\x8FsQN\xB7\x8C\xEF\xCA2\xDE\xB8@", @type=194>
 ```
 
 
-### トークンの残高
+### 投票トークン
 
-amount が1 と 9999 の2つになっていることを確認
+上記で作成したトークンを投票トークンとする
 
 ```ruby
-tapyrusRPC('listunspent',[]).select{|x|x["token"]== vtoken}
+VToken = color_id
+```
+
+
+###   NRT送金トランザクション(CP2PKH)
+
+#### カラー付きアドレスの生成
+
+```ruby
+def cp2pkh_addr(addr, color_id)
+    p2pkh = Tapyrus::Script.parse_from_addr(addr)
+    cp2pkh = p2pkh.add_color(color_id)
+    cp2pkh.addresses[0]
+end
+
+# Aliceの投票アドレス
+vAlice = cp2pkh_addr(alice,VToken)
+# Bobの投票アドレス
+vBob = cp2pkh_addr(bob,VToken)
+```
+
+#### transfertoken コマンドでの投票権の送付
+
+```ruby
+txidAlice = tapyrusRPC('transfertoken',[vAlice,10]).chomp
+txidBob = tapyrusRPC('transfertoken',[vBob,10]).chomp
+```
+
+### Aliceの投票権UTXO
+
+```ruby
+utxos =  tapyrusRPC('listunspent',[])
+utxo_vAlice = utxos.select{|x|x["token"]==VToken.to_hex and x["address"]==vAlice}
 
 => 
-[{"txid"=>"4fbf87c7b9452725d527c15249fcd8f5fe779e346260ea87b4443ad754c12d5e",
+[{"txid"=>"7e9e509bc2e231d4f20dc084d69438ad138f4f324374670745ecab83fd552275",
   "vout"=>0,
-  "address"=>"vshtZw56YGk7UbKnVE37gy7mSyL58xLAxQY4a48DYb2vHgymFGdk99Xxfvsr41zd6QkrX9VNyuEpMn",
-  "token"=>"c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a",
+  "address"=>"vr3ixFLzjK8uw5Hpm3WrXS9qrjTnzwZkBFe8pucGfSZjMT8fX6K2K2dej4VfUSfL5diBSZ9k71yx5N",
+  "token"=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840",
   "amount"=>1,
-  "label"=>"voter1",
-  "scriptPubKey"=>
-   "21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914ef5492849186e02e18f341c02ae8b5fbd6fb7e0488ac",
-  "confirmations"=>1,
-  "spendable"=>true,
-  "solvable"=>true,
-  "safe"=>true},
- {"txid"=>"4fbf87c7b9452725d527c15249fcd8f5fe779e346260ea87b4443ad754c12d5e",
-  "vout"=>1,
-  "address"=>"vshtZw56YGk7UbKnVE37gy7mSyL58xLAxQY4a48DYb2vHT7rQywCt8xxLd1G4NqF1KtLZnd1TjdWQp",
-  "token"=>"c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a",
-  "amount"=>9999,
-  "scriptPubKey"=>
-   "21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914574a73df5657dacfa24ea40200a773bfcf99ddd588ac",
-  "confirmations"=>1,
+  "scriptPubKey"=>"21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bc76a91439f63e11f7f2e7cf5338f699339e8404bf4af42588ac",
+  "confirmations"=>32,
   "spendable"=>true,
   "solvable"=>true,
   "safe"=>true}]
-
 ```
 
-### トークン送付トランザクションの内容を確認する
 
-scriptPubKey に OP_COLOR があることを確認する
+
+##  CP2SH
+
+投票トークンをHTLCでロックする
+
 
 ```ruby
-tapyrusRPC('getrawtransaction',[txid,1])
+# 秘密情報
+secret = "Yamalabo DAO member Alice"
+# 秘密情報ハッシュ
+secret_hash=Tapyrus.sha256(secret)
+# ロック日数
+lock_days = 10
+# ロックタイム（ブロック数）
+locktime = (6*24*lock_days).to_bn.to_s(2).reverse.bth
+# redeem スクリプト
+redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash.bth << OP_EQUALVERIFY << OP_ELSE << locktime << OP_CSV << OP_DROP << pub_sender << OP_ENDIF << OP_CHECKSIG
+# redeem スクリプトハッシュ
+script_hash = redeem_script.to_hash160
+# CP2SH 投票トークンのカラーを付与
+cp2sh = Tapyrus::Script.to_cp2sh(VToken, script_hash)
+
+# 確認
+cp2sh.to_h
 
 => 
-{"txid"=>"4fbf87c7b9452725d527c15249fcd8f5fe779e346260ea87b4443ad754c12d5e",
- "hash"=>"a8c70b0f741b36131ca648a5a75c3148624a963791dbe0d4a52f6c4198bd1c55",
- "features"=>1,
- "size"=>543,
- "locktime"=>261592,
- "vin"=>
-  [{"txid"=>"d4ef0e205ec2c42d4e9c38e3d35252a5a28a96ed6714bd22571a489d2ee31a41",
+{:asm=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840 OP_COLOR OP_HASH160 439d7da0fc8b4e21f6c2e77ab30b7a131e49ff40 OP_EQUAL",
+ :hex=>"21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bca914439d7da0fc8b4e21f6c2e77ab30b7a131e49ff4087",
+ :type=>"nonstandard",                                  
+ :req_sigs=>1,                                          
+ :addresses=>["4Zr521aQzVCXQBs7Qbnsb8z7no3xwhMifCp2dBoznjwQWPYRJDk3CUyvioEwPHRGRrJXA3pcYvYFvvy"]}
+```
+
+
+### CP2SH カラー付きアドレスの生成
+
+```ruby
+vote_HTLC_addr = cp2sh.addresses[0]
+
+=> "4Zr521aQzVCXQBs7Qbnsb8z7no3xwhMifCp2dBoznjwQWPYRJDk3CUyvioEwPHRGRrJXA3pcYvYFvvy"
+```
+
+
+### HTCL ロックトランザクションへの投票トークンの送付
+
+transfertoken コマンドでの投票権の送付
+
+
+```ruby
+txidHTLC = tapyrusRPC('transfertoken',[vote_HTLC_addr,1000]).chomp
+
+=> "95dad9202f5265714f61725ae9d1af0259da6f86a2ddd86d9e2db765fc8f3772"
+```
+
+トランザクションの確認
+
+```ruby
+ tapyrusRPC('getrawtransaction',[txidHTLC,1])
+=> 
+{"txid"=>"95dad9202f5265714f61725ae9d1af0259da6f86a2ddd86d9e2db765fc8f3772",
+ "hash"=>"9bc4da0bd0b6c9952c05e1620897d9cc3b99d00f96c82ccc1fe8489ba484c83a",
+ "features"=>1,                 
+ "size"=>474,                   
+ "locktime"=>262594,            
+ "vin"=>                     
+  [{"txid"=>"d5f42ca9608cb35e8d7fd7d4cb28474fb9fc47ec2421ee2edbddc94c88595292",
+    "vout"=>1,               
+    "scriptSig"=>
+     {"asm"=>
+       "30440220546dd37a45dbf8c354a7e40c949548e32d9766b967fb1e2aea841075184328a00220380b4484731613f0c77c513865c77e322e0af797ed2c7fefa181b8c840c99f59[ALL] 02e7b4e8a5084b138af56ff0c976289548701cc3eadc318d5807e2ba461a64a091",
+      "hex"=>
+       "4730440220546dd37a45dbf8c354a7e40c949548e32d9766b967fb1e2aea841075184328a00220380b4484731613f0c77c513865c77e322e0af797ed2c7fefa181b8c840c99f59012102e7b4e8a5084b138af56ff0c976289548701cc3eadc318d5807e2ba461a64a091"},
+    "sequence"=>4294967294},
+   {"txid"=>"7703460833e879112ca97f715890e0dd8441a29cadb966e545ee0783bf659f8c",
     "vout"=>1,
     "scriptSig"=>
      {"asm"=>
-       "304402204d70e461f2ba4f0e993a2d6c6a09622339ac0ef6aba02234c54ec4018f1f4cbe0220131aec4dc7e0a3d166ba61cd4f4605eb6235e8b40e1050e148a4057e9bef651a[ALL] 032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292",
+       "304402205cc6da903a61d933274fd9aca84510d60e26d384f2fa9d3d3b2ee83d5418e52102205067f0f9232d4592a08c0c903a9e0387b20bbc4ebffa27c4944c56197190bbc6[ALL] 025efe7861c3ac5554eb23355a0d518b7be58351aa1b2d85ed0e51039c7748fb78",
       "hex"=>
-       "47304402204d70e461f2ba4f0e993a2d6c6a09622339ac0ef6aba02234c54ec4018f1f4cbe0220131aec4dc7e0a3d166ba61cd4f4605eb6235e8b40e1050e148a4057e9bef651a0121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292"},
-    "sequence"=>4294967294},
-   {"txid"=>"9ab8623d9b0979bc20296f5bc80cc010bfb71a54321aa92d432d22883cbe4c02",
-    "vout"=>0,
-    "scriptSig"=>
-     {"asm"=>
-       "30440220054872cfe455a1fa061d92db732f9c3bb7125eff15ba8caa78896ace36411d9d02201220fe95ed522b1313bf5b3c73d15c0d3ed5e529c3a7abb0e41b9ac4c2a09357[ALL] 032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292",
-      "hex"=>
-       "4730440220054872cfe455a1fa061d92db732f9c3bb7125eff15ba8caa78896ace36411d9d02201220fe95ed522b1313bf5b3c73d15c0d3ed5e529c3a7abb0e41b9ac4c2a093570121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292"},
-    "sequence"=>4294967294},
-   {"txid"=>"b3a197f1bb4cc14a18cf8ca38955a2afec3c5281575886c77e15db222524859f",
-    "vout"=>0,
-    "scriptSig"=>
-     {"asm"=>"76a91460ab54d4b65157bddf89216a40d210f48e981c5588ac",
-      "hex"=>"1976a91460ab54d4b65157bddf89216a40d210f48e981c5588ac"},
+       "47304402205cc6da903a61d933274fd9aca84510d60e26d384f2fa9d3d3b2ee83d5418e52102205067f0f9232d4592a08c0c903a9e0387b20bbc4ebffa27c4944c56197190bbc60121025efe7861c3ac5554eb23355a0d518b7be58351aa1b2d85ed0e51039c7748fb78"},
     "sequence"=>4294967294}],
  "vout"=>
-  [{"token"=>"c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a",
-    "value"=>1,
+  [{"token"=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840",
+    "value"=>1000,
     "n"=>0,
     "scriptPubKey"=>
-     {"asm"=>
-       "c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a OP_COLOR OP_DUP OP_HASH160 ef5492849186e02e18f341c02ae8b5fbd6fb7e04 OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>
-       "21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914ef5492849186e02e18f341c02ae8b5fbd6fb7e0488ac",
+     {"asm"=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840 OP_COLOR OP_HASH160 439d7da0fc8b4e21f6c2e77ab30b7a131e49ff40 OP_EQUAL",
+      "hex"=>"21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bca914439d7da0fc8b4e21f6c2e77ab30b7a131e49ff4087",
       "reqSigs"=>1,
-      "type"=>"coloredpubkeyhash",
-      "addresses"=>["vshtZw56YGk7UbKnVE37gy7mSyL58xLAxQY4a48DYb2vHgymFGdk99Xxfvsr41zd6QkrX9VNyuEpMn"]}},
-   {"token"=>"c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a",
-    "value"=>9999,
+      "type"=>"coloredscripthash",
+      "addresses"=>["4Zr521aQzVCXQBs7Qbnsb8z7no3xwhMifCp2dBoznjwQWPYRJDk3CUyvioEwPHRGRrJXA3pcYvYFvvy"]}},
+   {"token"=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840",
+    "value"=>8989,
     "n"=>1,
     "scriptPubKey"=>
-     {"asm"=>
-       "c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5a OP_COLOR OP_DUP OP_HASH160 574a73df5657dacfa24ea40200a773bfcf99ddd5 OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>
-       "21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914574a73df5657dacfa24ea40200a773bfcf99ddd588ac",
+     {"asm"=>"c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840 OP_COLOR OP_DUP OP_HASH160 1f1cbf37b0848f02ad26da85e49f794856a65ded OP_EQUALVERIFY OP_CHECKSIG",
+      "hex"=>"21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bc76a9141f1cbf37b0848f02ad26da85e49f794856a65ded88ac",
       "reqSigs"=>1,
       "type"=>"coloredpubkeyhash",
-      "addresses"=>["vshtZw56YGk7UbKnVE37gy7mSyL58xLAxQY4a48DYb2vHT7rQywCt8xxLd1G4NqF1KtLZnd1TjdWQp"]}},
+      "addresses"=>["vr3ixFLzjK8uw5Hpm3WrXS9qrjTnzwZkBFe8pucGfSZjMQghQFXVGyd8qMuJSTbek9ewDWb6AobxKM"]}},
    {"token"=>"TPC",
-    "value"=>0.01006397,
+    "value"=>0.01000946,
     "n"=>2,
     "scriptPubKey"=>
-     {"asm"=>"OP_DUP OP_HASH160 574a73df5657dacfa24ea40200a773bfcf99ddd5 OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"76a914574a73df5657dacfa24ea40200a773bfcf99ddd588ac",
+     {"asm"=>"OP_DUP OP_HASH160 1f1cbf37b0848f02ad26da85e49f794856a65ded OP_EQUALVERIFY OP_CHECKSIG",
+      "hex"=>"76a9141f1cbf37b0848f02ad26da85e49f794856a65ded88ac",
       "reqSigs"=>1,
       "type"=>"pubkeyhash",
-      "addresses"=>["18xYykQjFPcByUKvLcxTSqkKLiPGz9e6DJ"]}}],
+      "addresses"=>["13qWPKXSc2Cm5zDaCgGD1p4N2kMaWTYpZs"]}}],
  "hex"=>
-  "0100000003411ae32e9d481a5722bd1467ed968aa2a55252d3e3389c4e2dc4c25e200eefd4010000006a47304402204d70e461f2ba4f0e993a2d6c6a09622339ac0ef6aba02234c54ec4018f1f4cbe0220131aec4dc7e0a3d166ba61cd4f4605eb6235e8b40e1050e148a4057e9bef651a0121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292feffffff024cbe3c88222d432da91a32541ab7bf10c00cc85b6f2920bc79099b3d62b89a000000006a4730440220054872cfe455a1fa061d92db732f9c3bb7125eff15ba8caa78896ace36411d9d02201220fe95ed522b1313bf5b3c73d15c0d3ed5e529c3a7abb0e41b9ac4c2a093570121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292feffffff9f85242522db157ec786585781523cecafa25589a38ccf184ac14cbbf197a1b3000000001a1976a91460ab54d4b65157bddf89216a40d210f48e981c5588acfeffffff0301000000000000003c21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914ef5492849186e02e18f341c02ae8b5fbd6fb7e0488ac0f270000000000003c21c2b6199605e897800b4340a42e6cc46f020c57f73dac6003e5a80c8c4910f9cb5abc76a914574a73df5657dacfa24ea40200a773bfcf99ddd588ac3d5b0f00000000001976a914574a73df5657dacfa24ea40200a773bfcf99ddd588acd8fd0300",
- "blockhash"=>"45453bf3b47c935146d3099dd82ddb28b48725e191ab00829cd2c7a2bf2f79b1",
- "confirmations"=>2,
- "time"=>1671899383,
- "blocktime"=>1671899383}
+  "0100000002925259884cc9dddb2eee2124ec47fcb94f4728cbd4d77f8d5eb38c60a92cf4d5010000006a4730440220546dd37a45dbf8c354a7e40c949548e32d9766b967fb1e2aea841075184328a00220380b4484731613f0c77c513865c77e322e0af797ed2c7fefa181b8c840c99f59012102e7b4e8a5084b138af56ff0c976289548701cc3eadc318d5807e2ba461a64a091feffffff8c9f65bf8307ee45e566b9ad9ca24184dde09058717fa92c1179e83308460377010000006a47304402205cc6da903a61d933274fd9aca84510d60e26d384f2fa9d3d3b2ee83d5418e52102205067f0f9232d4592a08c0c903a9e0387b20bbc4ebffa27c4944c56197190bbc60121025efe7861c3ac5554eb23355a0d518b7be58351aa1b2d85ed0e51039c7748fb78feffffff03e8030000000000003a21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bca914439d7da0fc8b4e21f6c2e77ab30b7a131e49ff40871d230000000000003c21c278e03b545ebe82561da31de8e1f0df2f1ccd75b58f73514eb78cefca32deb840bc76a9141f1cbf37b0848f02ad26da85e49f794856a65ded88acf2450f00000000001976a9141f1cbf37b0848f02ad26da85e49f794856a65ded88acc2010400",
+ "blockhash"=>"c6a71800efd20082b1d2f5f4dd1253dda3fa8527bdaa161b91ba4d96d71b4555",
+ "confirmations"=>10,
+ "time"=>1672231021,
+ "blocktime"=>1672231021}
 ```
+
