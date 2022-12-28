@@ -1,6 +1,6 @@
 # Tapyrus 投票ワレット
 
-最終更新 2022/12/24 Shigeichiro Yamasaki
+最終更新 2022/12/28 Shigeichiro Yamasaki
 
 tapyrusrb を使ってP2SH の送金と受領を行うトランザクションを作成する
 
