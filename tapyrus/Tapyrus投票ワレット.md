@@ -434,7 +434,7 @@ def unlock_htlc_au(htlc_txid, redeem_script_hex, pub_addr, addr, key, secret)
     utxo_value = p2sh_utxo.value    # この金額の単位は satoshi
     # P2SH のUTXOのoutpoint
     outpoint = Tapyrus::OutPoint.from_txid(htlc_txid, 0)
-    # アンロックトランザクションの構成（送金先はaliceとする）
+    # アンロックトランザクションの構成
     tx = Tapyrus::Tx.new
     # inputの構成
     # P2SH のoutputをinputにする
@@ -488,7 +488,7 @@ tapyrus core のコマンドではなくtapyrusrb で構成する
 ```ruby
 def issue_NRT(addr,token_amount)
     # UTXOの中でタイプがTPCでかつpubkeyhashでamount が FEE*3 より大きいのものを選択
-    utxos = unspent = tapyrusRPC('listunspent', []).select{|txo|txo["token"]=="TPC" and Tapyrus::Script.parse_from_payload(txo["scriptPubKey"].htb).to_h[:type]=="pubkeyhash" and (txo["amount"] > (FEE*3))}
+    utxos = tapyrusRPC('listunspent', []).select{|txo|txo["token"]=="TPC" and Tapyrus::Script.parse_from_payload(txo["scriptPubKey"].htb).to_h[:type]=="pubkeyhash" and (txo["amount"] > (FEE*3))}
     # UTXOのTDIDを一つ選ぶ（最も少額のもの）
     utxo = utxos.sort_by{|x|x["amount"]}[0]
     # トランザクションのoutpoint を一つ選ぶ
@@ -604,15 +604,22 @@ secret = "Yamalabo DAO member Alice"
 secret_hash=Tapyrus.sha256(secret)
 # ロック日数
 lock_days = 10
-# ロックタイム（ブロック数）
-locktime = (6*24*lock_days).to_bn.to_s(2).reverse.bth
-# redeem スクリプト
-redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash.bth << OP_EQUALVERIFY << OP_ELSE << locktime << OP_CSV << OP_DROP << pub_sender << OP_ENDIF << OP_CHECKSIG
-# redeem スクリプトハッシュ
-script_hash = redeem_script.to_hash160
-# CP2SH 投票トークンのカラーを付与
-cp2sh = Tapyrus::Script.to_cp2sh(VToken, script_hash)
+color_id = VToken
+pub_sender = pub_alice
 
+def cp2sh_HTLC_lock(secret_hash, lock_days, color_id, pub_sender)
+    # ロックタイム（ブロック数）
+    locktime = (6*24*lock_days).to_bn.to_s(2).reverse.bth
+    # redeem スクリプト
+    redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash.bth << OP_EQUALVERIFY << OP_ELSE << locktime << OP_CSV << OP_DROP << pub_sender << OP_ENDIF << OP_CHECKSIG
+    # redeem スクリプトハッシュ
+    script_hash = redeem_script.to_hash160
+    # CP2SH 投票トークンのカラーを付与
+    cp2sh = Tapyrus::Script.to_cp2sh(color_id, script_hash)
+    return cp2sh
+end
+
+cp2sh = cp2sh_HTLC_lock(secret_hash, lock_days, color_id, pub_sender)
 # 確認
 cp2sh.to_h
 
@@ -640,7 +647,7 @@ transfertoken コマンドでの投票権の送付
 
 
 ```ruby
-txidHTLC = tapyrusRPC('transfertoken',[vote_HTLC_addr,1000]).chomp
+htlc_txid = tapyrusRPC('transfertoken',[vote_HTLC_addr,1000]).chomp
 
 => "95dad9202f5265714f61725ae9d1af0259da6f86a2ddd86d9e2db765fc8f3772"
 ```
@@ -648,7 +655,8 @@ txidHTLC = tapyrusRPC('transfertoken',[vote_HTLC_addr,1000]).chomp
 トランザクションの確認
 
 ```ruby
- tapyrusRPC('getrawtransaction',[txidHTLC,1])
+tapyrusRPC('getrawtransaction',[txidHTLC,1])
+
 => 
 {"txid"=>"95dad9202f5265714f61725ae9d1af0259da6f86a2ddd86d9e2db765fc8f3772",
  "hash"=>"9bc4da0bd0b6c9952c05e1620897d9cc3b99d00f96c82ccc1fe8489ba484c83a",
@@ -708,3 +716,97 @@ txidHTLC = tapyrusRPC('transfertoken',[vote_HTLC_addr,1000]).chomp
  "blocktime"=>1672231021}
 ```
 
+### UTXOの取得
+
+```ruby
+tx = Tapyrus::Tx.parse_from_payload(tapyrusRPC('getrawtransaction',[htlc_txid]).chomp.htb)
+```
+
+### 投票 HTLC アンロックトランザクション
+
+input としてHTLC lockトランザクションのUTXOと自分が所有するTPCのUTXO（手数料用）の２つを使用する
+手数料用inputは１個だけとする
+
+* input 0: colored HTLC locked value: トークン数 (satoshi)
+* input 1: TPC (P2PKH) 手数料用
+* vout  0: colored output (CP2SH) value: トークン数（satoshi)
+* vout  1: TPC output (P2PKH) おつり
+
+```ruby
+# p2sh でロックされたトランザクションのtxid
+htlc_txid 
+# redeem script の16進数形式
+redeem_script_hex = redeem_script.to_hex
+# アンロックした資金は addr = bob に送金するものとする
+key = keyBob
+# 送金先はBob
+addr = bob
+
+
+def unlock_htlc_cp2sh(htlc_txid, color_id, redeem_script_hex, pub_addr, addr, key, secret)
+    # 16進数形式redeem script の復元
+    redeem_script = Tapyrus::Script.parse_from_payload(redeem_script_hex.htb)
+    # アンロック対象トランザクションとUTXOを確定する
+    locked_tx = Tapyrus::Tx.parse_from_payload(tapyrusRPC('getrawtransaction',[htlc_txid]).htb)
+    # ロックされているUTXO  0が cp2shであることがわかっている
+    cp2sh_utxo = locked_tx.out[0]
+    # このoutputの金額は NRT の票数（整数）
+    token_value = cp2sh_utxo.value    
+    # CP2SH のUTXOのoutpoint
+    cp2sh_outpoint = Tapyrus::OutPoint.from_txid(htlc_txid, 0)
+    # 手数料用のUTXO
+    utxos = tapyrusRPC('listunspent', []).select{|txo|txo["token"]=="TPC" and Tapyrus::Script.parse_from_payload(txo["scriptPubKey"].htb).to_h[:type]=="pubkeyhash" and (txo["amount"] > (FEE*3)) and txo["address"] == addr }
+    # UTXOのTDIDを一つ選ぶ（最も少額のもの）
+    utxo = utxos.sort_by{|x|x["amount"]}[0]
+    # おつり
+    change = utxo["amount"] - FEE
+    
+    # トランザクションの構成
+    tx = Tapyrus::Tx.new
+    
+    # inputs
+    # CP2SH の outpoint をinputにする
+    tx.in <<  Tapyrus::TxIn.new(out_point: cp2sh_outpoint)
+    # 手数料用のinputの構成
+    outpoint = Tapyrus::OutPoint.from_txid(utxo["txid"], utxo["vout"])
+    tx.in << Tapyrus::TxIn.new(out_point: outpoint)
+    
+    # outputs
+    # まず P2PKHアドレスへ送金のscriptPubKeyを作成する
+    scriptPubKey = Tapyrus::Script.parse_from_addr(addr)
+    # カラー付き scriptPubKeyに変換
+    cp2pkh_scriptPubKey = scriptPubKey.add_color(color_id)
+    # カラー付きCP2PKH とアンロックする票数を script_pubkeyをoutputに埋め込む
+    tx.out << Tapyrus::TxOut.new(value: token_value , script_pubkey:  cp2pkh_scriptPubKey)
+    # おつりTPC用 P2PKH
+    tx.out << Tapyrus::TxOut.new(value: (change*(10**8)).to_i , script_pubkey:  scriptPubKey)
+    
+    # sighashの構成
+    # アンロックトランザクションの署名対象のハッシュ値 sighash
+    sighash0 = tx.sighash_for_input(0, redeem_script, hash_type: Tapyrus::SIGHASH_TYPE[:all])
+    # scriptsig の追加
+    sig0 = key.key.sign(sighash0) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+    # <Bobの署名> 
+    # <Bobの公開鍵>
+    # <Secret> 
+    # OP_TRUE
+    tx.in[0].script_sig << sig0
+    tx.in[0].script_sig << pub_addr
+    tx.in[0].script_sig << secret.bth
+    tx.in[0].script_sig << OP_1
+    tx.in[0].script_sig << redeem_script.to_payload
+    sighash1 = tx.sighash_for_input(1, utxo[ "scriptPubKey"])
+    sig1 = key.key.sign(sighash1) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
+    # <Bobの署名> 
+    # <Bobの公開鍵>
+    tx.in[1].script_sig << sig1
+    tx.in[1].script_sig << pub_addr
+    
+    return tx
+    # 署名したトランザクションをブロードキャストする
+    #p2sh_txid = tapyrusRPC('sendrawtransaction', [tx.to_hex])
+    #return p2sh_txid, tx
+end
+
+unlock_htlc_tx = unlock_htlc_cp2sh(htlc_txid, VToken, redeem_script_hex, pub_bob, bob, keyBob, secret)
+```
