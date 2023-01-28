@@ -582,81 +582,6 @@ txidBob = tapyrusRPC('transfertoken',[vBob,10]).chomp
 => "75afb32fc210f0dc89ee49bdb1c61c74e77ddd6423f61cb2dd4e4f58e4bca8e4"
 ```
 
-#### transfertoken transaction の確認
-
-output として投票トークンのおつりとTPCのおつりが追加されている
-
-```ruby
-txBob = tapyrusRPC('getrawtransaction', [txidBob, 1])
-
-=> 
-{"txid"=>"75afb32fc210f0dc89ee49bdb1c61c74e77ddd6423f61cb2dd4e4f58e4bca8e4",
- "hash"=>"5a82bf79adf928d4fbd395ac7a9c15d2e6a54c745161648fc001a340381345d9",
- "features"=>1,
- "size"=>623,
- "locktime"=>263216,
- "vin"=>
-  [{"txid"=>"1addd9e81de05baff6e0d8a2256bd4d3f96c85b8192c066a46a51ed96d0a58a7",
-    "vout"=>1,
-    "scriptSig"=>
-     {"asm"=>
-       "3044022016a32c28811cc2fa40e449fdecc370ec797fa2f5f0cb6b888c16a3cfb18ab0d402201ac7bba8fe665f017011d9900f80bad611ca2e3871bcb335b31cc86630bff747[ALL] 03eac251090d5a9f80d31b49b9dff8c753feceab96799d1e176ae996c30190943d",
-      "hex"=>
-       "473044022016a32c28811cc2fa40e449fdecc370ec797fa2f5f0cb6b888c16a3cfb18ab0d402201ac7bba8fe665f017011d9900f80bad611ca2e3871bcb335b31cc86630bff747012103eac251090d5a9f80d31b49b9dff8c753feceab96799d1e176ae996c30190943d"},
-    "sequence"=>4294967294},
-   {"txid"=>"505b0edc0a6b83874d7237978e110dcbd3718121d9c6764cd7c399074bb8c144",
-    "vout"=>0,
-    "scriptSig"=>
-     {"asm"=>
-       "304402202eccafafa7f880d2fe6c4633b0f4fbc871e2f7bdf72e882133abf0d4a933c75002207061997c46919efc628f66fecaad2ecdbdc1b9b60806ec53b5eb79ddf3bc72c1[ALL] 03122e5241c75b42b8acdb3f392345bb2ed4c02c9c1487acfcc2871eeb908ab3b7",
-      "hex"=>
-       "47304402202eccafafa7f880d2fe6c4633b0f4fbc871e2f7bdf72e882133abf0d4a933c75002207061997c46919efc628f66fecaad2ecdbdc1b9b60806ec53b5eb79ddf3bc72c1012103122e5241c75b42b8acdb3f392345bb2ed4c02c9c1487acfcc2871eeb908ab3b7"},
-    "sequence"=>4294967294},
-   {"txid"=>"b6c4589d39e2f30ad473f3973c6cbfb915f9629bedeaecab4fa98872788292d2",
-    "vout"=>1,
-    "scriptSig"=>
-     {"asm"=>
-       "30440220604d84641276f07da923cb063e1b23b617c55ad60a619ab9782e4099d607a9a3022012e65e033d57a9f47fd16094ab2cd5b958dfe82faed61a525d3ef01b7d057242[ALL] 032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292",
-      "hex"=>
-       "4730440220604d84641276f07da923cb063e1b23b617c55ad60a619ab9782e4099d607a9a3022012e65e033d57a9f47fd16094ab2cd5b958dfe82faed61a525d3ef01b7d0572420121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292"},
-    "sequence"=>4294967294}],
- "vout"=>
-  [{"token"=>"c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4",
-    "value"=>10,
-    "n"=>0,
-    "scriptPubKey"=>
-     {"asm"=>
-       "c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4 OP_COLOR OP_DUP OP_HASH160 29b4b5fba49425ce64d9b27fbe5249827269d583 OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a91429b4b5fba49425ce64d9b27fbe5249827269d58388ac",
-      "reqSigs"=>1,
-      "type"=>"coloredpubkeyhash",
-      "addresses"=>["vsbVHH6scmw4jNz6iaxjGfh4wYzTcSFArDvVCV4JbvdhNUYwFAzcS4NspYSCjUmee7puELjqqMFkCd"]}},
-   {"token"=>"c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4",
-    "value"=>9980,
-    "n"=>1,
-    "scriptPubKey"=>
-     {"asm"=>
-       "c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4 OP_COLOR OP_DUP OP_HASH160 947c43fc94bbb1e70b6520d78f5112f336e7208f OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a914947c43fc94bbb1e70b6520d78f5112f336e7208f88ac",
-      "reqSigs"=>1,
-      "type"=>"coloredpubkeyhash",
-      "addresses"=>["vsbVHH6scmw4jNz6iaxjGfh4wYzTcSFArDvVCV4JbvdhNeHXvoz7HUhxsv4qC3CnkgPUFekDQU2k8w"]}},
-   {"token"=>"TPC",
-    "value"=>0.01084753,
-    "n"=>2,
-    "scriptPubKey"=>
-     {"asm"=>"OP_DUP OP_HASH160 947c43fc94bbb1e70b6520d78f5112f336e7208f OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"76a914947c43fc94bbb1e70b6520d78f5112f336e7208f88ac",
-      "reqSigs"=>1,
-      "type"=>"pubkeyhash",
-      "addresses"=>["1EY7sWpzzYRJjQbcrNkuobALHaVdBLikGJ"]}}],
- "hex"=>
-  "0100000003a7580a6dd91ea5466a062c19b8856cf9d3d46b25a2d8e0f6af5be01de8d9dd1a010000006a473044022016a32c28811cc2fa40e449fdecc370ec797fa2f5f0cb6b888c16a3cfb18ab0d402201ac7bba8fe665f017011d9900f80bad611ca2e3871bcb335b31cc86630bff747012103eac251090d5a9f80d31b49b9dff8c753feceab96799d1e176ae996c30190943dfeffffff44c1b84b0799c3d74c76c6d9218171d3cb0d118e9737724d87836b0adc0e5b50000000006a47304402202eccafafa7f880d2fe6c4633b0f4fbc871e2f7bdf72e882133abf0d4a933c75002207061997c46919efc628f66fecaad2ecdbdc1b9b60806ec53b5eb79ddf3bc72c1012103122e5241c75b42b8acdb3f392345bb2ed4c02c9c1487acfcc2871eeb908ab3b7feffffffd29282787288a94fabeceaed9b62f915b9bf6c3c97f373d40af3e2399d58c4b6010000006a4730440220604d84641276f07da923cb063e1b23b617c55ad60a619ab9782e4099d607a9a3022012e65e033d57a9f47fd16094ab2cd5b958dfe82faed61a525d3ef01b7d0572420121032f04706a999dc831bacf23f84554b0eb026a79bd76a204449a91401d963e7292feffffff030a000000000000003c21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a91429b4b5fba49425ce64d9b27fbe5249827269d58388acfc260000000000003c21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a914947c43fc94bbb1e70b6520d78f5112f336e7208f88ac518d1000000000001976a914947c43fc94bbb1e70b6520d78f5112f336e7208f88ac30040400",
- "blockhash"=>"39cd44e319014a9720ad1e9cc9a69210f91c9918b5ef0873efe1d1898de47645",
- "confirmations"=>1,
- "time"=>1672412362,
- "blocktime"=>1672412362}
-```
 
 ### Aliceの投票権UTXO
 
@@ -683,6 +608,41 @@ utxos_alice = consuming_utxos(FEE*4, alice, VToken.to_hex)
 
 投票トークンをHTLCでロックする
 
+### カラー付き 修正HTLC スクリプト構成
+
+アンロックの方法（カラーに関する処理はない）
+
+```
+    [HTLC の scriptSig]
+<Bobの署名> 
+<Bobの公開鍵>
+<Secret> 
+OP_TRUE
+------------連接--------------
+    [HTLCの redeem script] 
+OP_IF
+  OP_SHA256 <Secretのハッシュ値> OP_EQUALVERIFY 
+OP_ELSE
+  <ロックするブロック数> OP_CSV 
+  OP_DROP 
+  <Aliceの公開鍵>
+OP_ENDIF
+OP_CHECKSIG
+```
+
+### カラー付き修正HTLCのロックスクリプト (CP2SH)
+
+* scriptPubKey
+
+```
+<カラー識別子> 
+OP_COLOR 
+OP_HASH160 
+<redeem script のハッシュ値>
+OP_EQUAL
+```
+
+### カラー付き修正HTLC ロックトランザクション
 
 ```ruby
 # 秘密情報
@@ -706,7 +666,7 @@ def cp2sh_HTLC_lock(secret_hash, lock_days, color_id, pub_sender)
   return cp2sh
 end
 
-cp2sh = cp2sh_HTLC_lock(secret_hash, lock_days, color_id, pub_sender)
+cp2sh = cp2sh_HTLC_lock(secret_hash, lock_days, VToken, pub_alice)
 # 確認
 cp2sh.to_h
 
@@ -763,18 +723,11 @@ tapyrusRPC('getrawtransaction',[vHTLCtxid,1])
     "vout"=>1,
     "scriptSig"=>
      {"asm"=>
-       "3044022074c9375d7bc466e9404303e2b27a3b3e11f42f1041b63a8b2ed84df3c30f8f3602205028ba108b3d8a16f058722b56f01be562325846b75f7198c21c59b0118eaa79[ALL] 03c25e32b63da161ac66df5314c712de239b183b9a63b51b0d5ab3b42d6946876c",
-      "hex"=>
-       "473044022074c9375d7bc466e9404303e2b27a3b3e11f42f1041b63a8b2ed84df3c30f8f3602205028ba108b3d8a16f058722b56f01be562325846b75f7198c21c59b0118eaa79012103c25e32b63da161ac66df5314c712de239b183b9a63b51b0d5ab3b42d6946876c"},
-    "sequence"=>4294967294},
-   {"txid"=>"ba09d5ac272fdc5775626afdc9df0be753c7517671127431483c3132d01db0c6",
-    "vout"=>1,
-    "scriptSig"=>
-     {"asm"=>
-       "304402204628265c0f7087dbe2430d0e5954df7aa75b2c2f31738bacaca8a677b08e0a16022047b48596201da5a4705d3fa5cd06dd7a27e8631261feb2eb41eba329638297e7[ALL] 020176c078497f2d1e5860bef896c6e235359f868cc9d7b14ca7898082a2ac7e7c",
-      "hex"=>
-       "47304402204628265c0f7087dbe2430d0e5954df7aa75b2c2f31738bacaca8a677b08e0a16022047b48596201da5a4705d3fa5cd06dd7a27e8631261feb2eb41eba329638297e70121020176c078497f2d1e5860bef896c6e235359f868cc9d7b14ca7898082a2ac7e7c"},
-    "sequence"=>4294967294}],
+
+...
+
+★ CP2SH の部分
+
  "vout"=>
   [{"token"=>"c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4",
     "value"=>1000,
@@ -786,28 +739,11 @@ tapyrusRPC('getrawtransaction',[vHTLCtxid,1])
       "reqSigs"=>1,
       "type"=>"coloredscripthash",
       "addresses"=>["4ZscnLcAsNfKYzAogZLKTtDf1ssVcJrQ5snJyZPSpgRUUQbKXG7CG6xo1CNisPJNs549iq8ddS8EPdJ"]}},
-   {"token"=>"c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4",
-    "value"=>8980,
-    "n"=>1,
-    "scriptPubKey"=>
-     {"asm"=>
-       "c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4 OP_COLOR OP_DUP OP_HASH160 ae84268e422adf7b732599fd2144c409786acd9a OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a914ae84268e422adf7b732599fd2144c409786acd9a88ac",
-      "reqSigs"=>1,
-      "type"=>"coloredpubkeyhash",
-      "addresses"=>["vsbVHH6scmw4jNz6iaxjGfh4wYzTcSFArDvVCV4JbvdhNgfAwfFffWmVjufuLKRsb2W8jXHEAVPYTS"]}},
-   {"token"=>"TPC",
-    "value"=>0.01003298,
-    "n"=>2,
-    "scriptPubKey"=>
-     {"asm"=>"OP_DUP OP_HASH160 ae84268e422adf7b732599fd2144c409786acd9a OP_EQUALVERIFY OP_CHECKSIG",
-      "hex"=>"76a914ae84268e422adf7b732599fd2144c409786acd9a88ac",
-      "reqSigs"=>1,
-      "type"=>"pubkeyhash",
-      "addresses"=>["1GuktN6ZNaUqbQCgzeyzdwGzmT2dvtJPku"]}}],
- "hex"=>
-  "0100000002e4a8bce4584f4eddb21cf62364dd7de7741cc6b1bd49ee89dcf010c22fb3af75010000006a473044022074c9375d7bc466e9404303e2b27a3b3e11f42f1041b63a8b2ed84df3c30f8f3602205028ba108b3d8a16f058722b56f01be562325846b75f7198c21c59b0118eaa79012103c25e32b63da161ac66df5314c712de239b183b9a63b51b0d5ab3b42d6946876cfeffffffc6b01dd032313c48317412717651c753e70bdfc9fd6a627557dc2f27acd509ba010000006a47304402204628265c0f7087dbe2430d0e5954df7aa75b2c2f31738bacaca8a677b08e0a16022047b48596201da5a4705d3fa5cd06dd7a27e8631261feb2eb41eba329638297e70121020176c078497f2d1e5860bef896c6e235359f868cc9d7b14ca7898082a2ac7e7cfeffffff03e8030000000000003a21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bca914439d7da0fc8b4e21f6c2e77ab30b7a131e49ff408714230000000000003c21c2b206408c1842a3b4a2544585967f53e36a1d0b2f39132893a94312550f43bba4bc76a914ae84268e422adf7b732599fd2144c409786acd9a88ac224f0f00000000001976a914ae84268e422adf7b732599fd2144c409786acd9a88ac37040400"}
+  
+...
+
 ```
+
 
 ### UTXOの取得
 
@@ -835,8 +771,9 @@ secret = "Yamalabo DAO member Alice"
 pub_sender = pub_alice
 lock_days = 10
 locktime = (6*24*lock_days).to_bn.to_s(2).reverse.bth
-redeem_script = Tapyrus::Script.new << OP_IF << OP_SHA256 << secret_hash.bth << OP_EQUALVERIFY << OP_ELSE << locktime << OP_CSV << OP_DROP << pub_sender << OP_ENDIF << OP_CHECKSIG
-redeem_script_hex = redeem_script.to_hex
+redeem_script_hex = "63a820a0b3df51b73a8148bce482b88a36ab4f19598a4a3d0f217ea2b1e55e50a37649886702a005b2752102a333e0b6f503c2fa6df50b41f9775c95e5c47012d7cdbb5d86ef7441d693cf6568ac"
+
+
 #  unlock した資金は receiver = bob にremittanceするものとする
 key = keyBob
 # receiver はBob
@@ -879,10 +816,8 @@ def unlock_htlc_cp2sh(vHTLCtxid, color_id, redeem_script_hex, pub_receiver, rece
   tx.out << Tapyrus::TxOut.new(value: token_value , script_pubkey: cp2pkh_scriptPubKey)
   #  changeTPC用 P2PKH
   tx.out << Tapyrus::TxOut.new(value: (change*(10**8)).to_i , script_pubkey: scriptPubKey)
-  
-  # transactionへの署名
   # sighashの構成
-  #  unlock transactionの署名対象のハッシュ値 sighash
+  # unlock transactionの署名対象のハッシュ値 sighash
   sighash0 = tx.sighash_for_input(0, redeem_script, hash_type: Tapyrus::SIGHASH_TYPE[:all])
   # scriptsig の追加
   sig0 = key.key.sign(sighash0, algo: :ecdsa) + [Tapyrus::SIGHASH_TYPE[:all]].pack('C')
@@ -891,8 +826,8 @@ def unlock_htlc_cp2sh(vHTLCtxid, color_id, redeem_script_hex, pub_receiver, rece
   # <Secret> 
   # OP_TRUE
   tx.in[0].script_sig << sig0
-  tx.in[0].script_sig << pub_receiver.htb
-  tx.in[0].script_sig << secret
+  tx.in[0].script_sig << pub_receiver
+  tx.in[0].script_sig << secret.bth
   tx.in[0].script_sig << OP_1
   tx.in[0].script_sig << redeem_script.to_payload
   # TPC utxo のsighash
