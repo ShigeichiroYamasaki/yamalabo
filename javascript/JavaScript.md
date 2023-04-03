@@ -1,5 +1,9 @@
 # JavaScript言語入門
 
+2023/04/02 Shigeichiro Yamasaki
+
+## インストール
+
 node.jsをインストールしておく
 
 ubuntu
@@ -228,7 +232,7 @@ Uncaught ReferenceError: xx is not defined
 100
 ```
 
-定数定義
+### 定数定義
 
 ```js
 > const z=5;
@@ -257,7 +261,7 @@ Uncaught TypeError: Assignment to constant variable.
 if文
 
 ```js
- > if (1+1 == 2) "正しい";
+> if (1+1 == 2) "正しい";
 
 '正しい'
 
@@ -288,7 +292,7 @@ while文
 
 ```js
 > let n=1;
-> let s=0; > while (n<=10) {
+> let s=0;> while (n<=10) {
  s=s+n;
  n=n+1;
  }
@@ -592,6 +596,9 @@ undefined
 > arr.reduce(function(s,x){return s+x;})
 21
 
+> arr.reduce(function(s,x){return s*x;})
+720
+
 //無名関数の場合
 
 > arr.map(x=>x)
@@ -603,9 +610,8 @@ undefined
 > arr.reduce((s,x)=>s+x)
 21
 
-> let ss=0
-> for(n of arr){ss+=n}
-21
+> arr.reduce((s,x)=>s*x)
+720
 
 ```
 
@@ -626,9 +632,6 @@ Array.from(str).map(function(x){return x+x;})
 
 > Array.from(str).reduce((s,x)=>s+x+x)
 'abbccddeeffgghhiijjkkllmmnnooppqqrrssttuu'
-
-
-
 ```
 
 

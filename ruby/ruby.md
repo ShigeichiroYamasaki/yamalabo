@@ -1,9 +1,9 @@
 # Ruby インストール方法
 
-最終更新　2022/11/25 Shigeichiro Yamasaki
+最終更新　2023/04/02 Shigeichiro Yamasaki
 
 推奨バージョン変更
-3.1.3
+3.2.2
 
 ## MacOSXでのインストール
 
@@ -41,7 +41,7 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 brew update
 brew upgrade
 
-brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl rbenv
+brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl rbenv libyaml
 ```
 
 #### rbenvのインストール
@@ -109,7 +109,7 @@ rbenv install -l
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.1.3
+rbenv install 3.2.2
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -118,7 +118,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.1.3
+rbenv global 3.2.2
 source .zshrc 
 ```
 
@@ -195,7 +195,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.1.3
+rbenv install 3.2.2
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -204,7 +204,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.1.3
+rbenv global 3.2.2
 source .bashrc 
 ```
 
