@@ -1,6 +1,6 @@
 # rails7 のインストールと devise認証
 
-最終修正 2022/07/21
+最終修正 2023/04/03 Shigeichiro Yamasaki
 
 ### Rubyのインストール
 

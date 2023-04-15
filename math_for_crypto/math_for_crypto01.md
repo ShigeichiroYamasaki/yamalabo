@@ -403,7 +403,7 @@ memo={}
 #### javascript
 
 ```javascript
-function combi(n,r) {
+const combi=(n,r)=>{
   if (n==r || r==0) {
    return 1;
   } else {

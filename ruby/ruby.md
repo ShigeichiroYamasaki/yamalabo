@@ -2,8 +2,7 @@
 
 最終更新　2023/04/02 Shigeichiro Yamasaki
 
-推奨バージョン変更
-3.2.2
+推奨バージョン変更 3.2.2
 
 ## MacOSXでのインストール
 
@@ -77,19 +76,6 @@ source ~/.zshrc
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 rbenv install -l
 
-
-2.7.7
-3.0.5
-3.1.3
-jruby-9.4.0.0
-mruby-3.1.0
-picoruby-3.0.0
-rbx-5.0
-truffleruby-22.3.0
-truffleruby+graalvm-22.3.0
-
-Only latest stable releases for each Ruby implementation are shown.
-Use 'rbenv install --list-all / -L' to show all local versions.
 ```
 
 新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
@@ -129,7 +115,7 @@ source .zshrc
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev
+sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev libyaml-dev
 sudo apt autoremove -y
 ```
 
@@ -166,19 +152,6 @@ source ~/.bashrc
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 rbenv install -l
 
-
-2.7.7
-3.0.5
-3.1.3
-jruby-9.4.0.0
-mruby-3.1.0
-picoruby-3.0.0
-rbx-5.0
-truffleruby-22.3.0
-truffleruby+graalvm-22.3.0
-
-Only latest stable releases for each Ruby implementation are shown.
-Use 'rbenv install --list-all / -L' to show all local versions.
 ```
 
 新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
