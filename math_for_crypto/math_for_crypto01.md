@@ -162,7 +162,7 @@ factR(50)
 再帰を使う方法
 
 ```javascript
-function fact(n) {
+const fact=(n)=> {
   if (n==1){
     return 1
   } else {
@@ -172,6 +172,20 @@ function fact(n) {
 
 fact(50)
 3.0414093201713376e+64
+
+//bigIntを使う場合
+
+const factb=(n)=> {
+  if (n==1n){
+    return 1n
+  } else {
+    return factb(n-1n)*n
+  }
+}
+
+factb(50n)
+30414093201713378043612608166064768844377641568960512000000000000n
+
 ```
 
 reduceを使う方法
@@ -182,7 +196,7 @@ const range = (m,n)=> {
     return (Array.from(Array(n+1).keys())).slice(m);
 }
 
-function factR(n) {
+const factR=(n)=> {
     return range(1,n).reduce((x,y)=>x*y,1)
 }
 

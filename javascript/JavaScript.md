@@ -1,6 +1,6 @@
 # JavaScript言語入門
 
-2023/04/14 Shigeichiro Yamasaki
+2023/04/20 Shigeichiro Yamasaki
 
 ## インストール
 
@@ -8,20 +8,33 @@ node.jsをインストールしておく
 
 ubuntu 22.04LTS
 
+
+### nvm (ubuntu)のインストール
+
 ```bash
-sudo apt update
-sudo apt install curl
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt install yarn -y
+sudo apt install curl 
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.profile
+```
 
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - 
-sudo apt-get install gcc g++ make
-sudo apt-get install -y nodejs
-sudo apt install -y npm
+### nvm (macOSX)のインストール
 
-yarn add node-fetch@2.6.6
-yarn add -D @types/node-fetch@2.x
+```bash
+source $(brew --prefix nvm)/nvm.sh
+echo 'source $(brew --prefix nvm)/nvm.sh' >> ~/.zprofile
+source ~/.zprofile
+```
+
+### Node.jsのインストール
+
+```bash
+// node.js のインストール
+nvm install 18 
+nvm use 18
+// npmのバージョンアップ
+npm install -g npm@9.6.4
+// Truffleのインストール
+npm i -g truffle  # DO NOT USE sudo
 ```
 
 MacOSX
@@ -31,8 +44,7 @@ brew install nodejs
 brew install yarn 
 brew install npm
 
-yarn add node-fetch@2.6.6
-yarn add -D @types/node-fetch@2.x
+npm install --save node-fetch
 ```
 
 ## node.jsのインタープリタの起動と終了
@@ -1115,6 +1127,7 @@ javaScriptには，pythonやRubyの範囲オブジェクトに対応するもの
 
 ```js
 > let memo=new Map()
+// 再帰による階乗関数
 > const factMemo = (x,memo) => {
     // すでにメモに定義されていればそれを返しておわり
     if (memo.has(x)) {
@@ -1130,6 +1143,10 @@ javaScriptには，pythonやRubyの範囲オブジェクトに対応するもの
         }
     }
 }
+
+// 100の階乗
+> factMemo(100n,memo)
+93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000n
 
 // 10000 の階乗を求めるとスタックオーバーフローになる
 > factMemo(10000n,memo)
@@ -1148,14 +1165,11 @@ Uncaught RangeError: Maximum call stack size exceeded
 // 5000の階乗から計算結果をメモに登録していくと 20000 の階乗でも成功する
 
 > factMemo(5000n,memo)
-> factMemo(6000n,memo)
-> factMemo(7000n,memo)
-> factMemo(8000n,memo)
-> factMemo(9000n,memo)
 > factMemo(10000n,memo)
 > factMemo(15000n,memo)
 > factMemo(20000n,memo)
 ```
+
 
 ### コールバック関数と高階関数
 
@@ -1579,3 +1593,61 @@ awaitが指定されたコードを含む関数は，async 関数でなければ
 > await Promise.all([fetchbody('https://www.kindai.ac.jp'),fetchbody('https://www.google.com')])
 
 ```
+
+## モジュール
+
+既存のコードのライブラリなど外部のソースコードを利用するためにモジュール機構は必要です．
+大規模開発になると複数の様々な開発主体が作成したモジュールを利用することになります．
+そして，大規模開発では，クラス名，関数名，変数や定数の名前などの名前空間の管理が重要になります．
+外部モジュールの間も含めて，グローバルな名前空間が衝突などの汚染が発生しないような仕組みが必要です．
+
+### エクスポートとインポート
+
+外部のファイルなどに定義されたJavaScript のソースコードをモジュールとして他のプログラムから利用できるようにするとき，そのモジュールの外部に公開するクラス名や関数名やオブジェクト名を定義することを「エクスポート」といいます．
+また外部モジュールを自分のプログラムから利用するために，モジュールのファイルを指定して，そのモジュールのクラスや関数やオブジェクトを利用できるようにすることを「インポート」といいます．
+
+### Node.js のモジュール
+
+クラス，ブロックスコープ，クロージャはそのようなモジュール化の仕組みとして利用できます．
+Node.js のモジュールは基本的にこれです．
+
+#### エクスポート用ファイルの作成（Node.js)
+
+Node.js の場合について説明します．
+
+この例では，ファイル名を stat.js とします．
+
+```js
+const sum =(a,b)=> a+b;
+const square = a=>a**2;
+const mean = arr=> arr.reduce(sum)/arr.length;
+const stddev = arr=>{
+    let m=mean(arr);
+    return (Math.sqrt(arr.map(x=>(x-m)**2).reduce(sum)))/(arr.length-1);
+};
+
+// エクスポートする関数
+module.exports = {mean, stddev};
+```
+
+### モジュールのインポート(Node.js)
+
+Node.js ではインポートに require() 関数を利用します．
+
+ここでは，同じディレクトリに stat.js ファイルがあるものとします．
+
+```
+> const stat = require('./stat.js')
+{ mean: [Function: mean], stddev: [Function: stddev] }
+
+// この例では，stat という定数にモジュールをインポートしました
+// したがって，この後は stat という定数の名前空間でインポートした関数を利用できます
+
+> stat.mean([1,2,3])
+2
+> stat.stddev([1,2,3])
+0.7071067811865476
+```
+
+
+
