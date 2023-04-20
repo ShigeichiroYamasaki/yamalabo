@@ -626,6 +626,8 @@ true
 > arr0
 []
 
+> let arr5= new Array(5)
+
 > let map0 = new Map()
 > map0
 Map(0) {}
@@ -637,6 +639,18 @@ Set(0) {}
 > let date0 = new Date()
 > date0
 2023-04-13T01:56:38.510Z
+```
+
+javaScriptの配列は，インデックスをキーとするオブジェクト
+
+```
+> let arr5= new Array(5)
+undefined
+> arr5
+[ <5 empty items> ]
+
+> [...Array(5).keys()]
+[ 0, 1, 2, 3, 4 ]
 ```
 
 ### オブジェクトのプロパティへのアクセス
@@ -1032,26 +1046,36 @@ Array.from(str).map((x)=>{return x+x;})
 #### function文による関数定義（定義文）
 
 ```js
-> function sum(x) {
-    let arr=[...Array(x+1).keys()]
-    return arr.reduce((s,y)=>s+y,0)
+// reduce による配列の合計
+> function sumR(arr) {
+    return arr.reduce((s,x)=>s+x,0);
 }
+> let arr10=[...Array(10+1).keys()]
+[
+   0, 1, 2, 3, 4,
+   5, 6, 7, 8, 9,
+  10
+]
 
-> function sum(x) {
+> sumR(arr10)
+55
+
+// ループ制御による 1からn の合計
+> function sumN(n) {
     let s=0;
     do {
-        s+=x;
-        x-=1;
-    } while (x>0)
+        s+=n;
+        n-=1;
+    } while (n>0)
     return s;
 }
 
-> sum(10)
-55
-> sum(100)
+> sumN(100)
 5050
 
-> typeof sum
+> typeof sumR
+'function'
+> typeof sumN
 'function'
 ```
 
@@ -1076,6 +1100,9 @@ Array.from(str).map((x)=>{return x+x;})
 2432902008176640000
 > fact(50)
 3.0414093201713376e+64
+
+> typeof fact
+'function'
 ```
 
 BigIntの場合
