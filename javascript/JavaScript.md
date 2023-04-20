@@ -48,8 +48,6 @@ npm install --save node-fetch
 
 ```bash
 $ node
-Welcome to Node.js v16.13.2.
-Type ".help" for more information.
 > 
 ```
 
