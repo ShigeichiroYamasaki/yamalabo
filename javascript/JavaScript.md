@@ -33,17 +33,12 @@ nvm install 18
 nvm use 18
 // npmのバージョンアップ
 npm install -g npm@9.6.4
-// Truffleのインストール
-npm i -g truffle  # DO NOT USE sudo
+
 ```
 
-MacOSX
+### Node-fetchのインストール
 
 ```bash
-brew install nodejs
-brew install yarn 
-brew install npm
-
 npm install --save node-fetch
 ```
 
@@ -1195,6 +1190,15 @@ Uncaught RangeError: Maximum call stack size exceeded
 > factMemo(10000n,memo)
 > factMemo(15000n,memo)
 > factMemo(20000n,memo)
+```
+
+任意の関数をメモ化する関数
+
+```js
+> let memorize = f=>{
+    let m=new Map()
+
+}
 ```
 
 
