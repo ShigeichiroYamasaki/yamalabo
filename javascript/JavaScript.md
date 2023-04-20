@@ -32,7 +32,7 @@ source ~/.zprofile
 nvm install 18 
 nvm use 18
 // npmのバージョンアップ
-npm install -g npm@9.6.4
+npm install -g npm@9.6.5
 
 ```
 
