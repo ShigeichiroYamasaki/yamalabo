@@ -1,8 +1,8 @@
-# Tapyrus core v0.5.1 testnet ノード構築
+# 1. Tapyrus core v0.5.2 testnet ノード構築
 
-2022/05/06 Shigeichiro Yamasaki
+2023/04/26 Shigeichiro Yamasaki
 
-#### 環境は ubuntu 20.04LTS
+#### 環境は ubuntu 22.04LTS
 
 事前に必要そうなライブラリをインストールしておくとトラブルを避けることができます
 
@@ -51,7 +51,7 @@ bitcoin coreからのフォークなので、基本的にbitcoin coreの知識�
     マジックバイトは、Tapyrusネットワーク上のノード間で送信されるメッセージを識別する方法として使用されます。マジックバイトは、ネットワークIDから導出されます
 
 * ジェネシスブロック
-    Tapyrusでは、bitcoin と異なり、ジェネシスブロックはコードに埋め込まれていません。（bitcoin では、Satosh Nakamotoがジェネシスブロックを生成し、bitcoin のコードに埋め込んでいます）
+    Tapyrusでは、bitcoin と異なり、ジェネシスブロックはソースコードに埋め込まれていません。（bitcoin では、Satosh Nakamotoがジェネシスブロックを生成し、bitcoin のコードに埋め込んでいます）
     Tapyrusのジェネシスブロックは、Tapyrus-genesisと呼ばれるユーティリティを使用して生成され、さらにTapyrus署名者たちによって署名されて正統化されます。そして外部ファイルとして保管されます。
     Tapyrusネットワークには、それぞれに固有のジェネシスブロックがあります。
 
@@ -65,28 +65,28 @@ bitcoin coreからのフォークなので、基本的にbitcoin coreの知識�
 #### バイナリの入手
 
 taapyrus core v 0.5.1 のx86 64 linux用のバイナリは以下から入手可能です
-[v0.5.1 release](https://github.com/chaintope/tapyrus-core/releases/)
 
-[tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz](https://github.com/chaintope/tapyrus-core/releases/download/v0.5.1/tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz)
+[v0.5.2 release](https://github.com/chaintope/tapyrus-core/releases/)
 
+#### X86 64 アーキテクチャのマシンへのインストール
 
 ```bash
 cd ~
-wget https://github.com/chaintope/tapyrus-core/releases/download/v0.5.1/tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz
+wget https://github.com/chaintope/tapyrus-core/releases/download/v0.5.2/tapyrus-core-0.5.2-x86_64-linux-gnu.tar.gz
 ```
 
-tapyrus core v0.5.1 のx86 64 linuxバイナリが圧縮ファイルでダウンロードされているはずです
+tapyrus core v0.5.2 のx86 64 linuxバイナリが圧縮ファイルでダウンロードされているはずです
 
 ```bash
 ls
 =>
-...  tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz ...
+...  tapyrus-core-0.5.2-x86_64-linux-gnu.tar.gz ...
 ```
 
 tarコマンドによる圧縮ファイルの解凍
 
 ```bash
-tar xfvz tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz
+tar xfvz tapyrus-core-0.5.2-x86_64-linux-gnu.tar.gz
 ```
 
 これで、新しいディレクトリができているはずです
@@ -94,13 +94,13 @@ tar xfvz tapyrus-core-0.5.1-x86_64-linux-gnu.tar.gz
 ```bash
 ls
 =>
-... tapyrus-core-0.5.1  ...
+... tapyrus-core-0.5.2  ...
 ```
 
 このディレクトリのbinというサブディレクトリに tapyrus coreのバイナリがあります
 
 ```bash
-cd tapyrus-core-0.5.1
+cd tapyrus-core-0.5.2
 ls
 =>
 bin  include  lib  share
@@ -124,7 +124,7 @@ nano .bashrc
 
 ```bash
 ...
-export PATH="$HOME/tapyrus-core-0.5.1/bin:$PATH"
+export PATH="$HOME/tapyrus-core-0.5.2/bin:$PATH"
 ```
 
 ログインスクリプトを評価してパスを有効化する
@@ -332,11 +332,9 @@ tapyrus-cli getnewaddress bob
 13dsUJTSCACmpr7PCQsGQiUWN3Ziu38oVA
 ```
 
-## Faucetからコインを得る
+## testnet のFaucetからコインを得る
 
 [`https://testnet-faucet.tapyrus.dev.chaintope.com`](https://testnet-faucet.tapyrus.dev.chaintope.com)
-
-★　2022年５月５日現在、faucetからコインを入手することができません。
 
 
 #### 残高を確認
@@ -385,7 +383,7 @@ tapyrus-cli getnewaddress alice
 新しいアドレスへ送金
 
 ```bash
-tapyrus-cli sendtoaddress 1DhWU583X2bnCGtFiZmcUqrqEWm6HoFmLS 0.01
+tapyrus-cli sendtoaddress 1DhWU583X2bnCGtFiZmcUqrqEWm6HoFmLS 0.0001
 => 
 0d11ab3455e5987fbddce23881e9abe246051927cfa3245903a7f51520b00555
 ```
