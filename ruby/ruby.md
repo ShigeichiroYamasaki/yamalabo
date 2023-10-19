@@ -1,6 +1,6 @@
 # Ruby インストール方法
 
-最終更新　2023/04/02 Shigeichiro Yamasaki
+最終更新　2023/10/19 Shigeichiro Yamasaki
 
 推奨バージョン変更 3.2.2
 
@@ -9,7 +9,7 @@
 ### homebrewのインストールと環境整備
 
 ```bash
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 ### 確認
