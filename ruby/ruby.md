@@ -31,7 +31,7 @@ Your system is ready to brew.
 
 ```bash
 # homebrew のアンインストール方法
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+/bin/bash  "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 ```
 
 #### 必要（そう）なライブラリのインストール
