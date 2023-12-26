@@ -1,32 +1,28 @@
 # rails7 のインストールと devise認証
 
-最終修正 2023/04/03 Shigeichiro Yamasaki
+最終修正 2023/12/26 Shigeichiro Yamasaki
 
-### Rubyのインストール
+## Rubyのインストール
 
 ここを参照してください　[Rubyのインストール](./ruby.md)
 
-#### yarnのインストール
+## nvmのインストール
+
+### nvm (ubuntu)のインストール
 
 ```bash
-curl -o- -L https://yarnpkg.com/install.sh | bash
-source ~/.bashrc
+sudo apt install curl 
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.profile
 ```
 
-#### nvmのインストール
+### nvm (macOSX)のインストール
 
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-source ~/.bashrc
+source $(brew --prefix nvm)/nvm.sh
+echo 'source $(brew --prefix nvm)/nvm.sh' >> ~/.zprofile
+source ~/.zprofile
 ```
-
-#### node 12.13.0 のインストール
-
-```bash
-nvm install 12.13.0
-nvm use v12.13.0
-```
-
 
 ### Railsインストール
 
@@ -158,12 +154,5 @@ rails s -b 0.0.0.0
 
 ### ブラウザから確認
 
-http://106.157.214.199:3000/markets
+http://localhost:3000/markets
 
-http://192.168.0.247:3000/markets
-
-### QR codeの表示
-
-Google chart API のQR codeジェネレータを利用
-
-<img src="https://chart.apis.google.com/chart?chs=150x150&cht=qr&chl=http://106.157.214.199:3000/markets" alt="Token Market">
