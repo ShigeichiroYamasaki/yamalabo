@@ -1,8 +1,8 @@
 # Ruby インストール方法
 
-最終更新　2023/10/19 Shigeichiro Yamasaki
+最終更新　2023/12/26 Shigeichiro Yamasaki
 
-推奨バージョン変更 3.2.2
+推奨バージョン変更 3.3
 
 ## MacOSXでのインストール
 
@@ -40,7 +40,7 @@ Your system is ready to brew.
 brew update
 brew upgrade
 
-brew install llvm autoconf gcc make curl direnv readline sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl rbenv libyaml
+brew install llvm autoconf gcc make curl direnv sqlite3 sqlite-utils libsigsegv leveldb zlib zlib-ng git nodejs node npm m4 wget curl rbenv libyaml
 ```
 
 #### rbenvのインストール
@@ -95,7 +95,7 @@ rbenv install -l
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.2.2
+rbenv install 3.3.0
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -104,7 +104,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.2.2
+rbenv global 3.3.0
 source .zshrc 
 ```
 
@@ -115,7 +115,7 @@ source .zshrc
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libreadline-dev libyaml-dev
+sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libyaml-dev
 sudo apt autoremove -y
 ```
 
@@ -168,7 +168,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.2.2
+rbenv install 3.3.0
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -177,7 +177,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.2.2
+rbenv global 3.3.0
 source .bashrc 
 ```
 

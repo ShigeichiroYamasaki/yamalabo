@@ -8,7 +8,6 @@ node.jsをインストールしておく
 
 ubuntu 22.04LTS
 
-
 ### nvm (ubuntu)のインストール
 
 ```bash
