@@ -1,6 +1,6 @@
 # JavaScript言語入門
 
-2023/04/20 Shigeichiro Yamasaki
+2023/12/26 Shigeichiro Yamasaki
 
 ## インストール
 
@@ -28,10 +28,10 @@ source ~/.zprofile
 
 ```bash
 // node.js のインストール
-nvm install 18 
-nvm use 18
+nvm install 21
+nvm use 21
 // npmのバージョンアップ
-npm install -g npm@9.6.5
+npm install -g npm@10.2.5
 
 ```
 
