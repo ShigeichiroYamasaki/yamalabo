@@ -1,6 +1,6 @@
 # JavaScript言語入門
 
-2023/12/26 Shigeichiro Yamasaki
+2024/3/5 Shigeichiro Yamasaki
 
 ## インストール
 
@@ -1195,7 +1195,6 @@ Uncaught RangeError: Maximum call stack size exceeded
 ```js
 > let memorize = f=>{
     let m=new Map()
-
 }
 ```
 
@@ -1435,6 +1434,7 @@ delayは、ミリ秒
 > let t2=setTimeout(f2, 20000);
 > let t3=setTimeout(f3, 10000);
 
+// 10秒待つ
 > 処理3
 処理2
 処理1
@@ -1559,17 +1559,17 @@ Promise の使用法を劇的に簡略化する構文で，Promiseを事実上�
 
 Promiseオブジェクトを受け取り，その完了を待ち，その返り値やエラーに変換します．
 
-#### 非同期関数 fetch
+##### 非同期関数 fetch 
+
+(Node.js 18.0.0 以降ではデフォルトで fetch 関数が存在します)
 
 http を使ってデータを取得するPromise オブジェクトの非同期処理です．
-以下は，await を使ってURLの応答を得て，そのボディを得る例です
+以下は，await を使ってURLの応答を得るまで完了を待ち，その返り値のPromiseオブジェクトからさらに https でHTMLのbody部を得る例です
 
 ```js
-> const fetch = require('node-fetch')
 > let url = 'https://www.kindai.ac.jp'
 > let resp = await fetch(url)
-> let body = await resp.text()
-> body
+> await resp.text()
 
 '<!DOCTYPE html>\n' +
   '<html lang="ja">\n' +
@@ -1582,11 +1582,12 @@ http を使ってデータを取得するPromise オブジェクトの非同期�
 ...
 ```
 
-Promiseオブジェクトなので，then() メソッドを使うことができます．
+上記の resp はPromiseオブジェクトなので，then() メソッドを使って以下のようにコールバックチェーンで処理をつなげることができます
+
+then メソッドの中のアロー関数の引数の resp にはfetch の返り値の Promise オブジェクトが束縛されることになります
 
 ```js
-> body = await fetch(url).then(resp=>resp.text())
-> body
+> await fetch(url).then(resp=>resp.text())
 
 '<!DOCTYPE html>\n' +
   '<html lang="ja">\n' +
@@ -1604,7 +1605,7 @@ Promiseオブジェクトなので，then() メソッドを使うことができ
 async は非同期関数を宣言するキーワードです．
 
 非同期な処理を含む関数は非同期になります．
-awaitが指定されたコードを含む関数は，async 関数でなければなりません．
+awaitが指定されたコードを含む関数は，async 関数として定義しなければなりません．
 
 ```js
 > const fetchbody = async url=>{
@@ -1616,10 +1617,21 @@ awaitが指定されたコードを含む関数は，async 関数でなければ
 > fetchbody('https://www.kindai.ac.jp')
 ```
 
+then()を使った場合
+
+```js
+> const fetchbodyC = async url=>{
+    let body = await fetch(url).then(resp=>resp.text())
+    console.log(body)
+}
+
+> fetchbodyC('https://www.kindai.ac.jp')
+```
+
 #### 複数のPromise を並行実行する場合
 
 ```js
-> await Promise.all([fetchbody('https://www.kindai.ac.jp'),fetchbody('https://www.google.com')])
+> await Promise.all([fetchbodyC('https://www.kindai.ac.jp'),fetchbodyC('https://www.google.com')])
 
 ```
 
