@@ -81,177 +81,28 @@ javaScriptには，pythonやRubyの範囲オブジェクトに対応するもの
 
 ```js
 // 0から n-1 の範囲
-> let range0 = (n=>{return [...Array(n).keys()]})
+> const range0 = (n=>{return [...Array(n).keys()]})
 > range0(3)
 [ 0, 1, 2 ]
 
 // 開始と終了の範囲
-> let range = ((from,to) =>{return [...Array(to-from+1)].map((_,i)=>i+from)})
+> const range = ((from,to) =>{return [...Array(to-from+1)].map((_,i)=>i+from)})
 > range(7,20)
 [
    7,  8,  9, 10, 11, 12,
   13, 14, 15, 16, 17, 18,
   19, 20
 ]
-
 ```
-
-
-
-
-
-
-
-
-
 
 イテレータに対する reduce 操作を使う方法
 
 ```js
-# functoolsモジュールのインポートが必要です
-from functools import reduce
-from operator import mul
+const factR=(n)=>{return range(1,n).reduce((x,y)=>x*y,1);}
 
-def factR(n):
-    return reduce(mul,range(1,n+1))
-
-factR(50)
-30414093201713378043612608166064768844377641568960512000000000000
+factR(20)
+2432902008176640000
 ```
-
-##### イテレータの仕組み
-
-
-```python
-# 範囲オブジェクト（繰り返し構造を持つデータ）を配列に変換して確認する
-list(range(1,3+1))
-[1, 2, 3]
-
-# 階乗計算を１から昇順に並んだ整数の繰り返し構造に沿って掛け算を行うこととと定義します．
-# 1 * 2 * 3 
-# ただし，掛け算には引数が２つ必要なので，初期値として 1 が追加されていることに注意
-# (((1 * 1) * 2) * 3) 
-reduce(mul,range(1,3+1))
-6
-
-# 足し算の場合
-from operator import add
-# 1 + 2 + 3
-# ただし，足し算には引数が２つ必要なので，初期値として 0 が追加されていることに注意
-# (((0 + 1) + 2) + 3)
-reduce(add,range(1,3+1))
-6
-```
-
-python での一般的な reduceの利用方法
-
-`reduce(<関数>, <イテラブルオブジェクト>, <初期値>)`
-
-このようにきちんとした形式で階乗関数やを書くと以下のようになります．
-
-```python
-def factR(n):
-    return reduce(mul,range(1,n+1),1)
-```
-
-##### ruby
-
-再帰を使う方法
-
-```ruby
-def fact(n)
-  if n==1 then 1
-  else
-     fact(n-1)*n
-  end
-end
-
-fact(50)
-=> 30414093201713378043612608166064768844377641568960512000000000000
-```
-
-reduceを使う方法
-
-```ruby
-def factR(n)
-  (1..n).reduce('*')
-end
-
-factR(50)
-=> 30414093201713378043612608166064768844377641568960512000000000000
-```
-
-
-##### javascript
-
-再帰を使う方法
-
-```javascript
-const fact=(n)=> {
-  if (n==1){
-    return 1
-  } else {
-    return fact(n-1)*n
-  }
-}
-
-fact(50)
-3.0414093201713376e+64
-
-//bigIntを使う場合
-
-const factb=(n)=> {
-  if (n==1n){
-    return 1n
-  } else {
-    return factb(n-1n)*n
-  }
-}
-
-factb(50n)
-30414093201713378043612608166064768844377641568960512000000000000n
-
-```
-
-reduceを使う方法
-
-```javascript
-// mからnまでの配列
-const range = (m,n)=> {
-    return (Array.from(Array(n+1).keys())).slice(m);
-}
-
-const factR=(n)=> {
-    return range(1,n).reduce((x,y)=>x*y,1)
-}
-
-factR(50)
-3.0414093201713376e+64
-```
-
-javascriptの範囲オブジェクト
-
-```
-```
-
-javascript の無限多倍長計算
-（整数の最後に n をつける．普通の整数との混在は許されない）
-
-```javascript
-function factB(n) {
-  if (n==1n){
-    return 1n
-  } else {
-    return factB(n-1n)*n
-  }
-}
-
-factB(50n)
-30414093201713378043612608166064768844377641568960512000000000000n
-```
-
-
-
 
 ### 問題
 
@@ -273,7 +124,7 @@ factB(50n)
 #### python
 
 ```python
-# lim未満の素数の冪乗
+# lim 未満の素数の冪乗
 def pow_prime(p,lim):
     list=[]
     e=1
@@ -632,7 +483,7 @@ a=[3,5,1,-2,0,5,1,1]
 b=[6,2,-9,3,1,7,2,9]
 k=10
 
-# ベクトルの話
+# ベクトルの和
 def vector_sum(a,b):
     return list(map(sum,zip(a,b))
 
@@ -869,15 +720,34 @@ gcd(5355,924)
 	* ベズー方程式
 * 拡張ユークリッドの互除法
 
+p=11
+q=13
+r=17
+
+
 ```ruby
 def egcd(a,b)							
-  if a%b==0 then [0,1,b]  # 再帰終了a*0+b*1=b 
+  if b==0 then [0,1,a]  # 再帰終了a*0+b*1=b 
   else
     xp,yp,d = egcd(b,a%b) # 再帰     bx'+a%by'=d
     [yp,xp-(a/b)*yp,d]    # 復帰処理 x=y', y=x'-(a/b)*y'
   end
 end
 ```
+javascript
+```js
+const egcd=(a,b)=>{
+  if (b==0) {return [0,1,a];}
+  else {
+    r= egcd(b,a%b);
+    xp=r[0];
+    yp=r[1];
+    d=r[2];
+    return [yp,xp-(a/b)*yp,d]
+  }
+}
+```
+
 
 * フェルマーの小定理
 

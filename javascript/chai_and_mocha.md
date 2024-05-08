@@ -150,7 +150,7 @@ match()             // RE
 
 関数 gcd の仕様
 ```
-b==0 のとき、最大公約数は a （と定義する）
+a%b==0 のとき、最大公約数は b
 そうでないとき gcd(a,b) = gcd(b,a%b)
 p,q,r が素数で
 a=p*q, b=p*r なら、最大公約数は p
@@ -191,8 +191,8 @@ Uncaught ReferenceError: gcd is not defined
 
 ```js
 const gcd=(a,b)=>{
-    if (b==0) {
-      return a;
+    if (a%b==0) {
+      return b;
     } else {
       return gcd(b,a%b);
     }
@@ -234,8 +234,8 @@ nano math.js
 
 ```js
 const gcd=(a,b)=>{
-    if (b==0) {
-      return a;
+    if (a%b==0) {
+      return b;
     } else {
       return gcd(b,a%b);
     }
@@ -258,12 +258,12 @@ const assert = require('assert');
 const math = require('../src/math.js');
 
 describe('gcd関数のテスト', function () {
-  describe('#b==0', function () {
+  describe('#gcd', function () {
         let p=11;
         let q=13;
         let r=17;
-        it('b==0 のとき、最大公約数は a （と定義する)', function () {
-                assert.equal(math.gcd(p*q*r,0) ,p*q*r);
+        it('a%b==0 のとき、最大公約数は b', function () {
+                assert.equal(math.gcd(p*q,q) ,q);
         });
         it('p*q と p*r の最大公約数は p', function () {
                 assert.equal(math.gcd(p*q,p*r) ,p);
