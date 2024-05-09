@@ -1,5 +1,8 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
+last update 2024/05/09
+Shigeichiro Yamasaki
+
 * chai: javascript のアサーションツール
   テストの内容を定義します
 
