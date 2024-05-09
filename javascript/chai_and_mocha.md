@@ -21,29 +21,30 @@ node.js と npm はインストール済とします
 npm で chai をインストール
 
 ```bash
-cd ~
-npm install -g chai
+$ cd ~
+$ npm install -g chai
 ```
 
 npm で mocha をインストール
 
 ```bash
-cd ~
-npm install -g mocha
+$ cd ~
+$ npm install -g mocha
 ```
 
 ### テスト用ディレクトリの作成
 
 ```bash
-mkdir test
+$ mkdir test
 ```
 ### mocha 設定ファイル mocha.config.js
 
 ```bash
-cd ~
-nano mocha.config.js
+$ cd ~
+$ nano mocha.config.js
 ```
 
+mocha.config.js の内容
 
 ```js
 module.exports={
@@ -57,7 +58,7 @@ module.exports={
 
 ```
 
-## chai の使い方
+## chai
 
 以下の３つのテストの宣言方法がある
 
@@ -76,6 +77,8 @@ assert APIの一般構造
 assert(式, エラーメッセージ)
 ```
 
+javaScript のテストコード
+
 ```js
 const assert = require('chai').assert
 foo = 'bar';
@@ -88,8 +91,9 @@ assert.lengthOf(foo, 3, 'foo`の値の長さは 3');
 assert.lengthOf(beverages.tea, 3, 'beverages has 3 types of tea');
 ```
 
-
 ### shouldの例
+
+javaScript のテストコード
 
 ```js
 const should = require('chai').should();
@@ -105,6 +109,8 @@ tea.should.have.property('flavors')
 
 ### expectの例
 
+javaScript のテストコード
+
 ```js
 const expect = require('chai').expect;
 foo = 'bar';
@@ -116,7 +122,9 @@ expect(foo).to.have.lengthOf(3);
 expect(beverages).to.have.property('tea').with.lengthOf(3);
 ```
 
-### アサーションメソッド
+### assert スタイルのアサーションメソッド一覧
+
+assertスタイルを利用する場合、以下をおぼえておけばよい
 
 ```
 isOk()              // true
@@ -144,11 +152,12 @@ match()             // RE
 ```
 
 
-## chai によるテストの作成
+### chai によるテストの例
 
-### ユークリッドの互除法による最大公約数の例
+### ユークリッドの互除法による最大公約数を求める gcd関数のテスト
 
-関数 gcd の仕様
+関数gcd の仕様
+
 ```
 a%b==0 のとき、最大公約数は b
 そうでないとき gcd(a,b) = gcd(b,a%b)
@@ -160,10 +169,11 @@ a,b が互いに素のとき、最大公約数は 1
 
 #### chai による仕様の定義
 
-node.js で実行
+node.js を起動して実行
 
 ```bash
-node
+$ node
+
 Welcome to Node.js v20.10.0.
 Type ".help" for more information.
 > 
@@ -172,16 +182,16 @@ Type ".help" for more information.
 以下は node.js のプロンプトから実行
 
 ```js
-const assert = require('chai').assert
+> const assert = require('chai').assert
 
 // 関数 gcd のアサーションを定義する
 //   b==0 のとき、最大公約数は a （定義する）
-p=11;
-q=13;
-r=17;
-assert.equal(gcd(p*q*r,0) ,p*q*r);
-assert.equal(gcd(p*q,p*r) ,p);
-assert.equal(gcd(p,q) ,1);
+> let p=11;
+> let q=13;
+> let r=17;
+> assert.equal(gcd(p*q,q) ,q);
+> assert.equal(gcd(p*q,p*r) ,p);
+> assert.equal(gcd(p,q) ,1);
 
 //実行すると関数 gcd が未定義というエラーが出る
 Uncaught ReferenceError: gcd is not defined
@@ -190,7 +200,7 @@ Uncaught ReferenceError: gcd is not defined
 関数 gcd の定義
 
 ```js
-const gcd=(a,b)=>{
+> const gcd=(a,b)=>{
     if (a%b==0) {
       return b;
     } else {
@@ -199,38 +209,39 @@ const gcd=(a,b)=>{
 }
 ```
 
-テストの実行
+テストの再実行
 
 ```js
-p=11;
-q=13;
-r=17;
-assert.equal(gcd(p*q*r,0) ,p*q*r);
-assert.equal(gcd(p*q,p*r) ,p);
-assert.equal(gcd(p,q) ,1);
+> assert.equal(gcd(p*q,q) ,q);
+> assert.equal(gcd(p*q,p*r),p);
+> assert.equal(gcd(p,q) ,1);
 ```
 エラーが起きないで終了
 
 ## mocha 
 
-### テスト対象のモジュール
+### テスト対象のモジュールの作成
 
-#### ディレクトリ
+#### テスト対象モジュールのディレクトリ
 
+```
 ~/src/
+```
 
 とする
 
 ```bash
-mkdir ~/src
-cd ~/src
+$ mkdir ~/src
+$ cd ~/src
 
-nano math.js
+$ nano math.js
 ```
+
+#### テスト対象モジュール
 
 ファイル名 math.js
 
-モジュール機構を使って gcd 関数をエクスポートします
+javascriptのモジュール機構を使って gcd 関数をエクスポートします
 
 ```js
 const gcd=(a,b)=>{
@@ -247,11 +258,15 @@ module.exports = {gcd};
 ### テストファイルの作成
 
 ```bash
-cd ~/test
-nano gcdtest.js
+$ cd ~/test
+$ nano mathtest.js
 ```
 
-require 関数でソース・ファイルから gcd 関数をインポートします
+#### mathtest.js の内容
+
+* テストは ~/test をカレントディレクトリとして実行されるので、テスト対象モジュールのファイルはここからの相対パスになります
+* require 関数でソース・ファイルから gcd 関数をインポートします
+
 
 ```js
 const assert = require('assert');
@@ -278,14 +293,15 @@ describe('gcd関数のテスト', function () {
 
 ### npx を使ったmocha のテスト実行
 
+シェルから実行
 
 ```bash
-cd ~
-npx mocha
+$ cd ~
+$ npx mocha
 
   gcd関数のテスト
-    #b==0
-      ✔ b==0 のとき、最大公約数は a （と定義する)
+    #gcd
+      ✔ a%b==0 のとき、最大公約数は b
       ✔ p*q と p*r の最大公約数は p
       ✔ a b が互いに素のとき最大公約数は 1
 
