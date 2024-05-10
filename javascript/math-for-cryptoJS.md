@@ -5,9 +5,9 @@ Shigeichro Yamasaki
 
 ## 事前準備
 
-JavaScript 言語
+[JavaScript 言語](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/javascript/JavaScript.md)
 
-mochaによるテスト駆動開発
+[chai と mochaによるテスト駆動開発](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/javascript/chai_and_mocha.md)
 
 
 ## JavaScript 関数の定義
@@ -79,6 +79,8 @@ const factB=(n)=>{
 
 javaScriptには，pythonやRubyの範囲オブジェクトに対応するものが無いので，次のようにして配列を生成する関数として作成することができる
 
+* javascript
+
 ```js
 // 0から n-1 の範囲
 > const range0 = (n=>{return [...Array(n).keys()]})
@@ -97,6 +99,7 @@ javaScriptには，pythonやRubyの範囲オブジェクトに対応するもの
 
 イテレータに対する reduce 操作を使う方法
 
+* javascript
 ```js
 const factR=(n)=>{return range(1,n).reduce((x,y)=>x*y,1);}
 
@@ -121,7 +124,7 @@ factR(20)
 
 {x | x < 100 かつ xは素数のべき乗}
 
-#### python
+* python
 
 ```python
 # lim 未満の素数の冪乗
@@ -145,7 +148,7 @@ power_prime = sorted(sum(list(map(lambda x: pow_prime(x,100), primes)),[]))
 => [2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41, 43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97]
 ```
 
-#### Ruby
+* Ruby
 
 ループで実施
 
@@ -172,6 +175,7 @@ power_prime = primes.map{|p|pow_prime(p,100)}.flatten.sort
 => [2, 3, 4, 5, 7, 8, 9, 11, 13, 16, 17, 19, 23, 25, 27, 29, 31, 32, 37, 41, 43, 47, 49, 53, 59, 61, 64, 67, 71, 73, 79, 81, 83, 89, 97]
 ```
 
+* Ruby
 map filter で実施
 
 ```ruby
@@ -186,7 +190,7 @@ power_prime(primes,100)
 => [2, 4, 8, 16, 32, 64, 3, 9, 27, 81, 5, 25, 7, 49, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
 ```
 
-#### javascript
+* javascript
 
 ```javascript
 // lim未満の素数の冪乗
@@ -217,7 +221,7 @@ let power_prime = primes.map(p=>pow_prime(p,100)).flat().sort((a, b) => a - b);
 組み合わせ関数の再帰的定義を実際に実装して
 n=10 のパスカルの三角形を出力するプログラムを作成してください
 
-#### python
+* python
 
 ```python
 def combi(n,r):
@@ -245,7 +249,7 @@ pascal(10)
 ```
 
 
-#### Ruby
+* Ruby
 
 ```ruby
 def combi(n,r)
@@ -270,6 +274,8 @@ end
 
 ```
 
+* Ruby
+
 Ruby でメモ化を利用した高速化
 
 ```ruby
@@ -290,7 +296,7 @@ memo={}
 (0..100).map{|n|p (0..n).map{|r|combi_memo(memo,n,r)}}
 ```
 
-#### javascript
+* javascript
 
 ```javascript
 const combi=(n,r)=>{
@@ -339,7 +345,7 @@ range(10).map(n => range(n+1).map(r => combi(n,r)))
 同一のf を6回合成したもの f○f○f○f○f○f を作成してください
  f○f○f○f○f○f ＝ e　となることを確認してください 
 
-#### python
+* python
 
 ```python
 def f1(a):
@@ -390,7 +396,7 @@ f5(f5(f5(f5(f5(f5(a))))))
 => ["a", "b", "c"]
 ```
 
-#### Ruby
+* Ruby
 
 ```ruby
 def f1(a) [a[0],a[2],a[1]] end
@@ -424,7 +430,7 @@ f5(f5(f5(f5(f5(f5(a))))))
 
 ```
 
-#### javascript
+* javascript
 
 ```javascript
 const f1=(a)=> [a[0],a[2],a[1]];
@@ -434,27 +440,27 @@ const f4=(a)=> [a[2],a[0],a[1]];
 const f5=(a)=> [a[2],a[1],a[0]];
 
 const a=['a','b','c'];
- f1(a)
-=> ["a", "c", "b"]
- f2(a)
-=> ["b", "a", "c"]
- f3(a)
-=> ["b", "c", "a"]
- f4(a)
-=> ["c", "a", "b"]
- f2(a)
-=> ["c", "b", "a"]
+> f1(a)
+["a", "c", "b"]
+> f2(a)
+["b", "a", "c"]
+> f3(a)
+["b", "c", "a"]
+> f4(a)
+["c", "a", "b"]
+> f2(a)
+["c", "b", "a"]
 
-f1(f1(f1(f1(f1(f1(a))))))
-=> ["a", "b", "c"]
-f2(f2(f2(f2(f2(f2(a))))))
-=> ["a", "b", "c"]
-f3(f3(f3(f3(f3(f3(a))))))
-=> ["a", "b", "c"]
-f4(f4(f4(f4(f4(f4(a))))))
-=> ["a", "b", "c"]
-f5(f5(f5(f5(f5(f5(a))))))
-=> ["a", "b", "c"]
+> f1(f1(f1(f1(f1(f1(a))))))
+["a", "b", "c"]
+> f2(f2(f2(f2(f2(f2(a))))))
+["a", "b", "c"]
+> f3(f3(f3(f3(f3(f3(a))))))
+["a", "b", "c"]
+> f4(f4(f4(f4(f4(f4(a))))))
+["a", "b", "c"]
+> f5(f5(f5(f5(f5(f5(a))))))
+["a", "b", "c"]
 
 ```
 	
@@ -475,7 +481,7 @@ f5(f5(f5(f5(f5(f5(a))))))
 
 ### 課題
 
-#### python
+* python
 
 ```python
 # ベクトルの和、差、スカラー倍
@@ -501,7 +507,7 @@ vector_diff(a,b)
 vector_scalar(k,a)
 ```
 
-#### Ruby
+* Ruby
 
 ```ruby
 # ベクトルの和、差、スカラー倍
@@ -528,6 +534,8 @@ vector_scalar(k,a)
 
 ### 行列の転置
 
+* Ruby
+
 ```ruby
 # 3,5行列の場合
 m=[[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3]]
@@ -545,6 +553,8 @@ transpose(m)
 ```
 ベクトルの転置
 
+* Ruby
+
 ```ruby
 # 行ベクトルを1☓n 行列と考える
 v=[[1,2,3,4,5]]
@@ -555,6 +565,7 @@ transpose(v)
 
 ## ベクトルの内積
 
+* Ruby
 
 ```ruby
 v1=[3,5,1]
@@ -576,6 +587,7 @@ p
 ## 行列の和、差、スカラー倍
 
 
+* Ruby
 
 ```ruby
 m1=[[1,2],[3,4]]
@@ -603,6 +615,8 @@ m
 ```
 ## 行列の積
 
+* Ruby
+
 ```ruby
 m1=[[1,2],[3,4]]
 m2=[[5,6],[7,8]]
@@ -626,6 +640,8 @@ m5=matrix_product(e3,m4)
 m5
 
 ```
+
+* Ruby
 
 ```ruby
 # n次の単位行列の生成
@@ -657,6 +673,8 @@ f5=[[0,0,1],[0,1,0],[1,0,0]]
 matrix_pow(f1,2)
 ```
 
+* Ruby
+
 ```ruby
 def inv(m)
 	a,b,c,d=m[0][0],m[0][1],m[1][0],m[1][1]
@@ -681,6 +699,8 @@ end
 * 組み合わせ爆発
 * RSA暗号
 
+* Ruby
+
 ```ruby
 p=41
 q=89
@@ -704,6 +724,8 @@ p
 
 ### 再帰プログラム　gcd
 
+* Ruby
+
 ```ruby
 def gcd(a,b)
   if a%b==0 then b
@@ -724,6 +746,7 @@ p=11
 q=13
 r=17
 
+* Ruby
 
 ```ruby
 def egcd(a,b)							
@@ -734,7 +757,8 @@ def egcd(a,b)
   end
 end
 ```
-javascript
+* javascript
+
 ```js
 const egcd=(a,b)=>{
   if (b==0) {return [0,1,a];}
@@ -757,6 +781,7 @@ const egcd=(a,b)=>{
 
 (b*s*p + a*t*q) mod p*q = x mod p*q
 
+* Ruby
 
 ```ruby
 def crt(a,b,p,q)
