@@ -968,12 +968,28 @@ sat
 
 ### イテレータ
 
-forEach, map, filter, reduce
+オブジェクトには，配列や文字列など，それ自身が繰り返し構造を持つものがあります．
+
+イテレータとは，ループによる繰り返し制御ではなく，対象となるオブジェクト自体が持つ繰り返し構造を利用した繰り返し制御です．
+
+* forEach
+
+    繰り返し要素ごとに処理を行う
+* map
+
+    繰り返し要素ごとに処理を行い，その処理結果も繰り返し構造を持つオブジェクトになる
+* filter
+
+    繰り返し要素ごとに条件判断を行い，true となるものだけの繰り返し構造オブジェクトを出力する（条件適合要素の選択など）
+* reduce
+
+    繰り返し要素ごとに処理を行い，それを集約した結果を出力する（要素の合計など）
 
 ```js
 > arr = [1,2,3,4,5,6]
 
 // forEach
+// それぞれを出力する
 > arr.forEach(x=>console.log(3*x))
 3
 6
@@ -983,17 +999,21 @@ forEach, map, filter, reduce
 18
 
 // map
+// それぞれを３倍する
 > arr.map(x=>3*x)
 [ 3, 6, 9, 12, 15, 18 ]
 
 // filter
+// 3よりも大きい要素を選択する
 > arr.filter(x=>x>3)
 [ 4, 5, 6 ]
 
 // redude
+// 要素の和を求める（和の初期値は 0)
 > arr.reduce((s,x)=>s+x,0)
 21
 
+// 要素の積を求める(積の初期値は 1)
 > arr.reduce((p,x)=>p*x,1)
 720
 ```
@@ -1006,17 +1026,19 @@ forEach, map, filter, reduce
 [ [ 1, 0 ], [ 2, 1 ], [ 3, 2 ], [ 4, 3 ], [ 5, 4 ], [ 6, 5 ] ]
 
 // filter
+// インデックスが偶数のものだけを選択する
 > arr.filter((x,i)=>i%2==0)
 [ 1, 3, 5 ]
 ```
 
-`
-
 #### 文字列に対するイテレータ
+
+文字列オブジェクトも繰り返し構造を持つオブジェクト
 
 ```js
 let str="abcdefghijklmnopqrstu"
 
+// 同じ文字を連接した配列を出力する
 Array.from(str).map((x)=>{return x+x;})
 [
   'aa', 'bb', 'cc', 'dd',
@@ -1027,8 +1049,39 @@ Array.from(str).map((x)=>{return x+x;})
   'uu'
 ]
 
-> Array.from(str).reduce((s,x)=>s+x+x)
-'abbccddeeffgghhiijjkkllmmnnooppqqrrssttuu'
+// 同じ文字の連接の連接(文字列の初期値は ""（空文字列）)
+> Array.from(str).reduce((s,x)=>s+x+x,"")
+'aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuu'
+```
+
+### イテレータオブジェクトの next() メソッド
+
+イテレータの対象となるオブジェクトは，配列，Set，Map などそれ自身が繰り返し構造を持つオブジェクトです.これらを反復可能オブジェクトと呼びます．
+
+反復可能オブジェクトには，Symbol.iterator というメソッドが定義されています．
+
+```js
+> let list=[1,2,3,4,5]
+> let it=list[Symbol.iterator]()
+Object [Array Iterator] {}
+```
+このメソッドが返すオブジェクトには，その繰り返しを実施する next() というメソッドが定義されています．
+
+next() メソッドが返すオブジェクトは，反復結果オブジェクトと呼ばれますが，value と done というプロパティがあります．done は繰り返しの終了状態を意味するプロパティで，doneの値が true になると繰り返しが終了します．
+
+```js
+> it.next()
+{ value: 1, done: false }
+> it.next()
+{ value: 2, done: false }
+> it.next()
+{ value: 3, done: false }
+> it.next()
+{ value: 4, done: false }
+> it.next()
+{ value: 5, done: false }
+> it.next()
+{ value: undefined, done: true }
 ```
 
 ## 関数
@@ -1263,15 +1316,24 @@ forEach, map, filter, reduce などのイテレータは高階関数で，コー
 
 ### ジェネレータ
 
-イテラブルなオブジェクトを生成する関数
-functionのあとに * をつけるとジェネレータ（オブジェクト）になる．
+イテラブルなオブジェクトを生成する処理過程の「定義」です．
+無限集合を生成する処理過程などを定義することができます．
 
-ジェネレータに対して next() メソッドを適用すると，次の計算が行われる．
-毎回の計算は，現在の位置から yield まで．
-yield 文は return 文のように関数のアウトプットを指定する．
+関数定義の function のあとに * をつけるとジェネレータ（オブジェクト）になります．
+
+★ アロー関数形式ではジェネレータを定義することはできません
+
+ジェネレータの生成処理は基本的に停止しており，ジェネレータに対して next() メソッドを適用すると，次のステップの生成処理が行われます．
+
+毎回の生成処理は，現在の位置から yield まで．
+yield 文は関数の return 文のようにジェネレータのアウトプットを指定します．
+
+
 
 ```js
 // フィボナッチ数列を無限に生成するジェネレータ
+// 論理的にはフィボナッチ数列という無限集合を意味しているとみなせます．
+//  もしこれが関数なら，for(;;) という無限ループになります．
 
 > function* fib() {
     let x=0, y=1;
@@ -1281,11 +1343,11 @@ yield 文は return 文のように関数のアウトプットを指定する．
     }
 }
 
-// ジェネレータの生成
+// ジェネレータオブジェクトの生成
 > f=fib()
 Object [Generator] {}
 
-// next() メソッドを適用してみる
+// ジェネレータに next() メソッドを適用してみる
 > f.next()['value']
 1
 > f.next()['value']
@@ -1300,6 +1362,16 @@ Object [Generator] {}
 8
 ```
 
+### take で n 個取り出す
+
+```js
+const take = (n,iterable)=>{
+
+}
+
+> f2=fib()
+
+```
 
 ## 文字列処理
 
