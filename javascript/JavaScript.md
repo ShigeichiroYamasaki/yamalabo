@@ -1795,45 +1795,64 @@ awaitは非同期処理を逐次化してしまいます．
 
 既存のコードのライブラリなど外部のソースコードを利用するためにモジュール機構は必要です．
 大規模開発になると複数の様々な開発主体が作成したモジュールを利用することになります．
-そして，大規模開発では，クラス名，関数名，変数や定数の名前などの名前空間の管理が重要になります．
+
+大規模開発では，クラス名，関数名，変数や定数の名前などの名前空間の管理が重要になります．
+
 外部モジュールの間も含めて，グローバルな名前空間が衝突などの汚染が発生しないような仕組みが必要です．
 
 ### エクスポートとインポート
 
-外部のファイルなどに定義されたJavaScript のソースコードをモジュールとして他のプログラムから利用できるようにするとき，そのモジュールの外部に公開するクラス名や関数名やオブジェクト名を定義することを「エクスポート」といいます．
-また外部モジュールを自分のプログラムから利用するために，モジュールのファイルを指定して，そのモジュールのクラスや関数やオブジェクトを利用できるようにすることを「インポート」といいます．
+外部のファイルなどに定義された JavaScript のソースコードをモジュールとして他のプログラムから利用できるようにするとき，そのモジュールの外部に公開するクラス名や関数名や定数などのオブジェクト名を定義することを「エクスポート」といいます．
+
+また外部モジュールを自分のプログラムから利用するために，モジュールのファイルを指定して，そのモジュールのクラスや関数や定数などのオブジェクトを利用できるようにすることを「インポート」といいます．
 
 ### Node.js のモジュール
 
 クラス，ブロックスコープ，クロージャはそのようなモジュール化の仕組みとして利用できます．
 Node.js のモジュールは基本的にこれです．
 
-javaScriptにモジュール機構が正式に組み込まれる以前に Node.js のモジュール機構は作成されました． ES2015 でjavaScriptに正式に組み込まれたモジュール機構では，インポート方法が異なっています．
+javaScriptにモジュール機構が正式に組み込まれる以前に Node.js のモジュール機構は作成されました．
 
-#### エクスポート用ファイルの作成（Node.js)
+ ES6 (ES2015) でjavaScriptに正式に組み込まれたモジュール機構では，Node.js とはインポート方法が異なっていることに注意が必要です．
 
-Node.js の場合について説明します．
+#### Node.js モジュールのエクスポート
+
+まずNode.js の場合について説明します．
 
 この例では，ファイル名を stat.js とします．
 
 ```js
 const sum =(a,b)=> a+b;
 const square = a=>a**2;
+// エクスポートする関数
+exports.mean = arr=> arr.reduce(sum)/arr.length;
+exports.stddev = arr=>{
+    let m = exports.mean(arr);
+    return (Math.sqrt(arr.map(x=>square(x-m)).reduce(sum)))/(arr.length-1);
+};
+```
+
+関数を一つずつエクスポートする代わりに，１個のオブジェクトだけをエクスポートする方法
+
+```js
+const sum =(a,b)=> a+b;
+const square = a=>a**2;
 const mean = arr=> arr.reduce(sum)/arr.length;
 const stddev = arr=>{
-    let m=mean(arr);
-    return (Math.sqrt(arr.map(x=>(x-m)**2).reduce(sum)))/(arr.length-1);
+    let m = mean(arr);
+    return (Math.sqrt(arr.map(x=>square(x-m)).reduce(sum)))/(arr.length-1);
 };
-
-// エクスポートする関数
+// エクスポートする関数，定数，クラスのリスト
 module.exports = {mean, stddev};
 ```
 
-### モジュールのインポート(Node.js)
+### Node.js モジュールのインポート
 
 Node.js ではインポートに require() 関数を利用します．
 
 ここでは，同じディレクトリに stat.js ファイルがあるものとします．
+
+#### require文によるインポート
 
 ```js
 > const stat = require('./stat.js')
@@ -1842,11 +1861,36 @@ Node.js ではインポートに require() 関数を利用します．
 // この例では，stat という定数にモジュールをインポートしました
 // したがって，この後は stat という定数の名前空間でインポートした関数を利用できます
 
-> stat.mean([1,2,3])
-2
-> stat.stddev([1,2,3])
-0.7071067811865476
+> stat.mean([1,2,3,4])
+2.5
+> stat.stddev([1,2,3,4])
+0.7453559924999299
 ```
 
+### ES6 のモジュール
 
+ES6 から javaScriptに import と export というキーワードが追加され javaScript言語処理系のコア機能としてモジュールがサポートされました．
+
+この文法は Node.js では基本的にサポートされていません．
+
+#### export キーワード によるエクスポート
+
+ファイル名を stat.js とします．
+
+```js
+const sum =(a,b)=> a+b;
+const square = a=>a**2;
+// エクスポートする関数
+export const mean = arr=> arr.reduce(sum)/arr.length;
+export const stddev = arr=>{
+    let m = mean(arr);
+    return (Math.sqrt(arr.map(x=>square(x-m)).reduce(sum)))/(arr.length-1);
+};
+```
+
+#### import キーワードによるインポート
+
+```js
+> import stat from "./test/stat.js";
+```
 
