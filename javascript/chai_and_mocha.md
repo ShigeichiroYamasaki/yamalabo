@@ -182,7 +182,7 @@ Type ".help" for more information.
 > 
 ```
 
-以下は node.js のプロンプトから実行
+以下は node.js のプロンプトからインタラクティブに実行
 
 ```js
 > const assert = require('chai').assert
