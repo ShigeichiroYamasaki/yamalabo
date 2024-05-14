@@ -1,6 +1,6 @@
 # JavaScript言語入門
 
-2024/05/09 
+2024/05/13
 Shigeichiro Yamasaki
 
 ## インストール
@@ -9,7 +9,7 @@ node.jsをインストールしておく
 
 ubuntu 22.04LTS
 
-### nvm (ubuntu)のインストール
+### 最新版のnvm (ubuntu)のインストール
 
 ```bash
 sudo apt install curl 
@@ -29,7 +29,7 @@ source ~/.zprofile
 
 ```bash
 // node.js のインストール
-nvm install 21
+nvm install node
 nvm use 21
 // npmのバージョンアップ
 npm install -g npm@10.2.5
