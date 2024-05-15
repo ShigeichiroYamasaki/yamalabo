@@ -43,7 +43,7 @@ nvm install --lts
 
 ```bash
 $ node
-Welcome to Node.js v22.1.0.
+
 Type ".help" for more information.
 > 
 ```
