@@ -1,6 +1,6 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/05/15
+last update 2024/05/16
 Shigeichiro Yamasaki
 
 * chai: javascript のアサーションツール
@@ -295,7 +295,7 @@ describe('gcd関数のテスト', function () {
 ```
 ## npx とは
 
-npx は、npm に同梱されているツールで、Node.js パッケージの実行を簡単にする
+npx は、npm に同梱されているツールで、Node.js パッケージの実行を簡単にするコマンド
 
 ###  インストールされたパッケージの実行
 
@@ -307,8 +307,20 @@ npx は、npm に同梱されているツールで、Node.js パッケージの�
 npx mocha
 ```
 
+### npx によるスクリプトの実行
 
-### npx を使ったmocha のテスト実行
+package.json で実行するスクリプトとして定義することで npx コマンドで実行できます
+
+```json
+{
+  "scripts": {
+    "start": "npx webpack serve",
+    "lint": "npx eslint ."
+  }
+}
+```
+
+## npx を使ったmocha のテスト実行
 
 シェルから実行
 
