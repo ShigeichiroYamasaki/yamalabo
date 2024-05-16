@@ -1,11 +1,25 @@
 # JavaScript言語入門
 
-2024/05/15
+Node.jsを中心にした解説です．
+
+2024/05/16
 Shigeichiro Yamasaki
 
-## Node.js のインストール
+## 目次
 
-### nvm (ubuntu)のインストール
+* nvm
+* Node.js のインストール
+* Node.jsのインタープリタの起動と終了
+* JavaScriptの文法
+* 制御構造
+* 関数
+* 文字列処理
+* 非同期処理
+* Node.js のパッケージ
+* npm
+* javaScriptのモジュール
+
+## nvm (ubuntu)
 
 nvm（Node Version Manager）は、Node.js のバージョン管理ツールであり、複数の Node.js バージョンを簡単にインストール、切り替え、管理するために使用されます
 
@@ -29,7 +43,7 @@ source ~/.zprofile
 
 [nvm winsdows インストーラのページ](https://github.com/coreybutler/nvm-windows/releases)
 
-### Node.jsのインストール
+## Node.jsのインストール
 
 最新の LTS バージョンをインストール
  
@@ -53,7 +67,7 @@ Type ".help" for more information.
 (コントロールｄ）
 
 
-## 文法
+## JavaScriptの文法
 
 ### 式
 
@@ -78,7 +92,7 @@ javaScript の式はセミコロンで終わるのが基本です．
 */
 ```
 
-## 予約語
+### 予約語
 
 以下は予約語なので変数名などの識別子として利用することができない
 
@@ -132,9 +146,9 @@ yield
 enum
 ```
 
-## 型
+### 型
 
-### 基本型
+#### 基本型
 
 イミュータブル（生成後，変更することができないオブジェクト）
 
@@ -144,7 +158,7 @@ enum
 * null, undefined
 * Symbol
 
-### オブジェクト型
+#### オブジェクト型
 
 プロパティ（名前と値を持ち，値として基本型やオブジェクトを保持できる）の集合体のこと
 
@@ -158,9 +172,9 @@ enum
 * 関数
 * クラス
 
-## リテラル
+### リテラル
 
-### 数値
+#### 数値
 
 64ビット浮動小数点形式が基本
 
@@ -189,7 +203,7 @@ true
 > 2e-123
 ```
 
-### 数値演算
+#### 数値演算
 
 ```js
 > 1+1
@@ -227,7 +241,7 @@ Infinity
 NaN     // Not a number
 ```
 
-### 数学的演算
+#### 数学的演算
 
 Math オブジェクトのプロパティを利用して計算する
 
@@ -244,7 +258,7 @@ Math オブジェクトのプロパティを利用して計算する
 > Math.log2(2048)   // 底が2の対数
 ```
 
-### BigInt （任意精度整数）
+#### BigInt （任意精度整数）
 
 数値の最後に小文字のnをつける
 
@@ -266,7 +280,7 @@ BigInt の計算に普通の数値リテラルを混在させることはでき�
 Uncaught TypeError: Cannot mix BigInt and other types, use explicit conversions
 ```
 
-## 文字リテラル
+#### 文字リテラル
 
 Unicodeの文字
 
@@ -314,7 +328,7 @@ Unicodeの文字
 > "hello \n hello"
 ```
 
-### 文字リテラルへの操作
+##### 文字リテラルへの操作
 
 ```js
 > "hello"+"world"
@@ -327,7 +341,7 @@ Unicodeの文字
 7
 ```
 
-## 論理値
+### 論理値
 
 tureとfalseの2つの真偽値
 
@@ -386,9 +400,9 @@ true
 false
 ```
 
-## 代入
+### 代入
 
-### 変数へのバインディング
+#### 変数へのバインディング
 
 * ローカル変数の宣言は let を使用
 * let で宣言された変数のスコープはブロックスコープ（{ } で囲まれた範囲のこと）
@@ -433,7 +447,7 @@ Uncaught ReferenceError: xx is not defined
 ```
 
 
-### 分割代入
+#### 分割代入
 
 ```js
 > {k1: x, k2: y}={k1: 1, k2: 3, k3: 5}
@@ -464,7 +478,7 @@ Uncaught ReferenceError: xx is not defined
 > var y=2
 ```
 
-### 定数定義
+#### 定数定義
 
 ```js
 > const z=5;
@@ -480,7 +494,7 @@ undefined
 Uncaught TypeError: Assignment to constant variable.
 ```
 
-## 変数名の文法
+#### 変数名の文法
 
 * アルファベットの大文字でも小文字でも使えます
 * 数字から始まってはいけません
@@ -488,7 +502,7 @@ Uncaught TypeError: Assignment to constant variable.
 * 予約語は使えません
 
 
-## 標準出力への出力
+### 標準出力への出力
 
 print文にあたるもの
 
@@ -499,9 +513,9 @@ undefined
 
 ```
 
-## 配列
+### 配列
 
-### 配列リテラルによる配列の生成
+#### 配列リテラルによる配列の生成
 
 ```js
 > let arr=[1,2,3,4,5,6];
@@ -518,7 +532,7 @@ undefined
 [ 1, <5 empty items>, 'hello' ]
 ```
 
-### Array() コンストラクタによる配列の生成
+#### Array() コンストラクタによる配列の生成
 
 ```js
 > let arr3=new Array()
@@ -530,7 +544,7 @@ undefined
 [ <5 empty items> ]
 ```
 
-### インデックスによる配列要素へのアクセス
+#### インデックスによる配列要素へのアクセス
 
 ```js
 > arr[0]
@@ -541,7 +555,7 @@ undefined
 4
 ```
 
-### 配列への操作
+#### 配列への操作
 
 ```js
 // 長さ
@@ -601,7 +615,7 @@ true
 3
 ```
 
-### スプレッド演算子
+#### スプレッド演算子
 
 ... は配列リテラルの展開を意味する
 配列リテラルの中に配列要素を入れることに利用できる
@@ -621,9 +635,9 @@ true
 [ 2, 3, 4, 5, 6 ]
 ```
 
-## オブジェクト
+### オブジェクト
 
-### オブジェクトの生成
+#### オブジェクトの生成
 
 ```js
 // オブジェクトリテラルによるオブジェクトの生成
@@ -672,7 +686,7 @@ undefined
 [ 0, 1, 2, 3, 4 ]
 ```
 
-### オブジェクトのプロパティへのアクセス
+#### オブジェクトのプロパティへのアクセス
 
 JavaScriptのオブジェクトにはプロパティという情報が格納されています．
 プロパティの読み出しと書き込みの方法には，メソッド型と連想配列型の2種類があります．
@@ -709,7 +723,7 @@ JavaScriptのオブジェクトにはプロパティという情報が格納さ�
 
 ```
 
-### Map オブジェクト
+#### Map オブジェクト
 
 キーに対応付けられた値にアクセスするためのオブジェクト
 マップは高速なので，処理の高速化手法として有効
@@ -764,7 +778,7 @@ true
 false
 ```
 
-### プロトタイプ・オブジェクトから新しいオブジェクトを生成
+#### プロトタイプ・オブジェクトから新しいオブジェクトを生成
 
 javaScript では，プロトタイプを使って新しいオブジェクトを生成できる．
 
@@ -796,7 +810,7 @@ javaScript では，プロトタイプを使って新しいオブジェクトを
 { x: 5555, y: 88888 }
 ```
 
-### プロパティのテスト
+#### プロパティのテスト
 
 オブジェクトがそのプロパティを持っているかテストできる
 
@@ -807,7 +821,7 @@ javaScript では，プロトタイプを使って新しいオブジェクトを
 true
 ```
 
-### オブジェクトの型
+#### オブジェクトの型
 
 ```js
 > typeof 1
@@ -1715,7 +1729,7 @@ callback2: event3 →
       └------------→(最初の失敗) --> callbackErr
 ```
 
-## await / async
+### await / async
 
 Promise の使用法を劇的に簡略化する構文で，Promise の複雑性を事実上隠蔽します．
 
@@ -1828,18 +1842,79 @@ Node.js のパッケージは，他のシステムにおける「プロジェク
 パッケージは一つのディレクトリで管理します．
 Node.js のパッケージは，モジュールの集合体です．
 
-### npm （Node Package Manager）
+## npm （Node Package Manager）
 
 Node.js のパッケージ管理には、主に npm コマンドが使用されます。npm は、ソフトウェアレジストリであり、Node.js のライブラリやツールが公開されています．
 
-#### npm の基本的なコマンド
+### npm の基本的なコマンド
 
-* npm init：プロジェクトの初期化を行い、package.json ファイルを作成します。
-* npm install（または npm i）：パッケージをインストールします。例えば、npm install express は express パッケージをインストールします。
-    * --save：依存関係として package.json に追加します（デフォルトで npm install で追加されます）。
-    * --save-dev：開発依存関係として追加します（例：npm install --save-dev mocha）。
+* npm init：プロジェクトの初期化
+* npm install（または npm i）：パッケージのインストール
 * npm update：パッケージを最新バージョンに更新します。
 * npm uninstall：パッケージをアンインストールします。
+
+####  npm init：npm による新しいプロジェクトの作成
+
+まずプロジェクトのディレクトリを作成し，そこで初期化を行います．
+
+package.json ファイルが作成されます．
+
+```bash
+$ mkdir <プロジェクトディレクトリ＞
+$ cd  <プロジェクトディレクトリ＞
+
+$ npm init
+
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (mynodeproj) mynodeproj
+version: (1.0.0) 
+description: 
+entry point: (index.js) 
+test command: 
+git repository: 
+keywords: 
+author: 
+license: (ISC) 
+About to write to /Users/shigeichiroyamasaki/git/yamalabo/myNodeProj/package.json:
+
+{
+  "name": "mynodeproj",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
+
+
+Is this OK? (yes) 
+
+npm notice
+npm notice New minor version of npm available! 10.7.0 -> 10.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.8.0
+npm notice To update run: npm install -g npm@10.8.0
+npm notice
+
+```
+
+#### npm install:パッケージのインストール
+
+    * --save：依存関係として package.json に追加します（デフォルトで npm install で追加されます）。
+    * --save-dev：開発依存関係として追加します（例：npm install --save-dev mocha）
+    * -g : グローバルインストール.システム全体で使用するパッケージのインストール
+
 
 #### package.json
 
