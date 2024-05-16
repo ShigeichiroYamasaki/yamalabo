@@ -35,7 +35,7 @@ $ cd ~
 $ npm install -g mocha
 ```
 
-### テスト用ディレクトリの作成
+### プロジェクトルート・ディレクトリの作成
 
 新しいNode.js プロジェクト（パッケージ）のディレクトリを作成します．
 
@@ -43,11 +43,14 @@ $ npm install -g mocha
 
 ```bash
 $ mkdir math-for-crypto
+$ cd math-for-crypto
 ```
+
+このディレクトリをプロジェクトルート・ディレクトリと呼ぶことにします．
+
 ### mocha 設定ファイル mocha.config.js
 
 ```bash
-$ cd ~
 $ nano mocha.config.js
 ```
 
@@ -84,7 +87,7 @@ assert APIの一般構造
 assert(式, エラーメッセージ)
 ```
 
-javaScript のテストコード
+テストコードの例
 
 ```js
 const assert = require('chai').assert
@@ -98,9 +101,9 @@ assert.lengthOf(foo, 3, 'foo`の値の長さは 3');
 assert.lengthOf(beverages.tea, 3, 'beverages has 3 types of tea');
 ```
 
-### shouldの例
+### should
 
-javaScript のテストコード
+javaScript のテストコードの例
 
 ```js
 const should = require('chai').should();
@@ -114,9 +117,9 @@ tea.should.have.property('flavors')
   .with.lengthOf(3);
 ```
 
-### expectの例
+### expect
 
-javaScript のテストコード
+javaScript のテストコードの例
 
 ```js
 const expect = require('chai').expect;
@@ -157,7 +160,6 @@ include()           // ex. 'foobar' includes 'foo'
 lengthOf()          // サイズ
 match()             // RE
 ```
-
 
 ### chai によるテストの例
 

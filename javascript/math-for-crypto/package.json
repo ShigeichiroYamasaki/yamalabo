@@ -10,5 +10,8 @@
     "crypto"
   ],
   "author": "Shigeichiro Yamasaki",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^10.4.0"
+  }
 }
