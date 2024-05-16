@@ -1,0 +1,14 @@
+{
+  "name": "math-for-crypto",
+  "version": "1.0.0",
+  "description": "math functions dor crypto",
+  "main": "index.js",
+  "scripts": {
+    "test": "mathtest"
+  },
+  "keywords": [
+    "crypto"
+  ],
+  "author": "Shigeichiro Yamasaki",
+  "license": "ISC"
+}

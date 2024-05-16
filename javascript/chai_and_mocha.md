@@ -21,14 +21,14 @@ node.js と npm はインストール済とします
 
 ## インストール
 
-npm で chai をインストール
+npm で chai をグローバルにインストール
 
 ```bash
 $ cd ~
 $ npm install -g chai
 ```
 
-npm で mocha をインストール
+npm で mocha をグローバルにインストール
 
 ```bash
 $ cd ~
@@ -37,8 +37,12 @@ $ npm install -g mocha
 
 ### テスト用ディレクトリの作成
 
+新しいNode.js プロジェクト（パッケージ）のディレクトリを作成します．
+
+ここでは，math-for-crypto というプロジェクトを作成するものとします．
+
 ```bash
-$ mkdir test
+$ mkdir math-for-crypto
 ```
 ### mocha 設定ファイル mocha.config.js
 

@@ -1,4 +1,3 @@
-// math.js のテストプログラム
 const assert = require('assert');
 const math = require('../src/math.js');
 
@@ -65,3 +64,4 @@ describe('gcd関数のテスト', function () {
 
   });
 });
+
