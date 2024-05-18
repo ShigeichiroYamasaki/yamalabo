@@ -1,7 +1,18 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/05/16
+last update 2024/05/18
 Shigeichiro Yamasaki
+
+## 目次
+
+* 概要と前提条件
+* プロジェクトの作成
+* chai
+* mocha
+
+## 概要と前提条件
+
+JavaScriptプログラムのテストを行うためのモジュールとして次の2つを利用することにします．
 
 * chai: javascript のアサーションツール
   テストの内容を定義します
@@ -15,25 +26,15 @@ Shigeichiro Yamasaki
   mocha のサイト <https://mochajs.org/>
 
 
-## 前提条件
+* 前提条件
 
-node.js と npm はインストール済とします
+[Node.js と npm はインストール済とします](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/javascript/JavaScript.md)
 
-## インストール
+## プロジェクトの作成
 
-npm で chai をグローバルにインストール
+開発するアプリケーションプロジェクトとそのテスト環境を作成します
 
-```bash
-$ cd ~
-$ npm install -g chai
-```
-
-npm で mocha をグローバルにインストール
-
-```bash
-$ cd ~
-$ npm install -g mocha
-```
+このプロジェクトの中に chai と mocha のモジュールをインストールします
 
 ### プロジェクトルート・ディレクトリの作成
 
@@ -48,26 +49,54 @@ $ cd math-for-crypto
 
 このディレクトリをプロジェクトルート・ディレクトリと呼ぶことにします．
 
-### mocha 設定ファイル mocha.config.js
+### npm プロジェクトの初期化
+
+Node.js のパッケージとして初期化します．
+
+その結果 package.json ファイルが作られます．
+
+★ test コマンドは mocha にします
 
 ```bash
-$ nano mocha.config.js
+$ npm init
+
+...
+
+package name: (math-for-crypto) 
+version: (1.0.0) 
+description: 暗号用の数学的関数
+entry point: (math.js) 
+test command: mocha
+git repository: 
+keywords: 
+author: Shigeichiro Yamasaki
+license: (ISC) 
+About to write to /Users/shigeichiroyamasaki/git/yamalabo/javascript/math-for-crypto/package.json:
+
+{
+  "name": "math-for-crypto",
+  "version": "1.0.0",
+  "description": "暗号用の数学的関数",
+  "main": "math.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Shigeichiro Yamasaki",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes) 
 ```
 
-mocha.config.js の内容
+### mocha と chai のインストール
 
-```js
-module.exports={
-  // テストのディレクトリ
-	spec:'test/**/*.spec.js',
-	timeout: 5000,
-  // テスト用インターフェース TDD/BDD
-	ui: 'tdd',
-	reporter: 'spec'
-};
-
+```bash
+$ npm install mocha chai --save-dev
 ```
-
 ## chai
 
 以下の３つのテストの宣言方法がある
@@ -80,6 +109,26 @@ assert  は宣言的な方法で TDD 型開発用
 
 should と expect は BDD 型開発用
 
+### chai のモジュール形式
+
+Node.js は，デフォルトではモジュールを歴史的に使われてきた CommonJS 形式のものとして扱います．
+
+chai のモジュールは CommonJS 形式もありますが，基本的に現在の標準である ES6 のESモジュールとして作られています．
+
+#### モジュールのインポート方法の違い
+
+* CommonJSモジュール の場合：
+  `require(モジュール名)` でインポートする
+* ES モジュールの場合：複数の方法がある
+  `import {名前} from パス` でインポートする（package.jsonの修正やファイル名の修正が必要）
+
+  動的インポートを利用する
+
+  `await import()` でインポートできる
+
+  ただし，await は async 関数の中でのみ利用できることに注意
+
+
 ### assertの例
 
 assert APIの一般構造
@@ -87,94 +136,7 @@ assert APIの一般構造
 assert(式, エラーメッセージ)
 ```
 
-テストコードの例
-
-```js
-const assert = require('chai').assert
-foo = 'bar';
-beverages = { tea: [ 'chai', 'matcha', 'oolong' ] };
-
-assert.typeOf(foo, 'string'); // エラーメッセージなし
-assert.typeOf(foo, 'string', 'fooは string型'); // エラーメッセージ付き
-assert.equal(foo, 'bar', 'foo equal `bar`');
-assert.lengthOf(foo, 3, 'foo`の値の長さは 3');
-assert.lengthOf(beverages.tea, 3, 'beverages has 3 types of tea');
-```
-
-### should
-
-javaScript のテストコードの例
-
-```js
-const should = require('chai').should();
-foo = 'bar';
-beverages = { tea: [ 'chai', 'matcha', 'oolong' ] };
-
-foo.should.be.a('string');
-foo.should.equal('bar');
-foo.should.have.lengthOf(3);
-tea.should.have.property('flavors')
-  .with.lengthOf(3);
-```
-
-### expect
-
-javaScript のテストコードの例
-
-```js
-const expect = require('chai').expect;
-foo = 'bar';
-beverages = { tea: [ 'chai', 'matcha', 'oolong' ] };
-
-expect(foo).to.be.a('string');
-expect(foo).to.equal('bar');
-expect(foo).to.have.lengthOf(3);
-expect(beverages).to.have.property('tea').with.lengthOf(3);
-```
-
-### assert スタイルのアサーションメソッド一覧
-
-assertスタイルを利用する場合、以下をおぼえておけばよい
-
-```
-isOk()              // true
-deepEqual()         // 同値
-isAbove()           // >
-isAtLeast()         // >=
-isBelow()           // <
-isAtMost()          // <=
-isTrue()            // == true
-isFalse()           // == false
-isNull()            // == null
-isNaN()             // isNan()
-isUndefined()       // === undefined
-isFunction()        // Function型
-isObject()          // Object型
-isArray()           // Array型
-isString()          // String型
-isNumber()          // Number型
-isBoolean()         // Boolean型
-typeOf()            // 型チェック
-instanceOf()        // 型のインスタンスである
-include()           // ex. 'foobar' includes 'foo'
-lengthOf()          // サイズ
-match()             // RE
-```
-
 ### chai によるテストの例
-
-### ユークリッドの互除法による最大公約数を求める gcd関数のテスト
-
-関数gcd の仕様
-
-```
-a%b==0 のとき、最大公約数は b
-そうでないとき gcd(a,b) = gcd(b,a%b)
-p,q,r が素数で
-a=p*q, b=p*r なら、最大公約数は p
-a,b が互いに素のとき、最大公約数は 1
-
-```
 
 #### chai による仕様の定義
 
@@ -183,27 +145,48 @@ node.js を起動して実行
 ```bash
 $ node
 
-Welcome to Node.js v20.10.0.
-Type ".help" for more information.
 > 
 ```
+
+#### ユークリッドの互除法による最大公約数を求める gcd関数のテスト
+
+関数gcd の仕様を次のように定義します
+
+```
+2つの整数 a b に対して
+
+a%b==0 のとき、最大公約数は b
+
+そうでないとき gcd(a,b) = gcd(b,a%b)
+
+p,q,r が素数のとき
+a=p*q, b=p*r なら、最大公約数は p
+
+a,b が互いに素のとき、最大公約数は 1
+
+```
+
 
 以下は node.js のプロンプトからインタラクティブに実行
 
 ```js
-> const assert = require('chai').assert
+> const chai = async ()=>{return await import('chai')};
+> let c = await chai();
+> let assert=c.assert
 
 // 関数 gcd のアサーションを定義する
 //   b==0 のとき、最大公約数は a （定義する）
 > let p=11;
 > let q=13;
 > let r=17;
-> assert.equal(gcd(p*q,q) ,q);
-> assert.equal(gcd(p*q,p*r) ,p);
-> assert.equal(gcd(p,q) ,1);
+>  assert(gcd(p*q,q) == q);
+Uncaught ReferenceError: gcd is not defined
+> assert(gcd(p*q,p*r) == p);
+Uncaught ReferenceError: gcd is not defined
+>  assert(gcd(p,q) == 1);
+Uncaught ReferenceError: gcd is not defined
 
 //実行すると関数 gcd が未定義というエラーが出る
-Uncaught ReferenceError: gcd is not defined
 ```
 
 関数 gcd の定義
@@ -221,36 +204,87 @@ Uncaught ReferenceError: gcd is not defined
 テストの再実行
 
 ```js
-> assert.equal(gcd(p*q,q) ,q);
-> assert.equal(gcd(p*q,p*r),p);
-> assert.equal(gcd(p,q) ,1);
+>assert(gcd(p*q,q) == q);
+undefined
+> assert(gcd(p*q,p*r) == p);
+undefined
+> assert(gcd(p,q) == 1);
+undefined
 ```
 エラーが起きないで終了
 
 ## mocha 
 
-### テスト対象のモジュールの作成
+#### テストプログラム用のディレクトリの作成
 
-#### テスト対象モジュールのディレクトリ
-
-```
-~/src/
-```
-
-とする
+プロジェクトルートの下に test というディレクトリを作成します
 
 ```bash
-$ mkdir ~/src
-$ cd ~/src
-
-$ nano math.js
+$ mkdir test
+$ cd test
 ```
 
-#### テスト対象モジュール
+テストプログラムを mathtest.js とします
 
-ファイル名 math.js
+```bash
+$ nano mathtest.js
+```
 
-javascriptのモジュール機構を使って gcd 関数をエクスポートします
+```js
+const chai = async ()=>{return await import('chai')};
+const math = require('../math.js');
+
+// 関数 gcd のアサーションを定義する
+//   b==0 のとき、最大公約数は a （定義する）
+let p=11;
+let q=13;
+let r=17;
+assert.equal(math.gcd(p*q,q) ,q);
+assert.equal(math.gcd(p*q,p*r) ,p);
+assert.equal(math.gcd(p,q) ,1);
+```
+
+## package.json ファイルの設定内容の確認
+
+Node.js プロジェクトの設定を行う package.json ファイルを確認する
+
+
+プロジェクトルート・ディレクトリに移動
+
+```bash
+$ nano package.json
+```
+
+```json
+  "name": "math-for-crypto",
+  "version": "1.0.0",
+  "description": "暗号用の数学的関数",
+  "main": "math.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Shigeichiro Yamasaki",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.4.0"
+  }
+}
+
+```
+
+### テスト対象プログラムの作成
+
+プロジェクトルート・ディレクトリ
+
+テスト対象プログラムのファイルを math.js とします．
+
+```bash
+$ nano math.js
+```
 
 ```js
 const gcd=(a,b)=>{
@@ -262,87 +296,74 @@ const gcd=(a,b)=>{
 }
 
 module.exports = {gcd};
+
 ```
 
 ### テストファイルの作成
 
 ```bash
-$ cd ~/test
+$ cd test
 $ nano mathtest.js
 ```
 
 #### mathtest.js の内容
 
-* テストは ~/test をカレントディレクトリとして実行されるので、テスト対象モジュールのファイルはここからの相対パスになります
+* テストは test ディレクトリをカレントディレクトリとして実行されるので、テスト対象モジュールのファイルはここからの相対パスになります
 * require 関数でソース・ファイルから gcd 関数をインポートします
+* chai モジュールは await で動的インポートするので，それを行う非同期関数を定義します．
+* さらに assert 関数を利用するときもテスト項目の it ごとに非同期関数を使って assert関数をインポートします．
+
 
 
 ```js
-const assert = require('assert');
-const math = require('../src/math.js');
+const chai = async ()=>{return await import('chai')};
+const math = require('../math.js');
 
+// ユークリッド互除法
 describe('gcd関数のテスト', function () {
-  describe('#gcd', function () {
+  describe('#dcg', function () {
         let p=11;
         let q=13;
         let r=17;
-        it('a%b==0 のとき、最大公約数は b', function () {
-                assert.equal(math.gcd(p*q,q) ,q);
+        it('a%b==0 のとき、最大公約数は b', async function () {
+                let c = await chai();
+                let assert = c.assert;
+                assert(math.gcd(p*q,q) == q);
         });
-        it('p*q と p*r の最大公約数は p', function () {
-                assert.equal(math.gcd(p*q,p*r) ,p);
+        it('p*q と p*r の最大公約数は p', async function () {
+                let c = await chai();
+                let assert = c.assert;
+                assert(math.gcd(p*q,p*r) == p);
         });
-        it('a b が互いに素のとき最大公約数は 1', function () {
-                assert.equal(math.gcd(p,q) ,1);
+        it('a b が互いに素のとき最大公約数は 1', async function () {
+                let c = await chai();
+                let assert = c.assert;
+                assert(math.gcd(p,q) == 1);
         });
 
   });
 });
 ```
-## npx とは
 
-npx は、npm に同梱されているツールで、Node.js パッケージの実行を簡単にするコマンド
+### mochaによるテストの実行
 
-###  インストールされたパッケージの実行
-
-プロジェクトの node_modules にインストールされているパッケージを実行
-
-インストール済の mocha パッケージを実行して，現在のディレクトリのプログラムを評価します
 
 ```bash
-npx mocha
-```
+$ npm run test
 
-### npx によるスクリプトの実行
+> math-for-crypto@1.0.0 test
+> mocha
 
-package.json で実行するスクリプトとして定義することで npx コマンドで実行できます
 
-```json
-{
-  "scripts": {
-    "start": "npx webpack serve",
-    "lint": "npx eslint ."
-  }
-}
-```
-
-## npx を使ったmocha のテスト実行
-
-シェルから実行
-
-```bash
-$ cd ~
-$ npx mocha
 
   gcd関数のテスト
-    #gcd
+    #dcg
       ✔ a%b==0 のとき、最大公約数は b
       ✔ p*q と p*r の最大公約数は p
       ✔ a b が互いに素のとき最大公約数は 1
 
 
-  3 passing (2ms)
-
+  3 passing (7ms)
 
 ```
 

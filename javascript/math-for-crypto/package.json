@@ -1,17 +1,18 @@
 {
   "name": "math-for-crypto",
   "version": "1.0.0",
-  "description": "math functions dor crypto",
-  "main": "index.js",
-  "scripts": {
-    "test": "mathtest"
+  "description": "暗号用の数学的関数",
+  "main": "math.js",
+  "directories": {
+    "test": "test"
   },
-  "keywords": [
-    "crypto"
-  ],
+  "scripts": {
+    "test": "mocha"
+  },
   "author": "Shigeichiro Yamasaki",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
+    "chai": "^5.1.1",
     "mocha": "^10.4.0"
   }
 }
