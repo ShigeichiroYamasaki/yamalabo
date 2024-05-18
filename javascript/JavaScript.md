@@ -23,6 +23,8 @@ Shigeichiro Yamasaki
 
 nvm（Node Version Manager）は、Node.js のバージョン管理ツールであり、複数の Node.js バージョンを簡単にインストール、切り替え、管理するために使用されます
 
+### nvm (ubuntu)のインストール
+
 ```bash
 sudo apt install curl 
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
