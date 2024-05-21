@@ -1,16 +1,19 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/05/18
+last update 2024/05/21
 Shigeichiro Yamasaki
 
 ## 目次
 
-* 概要と前提条件
-* プロジェクトの作成
-* chai
-* mocha
+* [概要と前提条件](#overview)
+* [プロジェクトの作成](#project)
+* [chai](#chai)
+* [mocha](#mocha)
+* [テストの記述方法](#testdescription)
+* [mochaによるテストの実行](#execution)
+* モックの利用
 
-## 概要と前提条件
+##  <a id="overview"> </a>概要と前提条件
 
 JavaScriptプログラムのテストを行うためのモジュールとして次の2つを利用することにします．
 
@@ -30,7 +33,7 @@ JavaScriptプログラムのテストを行うためのモジュールとして�
 
 [Node.js と npm はインストール済とします](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/javascript/JavaScript.md)
 
-## プロジェクトの作成
+##  <a id="project"> </a>プロジェクトの作成
 
 開発するアプリケーションプロジェクトとそのテスト環境を作成します
 
@@ -97,7 +100,7 @@ Is this OK? (yes)
 ```bash
 $ npm install mocha chai --save-dev
 ```
-## chai
+##  <a id="chai"> </a>chai
 
 以下の３つのテストの宣言方法がある
 
@@ -212,10 +215,9 @@ undefined
 undefined
 ```
 エラーが起きないで終了
+##  <a id="mocha"> </a>mocha 
 
-## mocha 
-
-#### テストプログラム用のディレクトリの作成
+### テストプログラム用のディレクトリの作成
 
 プロジェクトルートの下に test というディレクトリを作成します
 
@@ -223,6 +225,38 @@ undefined
 $ mkdir test
 $ cd test
 ```
+### mocha の設定ファイル
+
+プロジェクトルートディレクトリに `mocha.config.js` ファイルを作成します
+
+```bash
+$ nano mocha.config.js
+```
+
+mocha.config.js
+
+```js
+module.exports={
+  // テストのディレクトリを test にする
+  spec: 'test/**/*.spec.js',
+  // テストスイートのタイムアウトは5秒
+  timeout: 5000,
+  // 使用するテストインターフェース TDD/BDD
+  ui: 'tdd',
+  // レポーターの指定
+  reporter: 'spec'
+}
+```
+
+### npx コマンドによる mocha テストの実行
+
+```bash
+$ npx mocha
+```
+
+### テストプログラム（テストスイート）の作成
+
+テストプログラムは `test` ディレクトリに記述します．
 
 テストプログラムを mathtest.js とします
 
@@ -244,12 +278,11 @@ assert.equal(math.gcd(p*q,p*r) ,p);
 assert.equal(math.gcd(p,q) ,1);
 ```
 
-## package.json ファイルの設定内容の確認
-
-Node.js プロジェクトの設定を行う package.json ファイルを確認する
-
+### package.json ファイルの設定内容の確認
 
 プロジェクトルート・ディレクトリに移動
+
+Node.js プロジェクトの設定を行う package.json ファイルを確認する
 
 ```bash
 $ nano package.json
@@ -275,6 +308,39 @@ $ nano package.json
 }
 
 ```
+
+##  <a id="testdescription"> </a>テストの記述方法
+
+mocha によるテスト記述の文法を説明します
+
+### Describe ブロック
+
+関連する複数のテストをグループ化するためのものです．
+
+一般的に機能的なまとまりやコンポーネントを１つのDescribe ブロックにします．
+
+#### 階層化 describe ブロック
+
+describe ブロックは階層化させることができます．
+
+### it ブロック
+
+descripbe ブロックの中で各テストケースを定義するためのものです．
+
+1つのテストケースごとに１つの it ブロックを作成します．
+
+### アサーション
+
+仕様を意味する挙動を定義することです．
+
+典型的には実行の結果が満たすべき等式や不等式や型などとして定義されます．
+
+assert, expect, should などの定義方法があります．
+
+assertは，引数の式が`真` であることを期待します．
+
+また，結果が `真` でないときにテストは失敗します．
+失敗時のエラーメッセージで原因調査に有用な情報を上げることができます．
 
 ### テスト対象プログラムの作成
 
@@ -345,15 +411,11 @@ describe('gcd関数のテスト', function () {
 });
 ```
 
-### mochaによるテストの実行
+## <a id="execution">mochaによるテストの実行
 
 
 ```bash
-$ npm run test
-
-> math-for-crypto@1.0.0 test
-> mocha
-
+$ npx mocha
 
 
   gcd関数のテスト
@@ -366,4 +428,10 @@ $ npm run test
   3 passing (7ms)
 
 ```
+
+## モックの利用
+
+モックとは，データなどの外部依存関係をテスト用のものに置き換えたものです．
+
+### モックの作成
 
