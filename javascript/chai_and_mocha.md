@@ -11,7 +11,6 @@ Shigeichiro Yamasaki
 * [mocha](#mocha)
 * [テストの記述方法](#testdescription)
 * [mochaによるテストの実行](#execution)
-* モックの利用
 
 ##  <a id="overview"> </a>概要と前提条件
 
@@ -428,10 +427,3 @@ $ npx mocha
   3 passing (7ms)
 
 ```
-
-## モックの利用
-
-モックとは，データなどの外部依存関係をテスト用のものに置き換えたものです．
-
-### モックの作成
-
