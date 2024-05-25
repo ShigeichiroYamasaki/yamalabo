@@ -1,6 +1,6 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/05/21
+last update 2024/05/25
 Shigeichiro Yamasaki
 
 ## 目次
@@ -16,12 +16,12 @@ Shigeichiro Yamasaki
 
 JavaScriptプログラムのテストを行うためのモジュールとして次の2つを利用することにします．
 
-* chai: javascript のアサーションツール
+* chai: JavaScript のアサーションツール
   テストの内容を定義します
 
   chai のサイト <https://www.chaijs.com/>
 
-* mocha: javascriptのテストフレームワーク
+* mocha: JavaScriptのテストフレームワーク
 
   テストの実行環境
 
@@ -30,7 +30,7 @@ JavaScriptプログラムのテストを行うためのモジュールとして�
 
 * 前提条件
 
-[Node.js と npm はインストール済とします](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/javascript/JavaScript.md)
+[Node.js と npm はインストール済とします](https://github.com/ShigeichiroYamasaki/yamalabo/blob/master/JavaScript/JavaScript.md)
 
 ##  <a id="project"> </a>プロジェクトの作成
 
@@ -51,6 +51,12 @@ $ cd math-for-crypto
 
 このディレクトリをプロジェクトルート・ディレクトリと呼ぶことにします．
 
+プロジェクトルートに移動する操作を以下のように表記します
+
+```bash
+$ cd <プロジェクトルート>
+```
+
 ### npm プロジェクトの初期化
 
 Node.js のパッケージとして初期化します．
@@ -60,6 +66,7 @@ Node.js のパッケージとして初期化します．
 ★ test コマンドは mocha にします
 
 ```bash
+$ cd <プロジェクトルート>
 $ npm init
 
 ...
@@ -73,7 +80,7 @@ git repository:
 keywords: 
 author: Shigeichiro Yamasaki
 license: (ISC) 
-About to write to /Users/shigeichiroyamasaki/git/yamalabo/javascript/math-for-crypto/package.json:
+About to write to /Users/shigeichiroyamasaki/git/yamalabo/JavaScript/math-for-crypto/package.json:
 
 {
   "name": "math-for-crypto",
@@ -97,6 +104,7 @@ Is this OK? (yes)
 ### mocha と chai のインストール
 
 ```bash
+$ cd <プロジェクトルート>
 $ npm install mocha chai --save-dev
 ```
 ##  <a id="chai"> </a>chai
@@ -206,7 +214,7 @@ Uncaught ReferenceError: gcd is not defined
 テストの再実行
 
 ```js
->assert(gcd(p*q,q) == q);
+> assert(gcd(p*q,q) == q);
 undefined
 > assert(gcd(p*q,p*r) == p);
 undefined
@@ -221,6 +229,7 @@ undefined
 プロジェクトルートの下に test というディレクトリを作成します
 
 ```bash
+$ cd <プロジェクトルート>
 $ mkdir test
 $ cd test
 ```
@@ -229,6 +238,7 @@ $ cd test
 プロジェクトルートディレクトリに `mocha.config.js` ファイルを作成します
 
 ```bash
+$ cd <プロジェクトルート>
 $ nano mocha.config.js
 ```
 
@@ -250,32 +260,10 @@ module.exports={
 ### npx コマンドによる mocha テストの実行
 
 ```bash
+$ cd <プロジェクトルート>
 $ npx mocha
 ```
 
-### テストプログラム（テストスイート）の作成
-
-テストプログラムは `test` ディレクトリに記述します．
-
-テストプログラムを mathtest.js とします
-
-```bash
-$ nano mathtest.js
-```
-
-```js
-const chai = async ()=>{return await import('chai')};
-const math = require('../math.js');
-
-// 関数 gcd のアサーションを定義する
-//   b==0 のとき、最大公約数は a （定義する）
-let p=11;
-let q=13;
-let r=17;
-assert.equal(math.gcd(p*q,q) ,q);
-assert.equal(math.gcd(p*q,p*r) ,p);
-assert.equal(math.gcd(p,q) ,1);
-```
 
 ### package.json ファイルの設定内容の確認
 
@@ -284,6 +272,7 @@ assert.equal(math.gcd(p,q) ,1);
 Node.js プロジェクトの設定を行う package.json ファイルを確認する
 
 ```bash
+$ cd <プロジェクトルート>
 $ nano package.json
 ```
 
@@ -348,6 +337,7 @@ assertは，引数の式が`真` であることを期待します．
 テスト対象プログラムのファイルを math.js とします．
 
 ```bash
+$ cd <プロジェクトルート>
 $ nano math.js
 ```
 
@@ -367,6 +357,7 @@ module.exports = {gcd};
 ### テストファイルの作成
 
 ```bash
+$ cd <プロジェクトルート>
 $ cd test
 $ nano mathtest.js
 ```

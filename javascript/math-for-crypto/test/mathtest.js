@@ -62,10 +62,11 @@ describe('factR関数のテスト', function () {
 
 // ユークリッド互除法
 describe('gcd関数のテスト', function () {
-  describe('#dcg', function () {
+	// 素数
 	let p=11;
-	let q=13;
-	let r=17;
+	let q=17;
+	let r=23;
+  describe('#dcg', function () {
 	it('a%b==0 のとき、最大公約数は b', async function () {
                 let c = await chai();
                 let assert = c.assert;
