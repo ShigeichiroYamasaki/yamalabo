@@ -730,7 +730,8 @@ module.exports = TokenModule;
 
 ### Hardhat とネットワークの接続方法
 
-以下のようにネットワーク名を指定して実行します
+プロジェクトルートから，
+以下のようにネットワーク名を指定して ignition のデプロイを実行します
 
 ```bash
 npx hardhat ignition deploy ./ignition/modules/Token.js --network <ネットワーク名>
