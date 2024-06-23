@@ -1,6 +1,6 @@
 # Hardhat 
 
-2024/06/16
+2024/06/23
 作成，更新 Shigeichiro Yamasaki
 
 ## 環境のセットアップ
@@ -49,6 +49,13 @@ cd hardhat-tutorial
 
 ### JavaScript プロジェクトの作成
 
+init コマンドでプロジェクトのフォルダ群を自動生成します．
+
+また，このパスがプロジェクトの起点となる「プロジェクトルート」になります．
+
+とりあえず，入力なしでエンターキーを押していくだけでよいですが，実際にプロジェクトを作成するときは，それぞれの設定を入力してください．
+
+設定ファイルは，package.json というファイルです．
 
 ```bash
 npm init
@@ -93,15 +100,19 @@ Is this OK? (yes)
 
 ### Hardhat パッケージモジュールのインストール
 
+hardhat は，javaScriptのパッケージモジュールです．
+
+★  --save-dev というオプションは，このプロジェクトだけのローカルな環境にモジュールをインストールするという意味です．
+
 ```bash
 npm install --save-dev hardhat
 ```
 
 ### Hardhat の初期化 （空の設定ファイルの作成）
 
-Create an empty hardhat.config.js を選択して，現在のディレクトリに空の hardhat.config.js ファイルを作成します．
+▶ Create an empty hardhat.config.js を選択
 
-Hardhat の実行には空の hardhat.config.js ファイルで問題ありません．
+プロジェクトルートディレクトリに，空の hardhat.config.js ファイルを作成します．
 
 ```bash
 npx hardhat init
@@ -118,10 +129,10 @@ npx hardhat init
 Welcome to Hardhat v2.22.5
 
 ? What do you want to do? … 
-▸ Create a JavaScript project
+  Create a JavaScript project
   Create a TypeScript project
   Create a TypeScript project (with Viem)
-  Create an empty hardhat.config.js
+▸ Create an empty hardhat.config.js
   Quit
 
 ```
@@ -154,6 +165,11 @@ npm install --save-dev @nomicfoundation/hardhat-toolbox
 
 * hardhat.config.js ファイルの修正
 
+```bash
+nano hardhat.config.js
+```
+
+プラグインの require文を追加
 ```js
 require("@nomicfoundation/hardhat-toolbox");
 
@@ -164,6 +180,14 @@ module.exports = {
 ```
 
 ## スマートコントラクトの作成とコンパイル
+
+プロジェクトルートのディレクトリ一覧
+
+```bash
+ls
+=>
+cache			hardhat.config.js	node_modules		package-lock.json	package.json
+```
 
 ### contracts ディレクトリの作成
 
@@ -186,6 +210,8 @@ Solidityプログラムのソースコードには .sol という拡張子をつ
 ```bash
 nano Token.sol
 ```
+
+ファイルの内容
 
 ```js
 //SPDX-License-Identifier: UNLICENSED
@@ -262,11 +288,10 @@ contract Token {
 npx hardhat compile
 
 =>
-Downloading compiler 0.8.24
 Compiled 1 Solidity file successfully (evm target: paris).
 ```
 
-## コントラクトのテスト
+## Hardhat Network でのコントラクトのテスト
 
 コントラクトのテストは ローカルノードである Hardhat Networkで実施します．
 
@@ -277,13 +302,21 @@ Compiled 1 Solidity file successfully (evm target: paris).
 ### テストの作成
 
 プロジェクトルートの下に test という名前のディレクトリを作成します．
-
 ```bash
 cd ..
+ls
+=>
+artifacts		contracts		node_modules		package.json
+cache			hardhat.config.js	package-lock.json
+```
+
+test ディレクトリの作成
+
+```bash
 mkdir test
 cd test
 ```
-JavaScript のテストフレームワーク CHai を利用する
+#### JavaScript のテストフレームワーク CHai を利用する
 
 また， ethers.js を利用して操作を行います
 
@@ -295,15 +328,15 @@ JavaScript のテストフレームワーク CHai を利用する
 nano Token.js
 ```
 
+ファイルの内容
+
 ```js
 const { expect } = require("chai");
 
-describe("Token contract", function () {
-  it("Deployment should assign the total supply of tokens to the owner", async function () {
+describe("トークンのコントラクト", function () {
+  it("デプロイによりトークンの総供給量が所有者に割り当てられること", async function () {
     const [owner] = await ethers.getSigners();
-
     const hardhatToken = await ethers.deployContract("Token");
-
     const ownerBalance = await hardhatToken.balanceOf(owner.address);
     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
   });
@@ -312,59 +345,64 @@ describe("Token contract", function () {
 
 ### テストの実行
 
+プロジェクトルートで実行
+
 ```bash
+cd ..
+
 npx hardhat test
 
 =>
 
 
-  Token contract
-    ✔ Deployment should assign the total supply of tokens to the owner (435ms)
+  トークンのコントラクト
+    ✔ デプロイによりトークンの総供給量が所有者に割り当てられること(435ms)
 
 
   1 passing (436ms)
-
-
 ```
 
-#### テスト内容
+#### テストプログラムの内容の説明
+
+ラッピングライブラリには ethers.js  を使っています．
+
+ethers.getSigners() は，トランザクション送信者のEthereumアカウントを返すメソッドです．
 
 ```js
 const [owner] = await ethers.getSigners();
 ```
 
-ethers.js  を使っています．
+ethers.deployContract()  は，引数のコントラクトをデプロイする ethers.js メソッドです．
 
-ethers.getSigners() は，トランザクション送信者のEthereumアカウントを返します．
+デプロイが完了すると hardhatToken というオブジェクトが利用可能になります．
 
 ```js
 const hardhatToken = await ethers.deployContract("Token");
 ```
 
-ethers.deployContract("Token") は，このコントラクトをデプロイします．
+
+hardhatTokenに対して balanceOf というメソッドを使うと Owner の所持金を確認することができます．
 
 ```js
 const ownerBalance = await hardhatToken.balanceOf(owner.address);
 ```
 
-デプロイが完了すると hardhatToken というオブジェクトが利用可能になります．
+hardhatTokenに対して totalSupply というメソッドを使ってトークンの供給量を求めます．
 
-hardhatTokenに対して balanceOf というメソッドを使って Owner の所持金を確認することができます．
+ここではさらに，その値が Ownerの所持金と等しいことをテストします．
 
 ```js
 expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
 ```
 
-hardhatTokenに対して totalSupply というメソッドを使ってトークンの供給量を求めます．
-さらに，その値が Ownerの所持金と等しいことを確認します．
-
 #### Token.js の修正例
 
-* Token.js
+* Token.js は test ディレクトリにあります
 
 ```bash
-nano Token.js
+nano test/Token.js
 ```
+
 
 ```js
 const {
@@ -372,7 +410,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { expect } = require("chai");
 
-describe("Token contract", function () {
+describe("トークンのコントラクト", function () {
   async function deployTokenFixture() {
     const [owner, addr1, addr2] = await ethers.getSigners();
 
@@ -382,14 +420,14 @@ describe("Token contract", function () {
     return { hardhatToken, owner, addr1, addr2 };
   }
 
-  it("Should assign the total supply of tokens to the owner", async function () {
+  it("トークンの総供給量が所有者に割り当てられること", async function () {
     const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
 
     const ownerBalance = await hardhatToken.balanceOf(owner.address);
     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
   });
 
-  it("Should transfer tokens between accounts", async function () {
+  it("アカウント間でトークンが転送されること", async function () {
     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
@@ -409,18 +447,19 @@ describe("Token contract", function () {
 
 ```
 
+テストの実行
+
 ```bash
 npx hardhat test 
 
 =>
 
+  トークンのコントラクト
+    ✔ トークンの総供給量が所有者に割り当てられること (433ms)
+    ✔ アカウント間でトークンが転送されること
 
-  Token contract
-    ✔ Should assign the total supply of tokens to the owner (340ms)
-    ✔ Should transfer tokens between accounts
 
-
-  2 passing (356ms)
+  2 passing (446ms)
 ```
 
 #### フルテストの例
@@ -432,43 +471,85 @@ nano Token.js
 ```
 
 ```js
+const { expect } = require("chai");
 const {
   loadFixture,
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-const { expect } = require("chai");
 
-describe("Token contract", function () {
+describe("トークンのコントラクト", function () {
   async function deployTokenFixture() {
+    // Get the Signers here.
     const [owner, addr1, addr2] = await ethers.getSigners();
-
     const hardhatToken = await ethers.deployContract("Token");
-
+    await hardhatToken.waitForDeployment();
     // Fixtures can return anything you consider useful for your tests
     return { hardhatToken, owner, addr1, addr2 };
   }
 
-  it("Should assign the total supply of tokens to the owner", async function () {
-    const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+  // You can nest describe calls to create subsections.
+  describe("デプロイ", function () {
+    it("正しいオーナーが設定されていること", async function () {
 
-    const ownerBalance = await hardhatToken.balanceOf(owner.address);
-    expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+      const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+      expect(await hardhatToken.owner()).to.equal(owner.address);
+    });
+
+    it("トークンの総供給量が所有者に割り当てられること", async function () {
+      const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+      const ownerBalance = await hardhatToken.balanceOf(owner.address);
+      expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+    });
   });
 
-  it("Should transfer tokens between accounts", async function () {
-    const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
-      deployTokenFixture
-    );
+  describe("トランザクション", function () {
+    it("アカウント間でトークンが転送されること", async function () {
+      const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
+        deployTokenFixture
+      );
+      // Transfer 50 tokens from owner to addr1
+      await expect(
+        hardhatToken.transfer(addr1.address, 50)
+      ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
 
-    // Transfer 50 tokens from owner to addr1
-    await expect(
-      hardhatToken.transfer(addr1.address, 50)
-    ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
+      await expect(
+        hardhatToken.connect(addr1).transfer(addr2.address, 50)
+      ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
+    });
 
-    // Transfer 50 tokens from addr1 to addr2
-    // We use .connect(signer) to send a transaction from another account
-    await expect(
-      hardhatToken.connect(addr1).transfer(addr2.address, 50)
-    ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
+    it("転送イベントが発出されること", async function () {
+      const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      // Transfer 50 tokens from owner to addr1
+      await expect(hardhatToken.transfer(addr1.address, 50))
+        .to.emit(hardhatToken, "Transfer")
+        .withArgs(owner.address, addr1.address, 50);
+
+      // Transfer 50 tokens from addr1 to addr2
+      // We use .connect(signer) to send a transaction from another account
+      await expect(hardhatToken.connect(addr1).transfer(addr2.address, 50))
+        .to.emit(hardhatToken, "Transfer")
+        .withArgs(addr1.address, addr2.address, 50);
+    });
+
+    it("送金者が十分なトークンを所持していないときに失敗すること", async function () {
+      const { hardhatToken, owner, addr1 } = await loadFixture(
+        deployTokenFixture
+      );
+      const initialOwnerBalance = await hardhatToken.balanceOf(owner.address);
+
+      // Try to send 1 token from addr1 (0 tokens) to owner.
+      // `require` will evaluate false and revert the transaction.
+      await expect(
+        hardhatToken.connect(addr1).transfer(owner.address, 1)
+      ).to.be.revertedWith("Not enough tokens");
+
+      // Owner balance shouldn't have changed.
+      expect(await hardhatToken.balanceOf(owner.address)).to.equal(
+        initialOwnerBalance
+      );
+    });
   });
 });
 
@@ -480,17 +561,17 @@ npx hardhat test
 =>
 
 
-  Token contract
-    Deployment
-      ✔ Should set the right owner (460ms)
-      ✔ Should assign the total supply of tokens to the owner
-    Transactions
-      ✔ Should transfer tokens between accounts
-      ✔ Should emit Transfer events
-      ✔ Should fail if sender doesn't have enough tokens
+  トークンのコントラクト
+    デプロイ
+      ✔ 正しいオーナーが設定されていること (449ms)
+      ✔ トークンの総供給量が所有者に割り当てられること
+    トランザクション
+      ✔ アカウント間でトークンが転送されること
+      ✔ 転送イベントが発出されること
+      ✔ 送金者が十分なトークンを所持していないときに失敗すること
 
 
-  5 passing (495ms)
+  5 passing (484ms)
 
 
 ```
