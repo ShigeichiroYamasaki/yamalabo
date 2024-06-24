@@ -1,9 +1,15 @@
 # Hardhat 
 
-2024/06/23
+2024/06/24
 作成，更新 Shigeichiro Yamasaki
 
-## 環境のセットアップ
+* [環境のセットアップ](#setup)
+* [Hardhat プロジェクトの新規作成](#project)
+* [スマートコントラクトの作成とコンパイル](#compile)
+* [Hardhat Network でのコントラクトのテスト](#test)
+* [Sepolia テストネットへのデプロイ](#sepolia)
+
+##  <a id="setup">環境のセットアップ</a>
 
 Node.js と JavaScriptの知識が前提になります
 
@@ -27,7 +33,7 @@ nvm alias default 20
 npm install npm --global
 ```
 
-## Hardhat プロジェクトの新規作成
+## <a id="project">Hardhat プロジェクトの新規作成</a>
 
 ### プロジェクトフォルダの作成
 
@@ -179,7 +185,7 @@ module.exports = {
 };
 ```
 
-## スマートコントラクトの作成とコンパイル
+## <a id="compile">スマートコントラクトの作成とコンパイル</a>
 
 プロジェクトルートのディレクトリ一覧
 
@@ -291,7 +297,7 @@ npx hardhat compile
 Compiled 1 Solidity file successfully (evm target: paris).
 ```
 
-## Hardhat Network でのコントラクトのテスト
+## <a id="test">Hardhat Network でのコントラクトのテスト</a>
 
 コントラクトのテストは ローカルノードである Hardhat Networkで実施します．
 
@@ -576,8 +582,6 @@ npx hardhat test
 
 ```
 
-## Hardhat Network の利用
-
 ### Solidityの console.log 
 
 * Token.js の修正版
@@ -690,10 +694,66 @@ Transferring from 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900
 
   5 passing (899ms)
 
-
 ```
 
-## Sepolia テストネットへのデプロイ
+### Hardhat Network の利用
+
+hardhat node の起動
+
+```bash
+npx hardhat node
+
+=>
+Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
+
+Accounts
+========
+
+WARNING: These accounts, and their private keys, are publicly known.
+Any funds sent to them on Mainnet or any other live network WILL BE LOST.
+
+Account #0: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 (10000 ETH)
+Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+...
+
+Account #19: 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 (10000 ETH)
+Private Key: 0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e
+
+WARNING: These accounts, and their private keys, are publicly known.
+Any funds sent to them on Mainnet or any other live network WILL BE LOST.
+
+eth_chainId (8)
+eth_blockNumber
+eth_getBalance (6)
+eth_getBlockByNumber
+net_version (2)
+eth_blockNumber (2)
+eth_gasPrice
+eth_blockNumber (1568)
+```
+
+### メタマスクの利用
+
+![メタマスク](images/metamask1.png)
+
+左上のネットワーク接続メニューを選択
+
+![メタマスク](images/metamask2.png)
+
+ネットワークを追加ボタンをクリック
+
+「ネットワークを手動で追加」をクリック
+
+* ネットワーク名： hardhat network
+* 新しいRPC URL： http://localhost:8545/
+* チェーンID： 31337
+* 通貨記号： ETH
+
+で「保存」をクリックしてネットワークに接続します
+
+
+## <a id="sepolia">Sepolia テストネットへのデプロイ</a>
 
 infula を利用して Sepolia テストネットにデプロイする方法を説明します．
 mainnet へのデプロイも基本的に同様の方法で実施できます．
