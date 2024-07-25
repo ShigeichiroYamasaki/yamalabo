@@ -1,6 +1,6 @@
 # Hardhat 
 
-2024/06/24
+2024/07/24
 作成，更新 Shigeichiro Yamasaki
 
 * [環境のセットアップ](#setup)
@@ -116,6 +116,8 @@ npm install --save-dev hardhat
 
 ### Hardhat の初期化 （空の設定ファイルの作成）
 
+初期化コマンド `npx hardhat init` 実行後に
+
 ▶ Create an empty hardhat.config.js を選択
 
 プロジェクトルートディレクトリに，空の hardhat.config.js ファイルを作成します．
@@ -143,7 +145,51 @@ Welcome to Hardhat v2.22.5
 
 ```
 
-### タスクとプラグイン
+### プロジェクトのディレクトリ構成
+
+hardhat プロジェクトのディレクトリは以下のような構成になっている
+
+```bash
+contracts/
+ignition/modules/
+test/
+hardhat.config.js
+```
+
+### contracts ディレクトリの作成
+
+プロジェクトルートの下に contracts というディレクトリを作成します．
+
+ここに solidity言語のスマートコントラクトのファイルを作成します．
+
+```bash
+mkdir contracts
+```
+
+### test ディレクトリの作成
+
+プロジェクトルートの下に test というディレクトリを作成します．
+
+ここにテストプログラムを作成します．
+
+```bash
+mkdir test
+```
+
+### ignition ディレクトリの作成
+
+プロジェクトルートの下に ignition というディレクトリを作成します．
+
+ここにデプロイしたコントラクトを操作するモジュールが格納されます
+
+```bash
+mkdir ignition
+cd ignition
+mkdir modules
+cd ..
+```
+
+### Task と Plugin
 
 * Task
 
@@ -157,13 +203,14 @@ npx hardhat compile
 
 * plugin
 
+Hardhat はプラグインの集合体として構成されています．
 Hardhatのツールには組み込みのデフォルトのものがありますが，プラグインによって柔軟に別のツールに上書きが可能です．
 
 #### 推奨プラグインのインストール
 
 以下では，推奨プラグインを使って説明します．
 
-推奨プラグインのインストールは以下のようにします．
+hardhat の推奨プラグインのインストールは以下のようにします．
 
 ```bash
 npm install --save-dev @nomicfoundation/hardhat-toolbox
@@ -195,14 +242,6 @@ ls
 cache			hardhat.config.js	node_modules		package-lock.json	package.json
 ```
 
-### contracts ディレクトリの作成
-
-プロジェクトルートの下に contracts というディレクトリを作成します．
-
-```bash
-mkdir contracts
-cd contracts
-```
 
 ### Solidity プログラムの作成
 
@@ -214,73 +253,59 @@ Solidityプログラムのソースコードには .sol という拡張子をつ
 * Token.sol
 
 ```bash
-nano Token.sol
+nano contracts/Token.sol
 ```
 
 ファイルの内容
 
 ```js
 //SPDX-License-Identifier: UNLICENSED
-
-// Solidity files have to start with this pragma.
-// It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.0;
 
-
-// This is the main building block for smart contracts.
+// スマートコントラクトの定義
 contract Token {
-    // Some string type variables to identify the token.
-    string public name = "My Hardhat Token";
-    string public symbol = "MHT";
-
-    // The fixed amount of tokens, stored in an unsigned integer type variable.
+    // トークンのタイプとシンボル名
+    string public name = "Kindai Token";
+    string public symbol = "KT";
+    // トークンの総量
     uint256 public totalSupply = 1000000;
-
-    // An address type variable is used to store ethereum accounts.
+    // オーナーのアドレス
     address public owner;
-
-    // A mapping is a key/value map. Here we store each account's balance.
+    // アカウントごとのトークンの所持金を管理するマップ
     mapping(address => uint256) balances;
-
-    // The Transfer event helps off-chain applications understand
-    // what happens within your contract.
+    // チェーンの外部にこのコントラクトの状況を伝えるためのイベント
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     /**
-     * Contract initialization.
+     * コントラクトの初期化
      */
     constructor() {
-        // The totalSupply is assigned to the transaction sender, which is the
-        // account that is deploying the contract.
+        // トークンの総量がこのコントラクトをデプロイするトランザクションの送信者に割り当てられる
         balances[msg.sender] = totalSupply;
         owner = msg.sender;
     }
 
     /**
-     * A function to transfer tokens.
+     * トークンを送金する関数
      *
-     * The `external` modifier makes a function *only* callable from *outside*
-     * the contract.
+     * `external` の指定によりコントラクトの外部からのみアクセス可能な関数
      */
     function transfer(address to, uint256 amount) external {
-        // Check if the transaction sender has enough tokens.
-        // If `require`'s first argument evaluates to `false`, the
-        // transaction will revert.
+        // トランザクションの送金者が十分な所持金を持っていることをチェックする
+        // 不十分なら失敗する
         require(balances[msg.sender] >= amount, "Not enough tokens");
 
-        // Transfer the amount.
+        // 指定した金額を送金者の所持金から減額し送金先の所持金を増額する
         balances[msg.sender] -= amount;
         balances[to] += amount;
 
-        // Notify off-chain applications of the transfer.
+        // 処理結果を外部に通知するイベント
         emit Transfer(msg.sender, to, amount);
     }
 
     /**
-     * Read only function to retrieve the token balance of a given account.
-     *
-     * The `view` modifier indicates that it doesn't modify the contract's
-     * state, which allows us to call it without executing a transaction.
+     * アカウントのトークン残高を知るための読みだし専用関数
+     * `view` の指定によりコントラクトの状態を更新できない
      */
     function balanceOf(address account) external view returns (uint256) {
         return balances[account];
@@ -307,22 +332,9 @@ Compiled 1 Solidity file successfully (evm target: paris).
 
 ### テストの作成
 
-プロジェクトルートの下に test という名前のディレクトリを作成します．
-```bash
-cd ..
-ls
-=>
-artifacts		contracts		node_modules		package.json
-cache			hardhat.config.js	package-lock.json
-```
+プロジェクトルートの下に test ディレクトリにテストを作成します
 
-test ディレクトリの作成
-
-```bash
-mkdir test
-cd test
-```
-#### JavaScript のテストフレームワーク CHai を利用する
+#### JavaScript のテストフレームワーク Chai を利用する
 
 また， ethers.js を利用して操作を行います
 
@@ -331,7 +343,7 @@ cd test
 * Token.js
 
 ```bash
-nano Token.js
+nano test/Token.js
 ```
 
 ファイルの内容
@@ -340,10 +352,14 @@ nano Token.js
 const { expect } = require("chai");
 
 describe("トークンのコントラクト", function () {
-  it("デプロイによりトークンの総供給量が所有者に割り当てられること", async function () {
+  it("デプロイによりトークンの総量が所有者に割り当てられること", async function () {
+    // ethers.getSigners() は，トランザクション送信者のEthereumアカウントを返すメソッド
     const [owner] = await ethers.getSigners();
+    // ethers.deployContract()  は，引数のコントラクトをデプロイする ethers.js メソッド
     const hardhatToken = await ethers.deployContract("Token");
+    // オーナーの所持金
     const ownerBalance = await hardhatToken.balanceOf(owner.address);
+    // トークンの総量はオーナーの所持金と等しい
     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
   });
 });
@@ -372,7 +388,7 @@ npx hardhat test
 
 ラッピングライブラリには ethers.js  を使っています．
 
-ethers.getSigners() は，トランザクション送信者のEthereumアカウントを返すメソッドです．
+ethers.getSigners() は，トランザクション送信者（署名者）のEthereumアカウントを返すメソッドです．
 
 ```js
 const [owner] = await ethers.getSigners();
@@ -380,20 +396,20 @@ const [owner] = await ethers.getSigners();
 
 ethers.deployContract()  は，引数のコントラクトをデプロイする ethers.js メソッドです．
 
-デプロイが完了すると hardhatToken というオブジェクトが利用可能になります．
+デプロイが完了すると hardhatToken というコントラクトのオブジェクトが利用可能になります．
 
 ```js
 const hardhatToken = await ethers.deployContract("Token");
 ```
 
 
-hardhatTokenに対して balanceOf というメソッドを使うと Owner の所持金を確認することができます．
+コントラクトオブジェクト hardhatTokenに対して balanceOf メソッドを使うと Owner の所持金を確認することができます．
 
 ```js
 const ownerBalance = await hardhatToken.balanceOf(owner.address);
 ```
 
-hardhatTokenに対して totalSupply というメソッドを使ってトークンの供給量を求めます．
+コントラクトオブジェクト hardhatToken に対して totalSupply というメソッドを使ってトークンの総量を求めます．
 
 ここではさらに，その値が Ownerの所持金と等しいことをテストします．
 
@@ -403,7 +419,8 @@ expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
 
 #### Token.js の修正例
 
-* Token.js は test ディレクトリにあります
+* [Hardhat Toolbox](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-toolbox)  を利用します
+* テストプログラム Token.js は test ディレクトリにあるので，これを修正します
 
 ```bash
 nano test/Token.js
@@ -411,40 +428,43 @@ nano test/Token.js
 
 
 ```js
-const {
-  loadFixture,
-} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+// hardhat tool box の利用
+const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+// CHaiの利用
 const { expect } = require("chai");
 
 describe("トークンのコントラクト", function () {
   async function deployTokenFixture() {
+    // 複数のテスト用アカウントの取得
     const [owner, addr1, addr2] = await ethers.getSigners();
-
+    // コントラクトをデプロイする
     const hardhatToken = await ethers.deployContract("Token");
-
-    // Fixtures can return anything you consider useful for your tests
+    // テストに有用なフィクスチャ
     return { hardhatToken, owner, addr1, addr2 };
   }
 
-  it("トークンの総供給量が所有者に割り当てられること", async function () {
+  it("トークンの総量が所有者に割り当てられていること", async function () {
+    // フィクスチャをデプロイする
     const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
-
+    // オーナーの所持金額
     const ownerBalance = await hardhatToken.balanceOf(owner.address);
+    // トークンの総額がオーナーの所持金に等しい
     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
   });
 
   it("アカウント間でトークンが転送されること", async function () {
+    // フィクスチャをデプロイする
     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
       deployTokenFixture
     );
 
-    // Transfer 50 tokens from owner to addr1
+    // 50トークンをオーナーから addr1 に送金する
     await expect(
       hardhatToken.transfer(addr1.address, 50)
     ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
 
-    // Transfer 50 tokens from addr1 to addr2
-    // We use .connect(signer) to send a transaction from another account
+    // 50トークンを addr1 から addr2に送金する
+    // ここではトークンの送金に .connect(signer) を利用している
     await expect(
       hardhatToken.connect(addr1).transfer(addr2.address, 50)
     ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
@@ -473,66 +493,72 @@ npx hardhat test
 * Token.js
 
 ```bash
-nano Token.js
+nano test/Token.js
 ```
 
 ```js
 const { expect } = require("chai");
-const {
-  loadFixture,
-} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 describe("トークンのコントラクト", function () {
   async function deployTokenFixture() {
-    // Get the Signers here.
+    // 署名者
     const [owner, addr1, addr2] = await ethers.getSigners();
+    // Token コントラクトのデプロイ
     const hardhatToken = await ethers.deployContract("Token");
     await hardhatToken.waitForDeployment();
-    // Fixtures can return anything you consider useful for your tests
+    // Token コントラクトオブジェクトと署名者
     return { hardhatToken, owner, addr1, addr2 };
   }
 
   // You can nest describe calls to create subsections.
   describe("デプロイ", function () {
     it("正しいオーナーが設定されていること", async function () {
-
+      // コントラクトオブジェクトとオーナー
       const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+      // コントラクトのオーナーがオーナーであること
       expect(await hardhatToken.owner()).to.equal(owner.address);
     });
 
-    it("トークンの総供給量が所有者に割り当てられること", async function () {
+    it("トークンの総量がオーナーに割り当てられること", async function () {
+      // コントラクトオブジェクトとオーナー
       const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+      // オーナーの所持金
       const ownerBalance = await hardhatToken.balanceOf(owner.address);
+      // トークンの総量がオーナーの所持金に等しい
       expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
     });
   });
 
   describe("トランザクション", function () {
     it("アカウント間でトークンが転送されること", async function () {
+      // コントラクトオブジェクト，オーナー，addr1, addr2
       const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
         deployTokenFixture
       );
-      // Transfer 50 tokens from owner to addr1
+      // オーナーからaddr1 に50トークン送金する
       await expect(
         hardhatToken.transfer(addr1.address, 50)
       ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
-
+      // add1 から addr2 に50トークン送金する
+      // その結果，addr1 の残高が-50 addr2 の残高が +50 に変化する
       await expect(
         hardhatToken.connect(addr1).transfer(addr2.address, 50)
       ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
     });
 
     it("転送イベントが発出されること", async function () {
+      // コントラクトオブジェクト，オーナー，addr1 addr2
       const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
         deployTokenFixture
       );
 
-      // Transfer 50 tokens from owner to addr1
+      // オーナーからaddr1 に50トークン送金する
       await expect(hardhatToken.transfer(addr1.address, 50))
         .to.emit(hardhatToken, "Transfer")
         .withArgs(owner.address, addr1.address, 50);
 
-      // Transfer 50 tokens from addr1 to addr2
+      // addr1 から addr2 に 50トークン送金する
       // We use .connect(signer) to send a transaction from another account
       await expect(hardhatToken.connect(addr1).transfer(addr2.address, 50))
         .to.emit(hardhatToken, "Transfer")
@@ -545,13 +571,13 @@ describe("トークンのコントラクト", function () {
       );
       const initialOwnerBalance = await hardhatToken.balanceOf(owner.address);
 
-      // Try to send 1 token from addr1 (0 tokens) to owner.
+      // addr1（所持金0） からオーナーに 1 トークン送金しようとする
       // `require` will evaluate false and revert the transaction.
       await expect(
         hardhatToken.connect(addr1).transfer(owner.address, 1)
       ).to.be.revertedWith("Not enough tokens");
 
-      // Owner balance shouldn't have changed.
+      // オーナーの残高は変わっていない
       expect(await hardhatToken.balanceOf(owner.address)).to.equal(
         initialOwnerBalance
       );
@@ -565,20 +591,17 @@ describe("トークンのコントラクト", function () {
 npx hardhat test 
 
 =>
-
-
-  トークンのコントラクト
+トークンのコントラクト
     デプロイ
-      ✔ 正しいオーナーが設定されていること (449ms)
-      ✔ トークンの総供給量が所有者に割り当てられること
+      ✔ 正しいオーナーが設定されていること (345ms)
+      ✔ トークンの総量がオーナーに割り当てられること
     トランザクション
       ✔ アカウント間でトークンが転送されること
       ✔ 転送イベントが発出されること
       ✔ 送金者が十分なトークンを所持していないときに失敗すること
 
 
-  5 passing (484ms)
-
+  5 passing (383ms)
 
 ```
 
@@ -589,25 +612,20 @@ npx hardhat test
 contracts ディレクトリに移動して修正
 
 ```bash
-nano Token.sol
+nano contracts/Token.sol
 ```
 
 ```js
 //SPDX-License-Identifier: UNLICENSED
-
-// Solidity files have to start with this pragma.
-// It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.0;
-
 import "hardhat/console.sol";
 
-// This is the main building block for smart contracts.
 contract Token {
-    // Some string type variables to identify the token.
-    string public name = "My Hardhat Token";
-    string public symbol = "MHT";
+    // トークンのタイプとシンボル名
+    string public name = "Kindai Token";
+    string public symbol = "KT";
 
-    // The fixed amount of tokens, stored in an unsigned integer type variable.
+    // トークンの総量
     uint256 public totalSupply = 1000000;
 
     // An address type variable is used to store ethereum accounts.
@@ -621,7 +639,7 @@ contract Token {
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     /**
-     * Contract initialization.
+     * コントラクトの初期化
      */
     constructor() {
         // The totalSupply is assigned to the transaction sender, which is the
@@ -631,7 +649,7 @@ contract Token {
     }
 
     /**
-     * A function to transfer tokens.
+     * トークンを送金する関数
      *
      * The `external` modifier makes a function *only* callable from *outside*
      * the contract.
@@ -643,7 +661,7 @@ contract Token {
         require(balances[msg.sender] >= amount, "Not enough tokens");
 
     console.log(
-        "Transferring from %s to %s %s tokens",
+        "transfer  %s to %s %s tokens",
         msg.sender,
         to,
         amount
@@ -653,7 +671,7 @@ contract Token {
         balances[msg.sender] -= amount;
         balances[to] += amount;
 
-        // Notify off-chain applications of the transfer.
+        // イベントを外部に通知する
         emit Transfer(msg.sender, to, amount);
     }
 
@@ -674,25 +692,22 @@ contract Token {
 ```bash
 npx hardhat test
 
-=>
-Compiled 2 Solidity files successfully (evm target: paris).
+
+  トークンのコントラクト
+    デプロイ
+      ✔ 正しいオーナーが設定されていること (374ms)
+      ✔ トークンの総量がオーナーに割り当てられること
+    トランザクション
+transfer 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
+transfer 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
+      ✔ アカウント間でトークンが転送されること
+transfer 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
+transfer 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
+      ✔ 転送イベントが発出されること
+      ✔ 送金者が十分なトークンを所持していないときに失敗すること
 
 
-  Token contract
-    Deployment
-      ✔ Should set the right owner (854ms)
-      ✔ Should assign the total supply of tokens to the owner
-    Transactions
-Transferring from 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
-Transferring from 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
-      ✔ Should transfer tokens between accounts
-Transferring from 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
-Transferring from 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
-      ✔ Should emit Transfer events
-      ✔ Should fail if sender doesn't have enough tokens
-
-
-  5 passing (899ms)
+  5 passing (422ms)
 
 ```
 
@@ -762,16 +777,6 @@ mainnet へのデプロイも基本的に同様の方法で実施できます．
 
 Ignitionモージュールは，デプロイを支援するJavaScript 関数です．
 
-#### モジュールディレクトリの作成
-
-プロジェクトルートの下に `./ignition/modules` というディレクトリを作成します．
-
-```bash
-mkdir ignition
-cd ignition/
-mkdir modules
-cd modules
-```
 
 `./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．
 
