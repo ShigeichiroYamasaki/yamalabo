@@ -792,6 +792,45 @@ eth_blockNumber (3)
 
 ```
 
+##  <a id="hardhatnet">Hardhat Network へのデプロイ</a>
+
+ignition コマンドでデプロイすることができます．
+
+デプロイした結果，デプロイしたスマートコントラクトのコントラクトアカウントのアドレスが返ってきます
+
+```bash
+npx hardhat ignition deploy ./ignition/modules/Token.js
+
+=>
+You are running Hardhat Ignition against an in-process instance of Hardhat Network.
+This will execute the deployment, but the results will be lost.
+You can use --network <network-name> to deploy to a different network.
+
+Hardhat Ignition 🚀
+
+Deploying [ TokenModule ]
+
+Batch #1
+  Executed TokenModule#Token
+
+[ TokenModule ] successfully deployed 🚀
+
+Deployed Addresses
+
+TokenModule#Token - 0x5FbDB2315678afecb367f032d93F642f64180aa3
+```
+
+上記の場合，コントラクトアカウントのアドレスは
+
+`0x5FbDB2315678afecb367f032d93F642f64180aa3` です
+
+
+
+
+
+
+
+
 ## <a id="sepolia">Sepolia テストネットへのデプロイ</a>
 
 infula を利用して Sepolia テストネットにデプロイする方法を説明します．
@@ -946,3 +985,4 @@ Deployed Addresses
 TokenModule#Token - 0x2E911f3975D1c08aF0DF1cC64EDf2267701626b0
 
 ```
+
