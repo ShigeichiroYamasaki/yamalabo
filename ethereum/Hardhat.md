@@ -1,6 +1,6 @@
 # Hardhat 
 
-2024/07/24
+2024/07/28
 作成，更新 Shigeichiro Yamasaki
 
 * [環境のセットアップ](#setup)
@@ -11,7 +11,8 @@
 
 ##  <a id="setup">環境のセットアップ</a>
 
-Node.js と JavaScriptの知識が前提になります
+* hardhat node はローカルマシンで実行することを前提にします
+* Node.js と JavaScriptの知識が前提になります
 
 ### ubuntu
 
@@ -21,7 +22,6 @@ sudo apt install curl git
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
-
 
 ### MacOSX
 
@@ -41,12 +41,17 @@ npm install npm --global
 
 ★ このディレクトリを「プロジェクトルート」といいます．
 
-ここでは，hardhat-tutorial という名前のフォルダにします．
+
 
 ```bash
 cd ~
 mkdir hardhat-projects
 cd hardhat-projects/
+```
+
+* ここでは，プロジェクトルートを hardhat-tutorial という名前のフォルダにしますが，適宜自分のプロジェクト名に修正してください
+
+```bash
 mkdir hardhat-tutorial
 cd hardhat-tutorial
 ```
@@ -150,13 +155,12 @@ Welcome to Hardhat v2.22.5
 hardhat プロジェクトのディレクトリは以下のような構成になっている
 
 ```bash
-contracts/
-ignition/modules/
-test/
-hardhat.config.js
+ls
+
+hardhat.config.js	node_modules		package-lock.json	package.json
 ```
 
-### contracts ディレクトリの作成
+#### contracts ディレクトリの作成
 
 プロジェクトルートの下に contracts というディレクトリを作成します．
 
@@ -166,7 +170,7 @@ hardhat.config.js
 mkdir contracts
 ```
 
-### test ディレクトリの作成
+#### test ディレクトリの作成
 
 プロジェクトルートの下に test というディレクトリを作成します．
 
@@ -176,7 +180,7 @@ mkdir contracts
 mkdir test
 ```
 
-### ignition ディレクトリの作成
+#### ignition ディレクトリの作成
 
 プロジェクトルートの下に ignition というディレクトリを作成します．
 
@@ -184,11 +188,17 @@ mkdir test
 
 ```bash
 mkdir ignition
-cd ignition
-mkdir modules
-cd ..
+mkdir ignition/modules
 ```
 
+#### ディレクトリ構成の確認
+
+```bash
+ ls
+
+contracts		ignition		package-lock.json	test
+hardhat.config.js	node_modules		package.json
+```
 ### Task と Plugin
 
 * Task
@@ -216,13 +226,14 @@ hardhat の推奨プラグインのインストールは以下のようにしま
 npm install --save-dev @nomicfoundation/hardhat-toolbox
 ```
 
-* hardhat.config.js ファイルの修正
+####  hardhat.config.js ファイルの修正
 
 ```bash
 nano hardhat.config.js
 ```
 
-プラグインの require文を追加
+ファイルの１行目にプラグインの require文を追加
+
 ```js
 require("@nomicfoundation/hardhat-toolbox");
 
@@ -234,12 +245,13 @@ module.exports = {
 
 ## <a id="compile">スマートコントラクトの作成とコンパイル</a>
 
-プロジェクトルートのディレクトリ一覧
+プロジェクトルートの確認
 
 ```bash
-ls
-=>
-cache			hardhat.config.js	node_modules		package-lock.json	package.json
+ ls
+
+contracts		ignition		package-lock.json	test
+hardhat.config.js	node_modules		package.json
 ```
 
 
@@ -252,10 +264,11 @@ Solidityプログラムのソースコードには .sol という拡張子をつ
 
 * Token.sol
 
+このプロクラムはマップデータとしてトークンを生成し，マップの更新によってアカウント間でトークンの送金を行うものです
+
 ```bash
 nano contracts/Token.sol
 ```
-
 ファイルの内容
 
 ```js
@@ -336,7 +349,7 @@ Compiled 1 Solidity file successfully (evm target: paris).
 
 #### JavaScript のテストフレームワーク Chai を利用する
 
-また， ethers.js を利用して操作を行います
+また，ethereumのラッピングライブラリの [ethers.js](https://docs.ethers.org/v6/) を利用して ethereumへの操作を行います
 
 ここではテストプログラムを Token.js とします．
 
@@ -370,12 +383,8 @@ describe("トークンのコントラクト", function () {
 プロジェクトルートで実行
 
 ```bash
-cd ..
-
 npx hardhat test
-
 =>
-
 
   トークンのコントラクト
     ✔ デプロイによりトークンの総供給量が所有者に割り当てられること(435ms)
@@ -386,7 +395,7 @@ npx hardhat test
 
 #### テストプログラムの内容の説明
 
-ラッピングライブラリには ethers.js  を使っています．
+ethers オブジェクトは，ラッピングライブラリ ethers.js を意味します．
 
 ethers.getSigners() は，トランザクション送信者（署名者）のEthereumアカウントを返すメソッドです．
 
@@ -417,15 +426,16 @@ const ownerBalance = await hardhatToken.balanceOf(owner.address);
 expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
 ```
 
-#### Token.js の修正例
+### Token.js の修正例
+
+テスト環境を整備するために  hardhat tool box が提供するフィクスチャーを利用するように修正します．これによってテス用のアカウントなどが利用できるようになります．
 
 * [Hardhat Toolbox](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-toolbox)  を利用します
-* テストプログラム Token.js は test ディレクトリにあるので，これを修正します
+
 
 ```bash
 nano test/Token.js
 ```
-
 
 ```js
 // hardhat tool box の利用
@@ -489,6 +499,8 @@ npx hardhat test
 ```
 
 #### フルテストの例
+
+さらにイベントの通知や送金の失敗などコントラクトの全ロジックを確認する
 
 * Token.js
 
@@ -607,7 +619,8 @@ npx hardhat test
 
 ### Solidityの console.log 
 
-* Token.js の修正版
+
+#### Token.js の修正版
 
 contracts ディレクトリに移動して修正
 
@@ -628,38 +641,33 @@ contract Token {
     // トークンの総量
     uint256 public totalSupply = 1000000;
 
-    // An address type variable is used to store ethereum accounts.
+    // オーナーのアドレス
     address public owner;
 
-    // A mapping is a key/value map. Here we store each account's balance.
+    // アカウントごとのトークンの所持金を管理するマップ
     mapping(address => uint256) balances;
 
-    // The Transfer event helps off-chain applications understand
-    // what happens within your contract.
+    // チェーンの外部にこのコントラクトの状況を伝えるためのイベント
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
     /**
      * コントラクトの初期化
      */
     constructor() {
-        // The totalSupply is assigned to the transaction sender, which is the
-        // account that is deploying the contract.
+        // トークンの総量がこのコントラクトをデプロイするトランザクションの送信者に割り当てられる
         balances[msg.sender] = totalSupply;
+        // コントラクトをデプロイしたアカウントをオーナーにする
         owner = msg.sender;
     }
 
     /**
      * トークンを送金する関数
-     *
-     * The `external` modifier makes a function *only* callable from *outside*
-     * the contract.
      */
     function transfer(address to, uint256 amount) external {
-        // Check if the transaction sender has enough tokens.
-        // If `require`'s first argument evaluates to `false`, the
-        // transaction will revert.
+        // トランザクションの送金者が十分な所持金を持っていることをチェックする
+        // 不十分なら失敗する
         require(balances[msg.sender] >= amount, "Not enough tokens");
-
+    // コンソールにログを表示する
     console.log(
         "transfer  %s to %s %s tokens",
         msg.sender,
@@ -667,7 +675,7 @@ contract Token {
         amount
     );
 
-        // Transfer the amount.
+        //指定金額を送金する（送金者の残高を減額し受領者の残高を増やす）
         balances[msg.sender] -= amount;
         balances[to] += amount;
 
@@ -676,15 +684,20 @@ contract Token {
     }
 
     /**
-     * Read only function to retrieve the token balance of a given account.
+     * 指定したアカウントの残高を表示する読み出し専用関数
      *
-     * The `view` modifier indicates that it doesn't modify the contract's
-     * state, which allows us to call it without executing a transaction.
+     * The `view` modifier は，コントラクトの状態更新を行わないことを意味する
      */
     function balanceOf(address account) external view returns (uint256) {
         return balances[account];
     }
 }
+```
+
+#### コンパイル
+
+```bash
+npx hardhat compile
 ```
 
 テストの実行とコンソールメッセージの確認
@@ -695,23 +708,27 @@ npx hardhat test
 
   トークンのコントラクト
     デプロイ
-      ✔ 正しいオーナーが設定されていること (374ms)
+      ✔ 正しいオーナーが設定されていること (422ms)
       ✔ トークンの総量がオーナーに割り当てられること
     トランザクション
-transfer 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
-transfer 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
+transfer  0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
+transfer  0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
       ✔ アカウント間でトークンが転送されること
-transfer 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
-transfer 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
+transfer  0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 to 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 50 tokens
+transfer  0x70997970c51812dc3a010c7d01b50e0d17dc79c8 to 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc 50 tokens
       ✔ 転送イベントが発出されること
       ✔ 送金者が十分なトークンを所持していないときに失敗すること
 
 
-  5 passing (422ms)
+  5 passing (454ms)
+
 
 ```
 
 ### Hardhat Network の利用
+
+* ここから新しく別のターミナルを開く
+* プロジェクトルートに移動する
 
 hardhat node の起動
 
@@ -738,17 +755,11 @@ Private Key: 0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e
 WARNING: These accounts, and their private keys, are publicly known.
 Any funds sent to them on Mainnet or any other live network WILL BE LOST.
 
-eth_chainId (8)
-eth_blockNumber
-eth_getBalance (6)
-eth_getBlockByNumber
-net_version (2)
-eth_blockNumber (2)
-eth_gasPrice
-eth_blockNumber (1568)
 ```
 
 ### メタマスクの利用
+
+有名なethrerum ワレットです
 
 ![メタマスク](images/metamask1.png)
 
@@ -767,6 +778,17 @@ eth_blockNumber (1568)
 
 で「保存」をクリックしてネットワークに接続します
 
+```bash
+
+eth_chainId
+eth_chainId (4)
+eth_blockNumber
+eth_getBalance (6)
+eth_getBlockByNumber
+net_version (2)
+eth_blockNumber (3)
+
+```
 
 ## <a id="sepolia">Sepolia テストネットへのデプロイ</a>
 
@@ -778,7 +800,11 @@ mainnet へのデプロイも基本的に同様の方法で実施できます．
 Ignitionモージュールは，デプロイを支援するJavaScript 関数です．
 
 
-`./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．
+`./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．]
+
+```bash
+nano ignition/modules/Token.js
+```
 
 ```js
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
@@ -805,7 +831,6 @@ npx hardhat ignition deploy ./ignition/modules/Token.js --network <ネットワ�
 プロジェクトルートに移動して，ネットワーク名を指定せずにテストとしてデプロイコマンドを実行して，エラーがないことを確認する．
 
 ```bash
-cd ../..
 npx hardhat ignition deploy ./ignition/modules/Token.js
 
 =>
@@ -828,12 +853,13 @@ TokenModule#Token - 0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
 
 
-### テストネットワークへのデプロイの事前準備
+### Sepolia テストネットワークへのデプロイの事前準備
 
 * infula のアカウントを作成
 * infula のAPIキーを取得:
   * INFURA_API_KEY
 * Sepolia テストネットでアカウントに foucet から資金を得ておく
+（ethereum mainnet の資金が必要なので，山崎に要求してください）
 * Sepolia で資金を所有するアカウントの秘密鍵を確認する: 
   * SEPOLIA_PRIVATE_KEY
 
@@ -859,12 +885,19 @@ The configuration variable has been stored in /home/yamasaki/.config/hardhat-nod
 
 ### 設定ファイルの修正
 
+
+
 プロジェクトルートの `hardhat.config.js` を修正
+
+
+```bash
+nano hardhat.config.js
+```
 
 ```js
 require("@nomicfoundation/hardhat-toolbox");
 
-// Ensure your configuration variables are set before executing the script
+// 設定変数はスクリプト実行前に設定される
 const { vars } = require("hardhat/config");
 
 // Go to https://infura.io, sign up, create a new API key
