@@ -82,12 +82,14 @@ hardhat の設定ファイルの状態
 
 ### ethereum との非同期の応答を受け取る方法
 
-javaSCript の await で非同期に受け取った内容を console.log で出力すればよい
+javaSCript の await で非同期に受け取った内容出力すればよい
 
 `ethers.getSigners()` で外部所有アカウントの一覧を得る例
 
 ```js
-> console.log(await ethers.getSigners())
+> await ethers.getSigners()
+
+=>
 [
   HardhatEthersSigner {
     _gasLimit: 30000000,
@@ -102,7 +104,7 @@ javaSCript の await で非同期に受け取った内容を console.log で出�
   },
 
   ...
-  
+
   HardhatEthersSigner {
     _gasLimit: 30000000,
     address: '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199',
@@ -118,3 +120,24 @@ javaSCript の await で非同期に受け取った内容を console.log で出�
 undefined
 ```
 
+配列のインデックス1 を取り出す場合
+
+```js
+> (await ethers.getSigners())[1]
+HardhatEthersSigner {
+  _gasLimit: 30000000,
+  address: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+  provider: HardhatEthersProvider {
+    _hardhatProvider: LazyInitializationProviderAdapter {
+      _providerFactory: [AsyncFunction (anonymous)],
+      _emitter: [EventEmitter],
+      _initializingPromise: [Promise],
+      provider: [BackwardsCompatibilityProviderAdapter]
+    },
+    _networkName: 'localhost',
+    _blockListeners: [],
+    _transactionHashListeners: Map(0) {},
+    _eventListeners: []
+  }
+}
+```
