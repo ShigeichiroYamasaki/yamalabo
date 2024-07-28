@@ -1,4 +1,6 @@
-# Hardhat 
+# Hardhat のチュートリアル
+
+Ethereum の開発環境
 
 2024/07/28
 作成，更新 Shigeichiro Yamasaki
