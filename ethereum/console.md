@@ -17,7 +17,7 @@ npx hardhat node
 Hardhat のチュートリアルにあるように igunition コマンドでデプロイできます
 
 ```bash
-npx hardhat ignition deploy ./ignition/modules/Token.js
+npx hardhat ignition deploy ./ignition/modules/Token.js --network localhost 
 
 =>
 ...

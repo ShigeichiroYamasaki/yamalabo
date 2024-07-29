@@ -792,20 +792,43 @@ eth_blockNumber (3)
 
 ```
 
-## Hardhat Ignitionモジュール
+## Hardhat Ignition
+
+hardhat ignition はスマートコントラクトをデプロイするためのシステムです．
+
+実際のデプロイ処理は，Ignition モジュールを使って定義されます．
+
+### hardhat Ignition モジュール
+
+javaScriptのモジュール機能に似た概念で，スマートコントラクトの関数や値などをカプセル化して外部に公開します．
 
 Ignitionモージュールは，デプロイを支援するJavaScript 関数です．
 
+#### プラグインのインストール
 
-`./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．
+プロジェクトルートで実行
+
+```bash
+npm install --save-dev @nomicfoundation/hardhat-ignition-ethers
+```
+
+### hardhat Ignition モジュールの作成
+
+`./ignition/modules` ディレクトリに以下の `Token.js` ファイルを作成します．
 
 ```bash
 nano ignition/modules/Token.js
 ```
 
 ```js
+// hardhat ignition プラグインを有効化する
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
+// buildModule関数でモジュールを作成する
+//  第１引数がモジュールの識別名
+//  引数のコールバック関数がモジュール定義の実際の内容
+//   コールバック関数のmはModuleBuilderのインスタンス
+//     
 const TokenModule = buildModule("TokenModule", (m) => {
   const token = m.contract("Token");
 
@@ -823,12 +846,9 @@ ignition コマンドでデプロイすることができます．
 デプロイした結果，デプロイしたスマートコントラクトのコントラクトアカウントのアドレスが返ってきます
 
 ```bash
-npx hardhat ignition deploy ./ignition/modules/Token.js
+ npx hardhat ignition deploy ./ignition/modules/Token.js --network localhost
 
 =>
-You are running Hardhat Ignition against an in-process instance of Hardhat Network.
-This will execute the deployment, but the results will be lost.
-You can use --network <network-name> to deploy to a different network.
 
 Hardhat Ignition 🚀
 
@@ -844,15 +864,9 @@ Deployed Addresses
 TokenModule#Token - 0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
 
-上記の場合，コントラクトアカウントのアドレスは
+上記の場合，Token コントラクトのアカウントのアドレスは
 
 `0x5FbDB2315678afecb367f032d93F642f64180aa3` です
-
-
-
-
-
-
 
 
 ## <a id="sepolia">Sepolia テストネットへのデプロイ</a>
@@ -874,7 +888,7 @@ npx hardhat ignition deploy ./ignition/modules/Token.js --network <ネットワ�
 プロジェクトルートに移動して，ネットワーク名を指定せずにテストとしてデプロイコマンドを実行して，エラーがないことを確認する．
 
 ```bash
-npx hardhat ignition deploy ./ignition/modules/Token.js
+npx hardhat ignition deploy ./ignition/modules/Token.js --network localhost 
 
 =>
 You are running Hardhat Ignition against an in-process instance of Hardhat Network.
@@ -895,6 +909,18 @@ Deployed Addresses
 TokenModule#Token - 0x5FbDB2315678afecb367f032d93F642f64180aa3
 ```
 
+### hardhat network の停止
+
+停止コマンドのインストール
+```bash
+npm i kill-port -g
+```
+
+停止
+
+```bash
+kill-port 8545
+```
 
 ### Sepolia テストネットワークへのデプロイの事前準備
 

@@ -238,6 +238,100 @@ TransactionResponse {
 
 ### Contract
 
+デプロイしたコントラクトのアドレス `0x5FbDB2315678afecb367f032d93F642f64180aa3` とします
+
 ```js
-ethers.contract.attach('0x5FbDB2315678afecb367f032d93F642f64180aa3')
+> const s0= (await ethers.getSigners())[0]
+> const contractAddress="0x5FbDB2315678afecb367f032d93F642f64180aa3"
+> const abi = ["function transfer(address to, uint256 amount)"," function balanceOf(address account) external view returns (uint256)"]
+> const contract = new ethers.Contract(contractAddress, abi, s0)
+```
+
+コントラクトオブジェクトの確認
+
+```js
+> contract
+
+=>
+Contract {
+  target: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  interface: Interface {
+    fragments: [ [FunctionFragment], [FunctionFragment] ],
+    deploy: ConstructorFragment {
+      type: 'constructor',
+      inputs: [],
+      payable: false,
+      gas: null
+    },
+    fallback: null,
+    receive: false
+  },
+  runner: HardhatEthersSigner {
+    _gasLimit: 30000000,
+    address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+    provider: HardhatEthersProvider {
+      _hardhatProvider: [LazyInitializationProviderAdapter],
+      _networkName: 'localhost',
+      _blockListeners: [],
+      _transactionHashListeners: Map(0) {},
+      _eventListeners: []
+    }
+  },
+  filters: {},
+  fallback: null,
+  [Symbol(_ethersInternal_contract)]: {}
+}
+```
+
+コントラクトオブジェクトへの操作
+
+```js
+await contract.balanceOf(s0)
+
+=>
+1000000n
+
+await contract.transfer(s1, 100n)
+
+=>
+ContractTransactionResponse {
+  provider: HardhatEthersProvider {
+    _hardhatProvider: LazyInitializationProviderAdapter {
+      _providerFactory: [AsyncFunction (anonymous)],
+      _emitter: [EventEmitter],
+      _initializingPromise: [Promise],
+      provider: [BackwardsCompatibilityProviderAdapter]
+    },
+    _networkName: 'localhost',
+    _blockListeners: [],
+    _transactionHashListeners: Map(0) {},
+    _eventListeners: []
+  },
+  blockNumber: 3,
+  blockHash: '0x1c7a8a128df6ab143b94d2a7fc1c284d16afee6ef471ec77e6f376b7420a8caa',
+  index: undefined,
+  hash: '0x486b0917771a45ad2d50999e916ae07449402ecce0f3ccef9f13fc39962b632c',
+  type: 2,
+  to: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  from: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+  nonce: 1,
+  gasLimit: 30000000n,
+  gasPrice: 1674629891n,
+  maxPriorityFeePerGas: 1000000000n,
+  maxFeePerGas: 1853828455n,
+  maxFeePerBlobGas: null,
+  data: '0xa9059cbb00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c80000000000000000000000000000000000000000000000000000000000000064',
+  value: 0n,
+  chainId: 31337n,
+  signature: Signature { r: "0x488730e600f356d559bfbc490b43cb06a1195b4a2f9b8f8d78956d234eb01811", s: "0x685756d10c5dceb8d6fbc5b300021b25443a3df165b29f356dbc902c7dcbdfa2", yParity: 0, networkV: null },
+  accessList: [],
+  blobVersionedHashes: null
+}
+
+
+>  await contract.balanceOf(s0)
+999900n
+
+>  await contract.balanceOf(s1)
+100n
 ```
