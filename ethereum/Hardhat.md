@@ -2,7 +2,7 @@
 
 Ethereum の開発環境
 
-2024/07/28
+2024/07/29
 作成，更新 Shigeichiro Yamasaki
 
 * [環境のセットアップ](#setup)
