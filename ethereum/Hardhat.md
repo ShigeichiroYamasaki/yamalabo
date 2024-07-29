@@ -792,6 +792,30 @@ eth_blockNumber (3)
 
 ```
 
+## Hardhat Ignitionモジュール
+
+Ignitionモージュールは，デプロイを支援するJavaScript 関数です．
+
+
+`./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．
+
+```bash
+nano ignition/modules/Token.js
+```
+
+```js
+const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
+
+const TokenModule = buildModule("TokenModule", (m) => {
+  const token = m.contract("Token");
+
+  return { token };
+});
+
+module.exports = TokenModule;
+
+```
+
 ##  <a id="hardhatnet">Hardhat Network へのデプロイ</a>
 
 ignition コマンドでデプロイすることができます．
@@ -836,29 +860,7 @@ TokenModule#Token - 0x5FbDB2315678afecb367f032d93F642f64180aa3
 infula を利用して Sepolia テストネットにデプロイする方法を説明します．
 mainnet へのデプロイも基本的に同様の方法で実施できます．
 
-### Hardhat Ignitionモジュール
 
-Ignitionモージュールは，デプロイを支援するJavaScript 関数です．
-
-
-`./ignition/modules`ディレクトリに以下の `Token.js` ファイルを作成します．]
-
-```bash
-nano ignition/modules/Token.js
-```
-
-```js
-const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
-
-const TokenModule = buildModule("TokenModule", (m) => {
-  const token = m.contract("Token");
-
-  return { token };
-});
-
-module.exports = TokenModule;
-
-```
 
 ### Hardhat とネットワークの接続方法
 
