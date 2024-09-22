@@ -1,6 +1,6 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/05/25
+last update 2024/09/23
 Shigeichiro Yamasaki
 
 ## 目次
@@ -222,6 +222,7 @@ undefined
 undefined
 ```
 エラーが起きないで終了
+
 ##  <a id="mocha"> </a>mocha 
 
 ### テストプログラム用のディレクトリの作成
@@ -297,7 +298,7 @@ $ nano package.json
 
 ```
 
-##  <a id="testdescription"> </a>テストの記述方法
+##  <a id="testdescription"> </a>mocha によるテストの記述方法
 
 mocha によるテスト記述の文法を説明します
 
