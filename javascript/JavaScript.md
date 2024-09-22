@@ -2065,9 +2065,9 @@ export const stddev = arr=>{
 };
 ```
 
-* import キーワードによる関数や定数のインポート
+* Node.js から import キーワードによる関数や定数のインポート
 
 ```js
-> import {mean, stddev} from "./stat.mjs";
+> const { mean, stddev } = await import("./stat.mjs");
 ```
 
