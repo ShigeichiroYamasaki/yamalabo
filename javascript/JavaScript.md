@@ -2068,6 +2068,6 @@ export const stddev = arr=>{
 * import キーワードによる関数や定数のインポート
 
 ```js
-> import {mean, stddev} from "./test/stat.mjs";
+> import {mean, stddev} from "./stat.mjs";
 ```
 
