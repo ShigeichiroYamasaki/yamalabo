@@ -2067,7 +2067,14 @@ export const stddev = arr=>{
 
 * Node.js から import キーワードによる関数や定数のインポート
 
+Node.js のプロンプトからモジュールを利用する場合
+
 ```js
 > const { mean, stddev } = await import("./stat.mjs");
+
+> mean([2,5,7,9])
+5.75
+> stddev([2,5,7,9])
+1.724013405464767
 ```
 
