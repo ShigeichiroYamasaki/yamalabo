@@ -2,7 +2,7 @@
 
 Node.jsを中心にした解説です．
 
-2024/09/21
+2024/09/25
 Shigeichiro Yamasaki
 
 ## 目次
@@ -26,7 +26,7 @@ nvm（Node Version Manager）は、Node.js のバージョン管理ツールで�
 ### nvm (ubuntu)のインストール
 
 ```bash
-sudo apt install curl 
+sudo apt install curl github
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 source ~/.profile
 ```
@@ -1292,13 +1292,8 @@ Uncaught RangeError: Maximum call stack size exceeded
 > factMemo(20000n,memo)
 ```
 
-任意の関数をメモ化する関数
 
-```js
-> let memorize = f=>{
-    let m=new Map()
-}
-```
+
 
 
 ### コールバック関数と高階関数

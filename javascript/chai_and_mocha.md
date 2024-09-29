@@ -1,6 +1,6 @@
 #  chai と mocha による JavaScript プログラムのテスト駆動開発
 
-last update 2024/09/23
+last update 2024/09/29
 Shigeichiro Yamasaki
 
 ## 目次
@@ -101,11 +101,12 @@ About to write to /Users/shigeichiroyamasaki/git/yamalabo/JavaScript/math-for-cr
 Is this OK? (yes) 
 ```
 
-### mocha と chai のインストール
+### chai のインストール
+
 
 ```bash
 $ cd <プロジェクトルート>
-$ npm install mocha chai --save-dev
+$ npm install chai --save-dev
 ```
 ##  <a id="chai"> </a>chai
 
@@ -142,6 +143,7 @@ chai のモジュールは CommonJS 形式もありますが，基本的に現�
 ### assertの例
 
 assert APIの一般構造
+
 ```
 assert(式, エラーメッセージ)
 ```
@@ -180,9 +182,8 @@ a,b が互いに素のとき、最大公約数は 1
 以下は node.js のプロンプトからインタラクティブに実行
 
 ```js
-> const chai = async ()=>{return await import('chai')};
-> let c = await chai();
-> let assert=c.assert
+> const chai = await import("chai");	
+> const assert = chai.assert;	
 
 // 関数 gcd のアサーションを定義する
 //   b==0 のとき、最大公約数は a （定義する）
@@ -225,6 +226,14 @@ undefined
 
 ##  <a id="mocha"> </a>mocha 
 
+
+### mocha のインストール
+
+```bash
+$ cd <プロジェクトルート>
+$ npm install mocha --save-dev
+```
+
 ### テストプログラム用のディレクトリの作成
 
 プロジェクトルートの下に test というディレクトリを作成します
@@ -243,7 +252,7 @@ $ cd <プロジェクトルート>
 $ nano mocha.config.js
 ```
 
-mocha.config.js
+* mocha.config.js
 
 ```js
 module.exports={
@@ -373,8 +382,9 @@ $ nano mathtest.js
 
 
 ```js
-const chai = async ()=>{return await import('chai')};
-const math = require('../math.js');
+const chai = await import("chai");	
+const assert = chai.assert;	
+const math = await import('../math.js');
 
 // ユークリッド互除法
 describe('gcd関数のテスト', function () {
@@ -383,18 +393,12 @@ describe('gcd関数のテスト', function () {
         let q=13;
         let r=17;
         it('a%b==0 のとき、最大公約数は b', async function () {
-                let c = await chai();
-                let assert = c.assert;
                 assert(math.gcd(p*q,q) == q);
         });
         it('p*q と p*r の最大公約数は p', async function () {
-                let c = await chai();
-                let assert = c.assert;
                 assert(math.gcd(p*q,p*r) == p);
         });
         it('a b が互いに素のとき最大公約数は 1', async function () {
-                let c = await chai();
-                let assert = c.assert;
                 assert(math.gcd(p,q) == 1);
         });
 
