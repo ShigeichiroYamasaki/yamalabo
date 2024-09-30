@@ -196,7 +196,7 @@ a,b が互いに素のとき、最大公約数は 1
 gcd関数を実装する前に実行してみる
 
 ```js
->  assert(gcd(p*q,q) == q);
+> assert(gcd(p*q,q) == q);
 Uncaught ReferenceError: gcd is not defined
 > assert(gcd(p*q,p*r) == p);
 Uncaught ReferenceError: gcd is not defined
@@ -229,6 +229,20 @@ undefined
 undefined
 ```
 エラーが起きないで終了
+
+### expect でのテスト定義
+
+assert ではなく expect でテストを定義することもできます
+
+```js
+> expect(gcd(p*q,q)).to.equal(q);
+undefined
+> expect(gcd(p*q,p*r)).to.equal(p);
+undefined
+> expect(gcd(p,q)).to.equal(1);
+undefined
+```
+
 
 ##  <a id="mocha"> </a>mocha 
 
