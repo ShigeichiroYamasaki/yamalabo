@@ -145,6 +145,7 @@ chai のモジュールは CommonJS 形式もありますが，基本的に現�
 assert APIの一般構造
 
 ```
+assert(式)
 assert(式, エラーメッセージ)
 ```
 
@@ -190,6 +191,11 @@ a,b が互いに素のとき、最大公約数は 1
 > let p=11;
 > let q=13;
 > let r=17;
+```
+
+gcd関数を実装する前に実行してみる
+
+```js
 >  assert(gcd(p*q,q) == q);
 Uncaught ReferenceError: gcd is not defined
 > assert(gcd(p*q,p*r) == p);
@@ -226,6 +232,7 @@ undefined
 
 ##  <a id="mocha"> </a>mocha 
 
+テストフレームワークを使ってプログラム（ソース・ファイル）をテストする
 
 ### mocha のインストール
 
@@ -252,7 +259,7 @@ $ cd <プロジェクトルート>
 $ nano mocha.config.js
 ```
 
-* mocha.config.js
+* mocha.config.js ファイルの内容を以下のように作成する
 
 ```js
 module.exports={
@@ -269,8 +276,9 @@ module.exports={
 
 ### npx コマンドによる mocha テストの実行
 
+ <プロジェクトルート>で mocha コマンドが実行できることを確認する
+
 ```bash
-$ cd <プロジェクトルート>
 $ npx mocha
 ```
 
@@ -321,13 +329,13 @@ mocha によるテスト記述の文法を説明します
 
 describe ブロックは階層化させることができます．
 
-### it ブロック
+#### it ブロック
 
 descripbe ブロックの中で各テストケースを定義するためのものです．
 
 1つのテストケースごとに１つの it ブロックを作成します．
 
-### アサーション
+#### アサーション
 
 仕様を意味する挙動を定義することです．
 
@@ -340,29 +348,6 @@ assertは，引数の式が`真` であることを期待します．
 また，結果が `真` でないときにテストは失敗します．
 失敗時のエラーメッセージで原因調査に有用な情報を上げることができます．
 
-### テスト対象プログラムの作成
-
-プロジェクトルート・ディレクトリ
-
-テスト対象プログラムのファイルを math.js とします．
-
-```bash
-$ cd <プロジェクトルート>
-$ nano math.js
-```
-
-```js
-const gcd=(a,b)=>{
-    if (a%b==0) {
-      return b;
-    } else {
-      return gcd(b,a%b);
-    }
-}
-
-module.exports = {gcd};
-
-```
 
 ### テストファイルの作成
 
@@ -372,13 +357,13 @@ $ cd test
 $ nano mathtest.js
 ```
 
+
 #### mathtest.js の内容
 
 * テストは test ディレクトリをカレントディレクトリとして実行されるので、テスト対象モジュールのファイルはここからの相対パスになります
 * require 関数でソース・ファイルから gcd 関数をインポートします
 * chai モジュールは await で動的インポートするので，それを行う非同期関数を定義します．
 * さらに assert 関数を利用するときもテスト項目の it ごとに非同期関数を使って assert関数をインポートします．
-
 
 
 ```js
@@ -406,8 +391,90 @@ describe('gcd関数のテスト', function () {
 });
 ```
 
-## <a id="execution">mochaによるテストの実行
+### テストの実行（テスト駆動プログラミング）
 
+対象プログラムを実装する前にテストプログラムを実行します
+
+当然，テストはエラーになります
+
+```js
+$ npx mocha           
+(node:4825) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/shigeichiroyamasaki/mocha/test/powtest.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/shigeichiroyamasaki/mocha/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+  gcd関数のテスト
+    #dcg
+      1) a%b==0 のとき、最大公約数は b
+      2) p*q と p*r の最大公約数は p
+      3) a b が互いに素のとき最大公約数は 1
+
+
+  0 passing (4ms)
+  3 failing
+
+  1) gcd関数のテスト
+       #dcg
+         a%b==0 のとき、最大公約数は b:
+     TypeError: math.gcd is not a function
+      at Context.<anonymous> (file:///Users/shigeichiroyamasaki/mocha/test/powtest.js:12:29)
+      at process.processImmediate (node:internal/timers:491:21)
+
+  2) gcd関数のテスト
+       #dcg
+         p*q と p*r の最大公約数は p:
+     TypeError: math.gcd is not a function
+      at Context.<anonymous> (file:///Users/shigeichiroyamasaki/mocha/test/powtest.js:15:29)
+      at process.processImmediate (node:internal/timers:491:21)
+
+  3) gcd関数のテスト
+       #dcg
+         a b が互いに素のとき最大公約数は 1:
+     TypeError: math.gcd is not a function
+      at Context.<anonymous> (file:///Users/shigeichiroyamasaki/mocha/test/powtest.js:18:29)
+      at process.processImmediate (node:internal/timers:491:21)
+
+
+
+```
+
+#### テスト駆動プログラミング ＝ テストのエラーを減らしていくプログラミング
+
+テストプログラムは，開発対象のプログラムの仕様を意味します．
+
+テストがすべて成功すること ＝ 対象プログラムが完成したことになります．
+
+### テスト対象プログラムの作成
+
+プロジェクトルート・ディレクトリ
+
+テスト対象プログラムのファイルを math.js とします．
+
+```bash
+$ cd <プロジェクトルート>
+$ nano math.js
+```
+
+```js
+const gcd=(a,b)=>{
+    if (a%b==0) {
+      return b;
+    } else {
+      return gcd(b,a%b);
+    }
+}
+
+module.exports = {gcd};
+
+```
+
+
+### <a id="execution">mochaによるテストの実行
+
+
+テストがすべて成功する ＝ 仕様どおりのプログラムが完成！
 
 ```bash
 $ npx mocha
