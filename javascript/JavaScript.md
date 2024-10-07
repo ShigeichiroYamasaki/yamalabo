@@ -36,8 +36,10 @@ source ~/.profile
 Homebrew がインストールされていることが前提です
 
 ```bash
-source $(brew --prefix nvm)/nvm.sh
-echo 'source $(brew --prefix nvm)/nvm.sh' >> ~/.zprofile
+brew install nvm
+mkdir ~/.nvm
+echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zprofile
+echo ' [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"' >> ~/.zprofile
 source ~/.zprofile
 ```
 
