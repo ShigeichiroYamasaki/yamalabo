@@ -77,9 +77,9 @@ Wallet 1 : n Address
 アセットパイプラインは使用しません
 
 ```bash
-rails new tapyrus_wallet --skip-sprockets
+rails new wallet --skip-sprockets
 
-cd tapyrus_wallet
+cd wallet
 ```
 
 ```
