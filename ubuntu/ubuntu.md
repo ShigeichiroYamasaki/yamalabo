@@ -1,19 +1,19 @@
 # ubuntuの基本操作
 
-以下，結果をメモしていく
+2024/10/14 Shigeichiro Yamasaki
 
 ## ファイルシステムの操作
 
 ### 現在のディレクトリのパスの確認 (pwdコマンド)
 
-```
+```bash
 $ pwd
 ```
 
 ### ディレクトリへの移動 (cdコマンド)
 
 
-```
+```bash
 $ cd ~
 $ pwd
 
@@ -32,15 +32,16 @@ $ pwd
 
 ### 現在のディレクトリのファイルの一覧　(lsコマンド)
 
-```
+```bash
 $ ls
-
 ```
 
 ####  ls コマンドに -l オプションをつけると詳細情報が表示される
 
-```
+```bash
 $ ls -l
+
+=>
 total 36
 drwxr-xr-x 2 yamasaki yamasaki 4096 Jul 19  2018 ビデオ
 drwxr-xr-x 2 yamasaki yamasaki 4096 Jul 19  2018 ピクチャ
@@ -55,9 +56,11 @@ drwxr-xr-x 7 yamasaki yamasaki 4096 Apr 17 08:30 公開
 
 ### 新しいディレクトリの作成　（mkdirコマンド）
 
-```
+```bash
 $ mkdir kadai
 $ ls
+
+=>
 ビデオ	  ダウンロード	テンプレート  デスクトップ  kadai
 ピクチャ  ミュージック	ドキュメント  公開
 
@@ -65,51 +68,68 @@ $ ls
 
 ### 新しいファイルの作成 (touchコマンド)
 
-```
+```bash
 $ touch test
 $ ls
+
+=>
 test
 
 ```
 
 ### ファイルのコピー (cpコマンド)
 
-```
+```bash
 $ cp test test1
 $ ls
+
+=>
 test  test1
 
 ```
 
 ### ファイルの移動 (mvコマンド)
 
-```
+```bash
 $ mkdir work
 $ ls
+
+=>
 test  test1  work
+
 $ mv test work
 $ ls
+
+=>
 test1  work
+
 $ cd work/
 $ ls
+
+=>
 test
 
 ```
 
 ### ファイル名の変更
 
-```
+```bash
 $ mv test test100
 $ ls
+
+=>
 test100
 
 ```
 
 ### ファイルの削除 (rmコマンド)
 
-```
+```bash
 $ ls
+
+=>
 test100
+
 $ rm test100 
 $ ls
 
@@ -119,8 +139,10 @@ $ ls
 
 -m オプションは　メガバイト単位という意味
 
-```
+```bash
 $ df -m
+
+=>
 Filesystem ...
 /dev/disk1s1   ...
 ...
@@ -130,11 +152,12 @@ Filesystem ...
 
 ## cd コマンドでホームディレクトに移動
 
-```
+```bash
 $ cd ~
 $ pwd
-/home/kindai
 
+=>
+/home/kindai
 ```
 
 ##  ネットワークの操作
@@ -143,9 +166,10 @@ $ pwd
 
 自分のIPアドレスを確認してください
 
-```
+```bash
 $ ip addr
 
+=>
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -163,12 +187,14 @@ $ ip addr
 
 ```
 
+enpXXX の中の inet のところが IP v4 アドレスです
+
 
 ### 標準デバイス名の確認方法
 
 ネットワークカード
 
-```
+```bash
 $ ip addr
 1: lo: <LOOPBACK,UP,LOWER_UP>
 ...
@@ -182,8 +208,10 @@ $ ip addr
 
 Ctrl-C で終了
 
-```
+```bash
 $ ping 8.8.8.8
+
+=>
 PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=116 time=11.9 ms
 64 bytes from 8.8.8.8: icmp_seq=2 ttl=116 time=13.3 ms
@@ -216,23 +244,29 @@ PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 `     ^X 終了`
 
 
-
-
 ## コマンドファイル
 
 ### コマンドのファイルの存在場所の確認
 
-```
+```bash
 $ which ls
+
+=>
 /bin/ls
 
 $ which pwd
+
+=>
 /bin/pwd
 
 $ which mv
+
+=>
 /bin/mv
 
 $ which ip
+
+=>
 /sbin/ip
 ```
 
@@ -241,7 +275,7 @@ $ which ip
 
 ### echo コマンドで環境変数を表示
 
-```
+```bash
 $ echo $LANG
 ja_JP.UTF-8
 
@@ -256,15 +290,19 @@ $ echo $PATH
 
 ### 環境変数変更の例
 
-```
+```bash
 $ export LANG=ja_JP.UTF-8
 
 $ date +%x
-2019年04月17日
+
+=>
+2024年10月14日
 
 $ export LANG=en_GB.UTF-8
 
 $ date +%x
+
+=>
 17/04/19
 
 $ export LANG=en_US.UTF-8
@@ -278,7 +316,7 @@ $ date +%x
 
 個人のパスワードでシステム管理者権限の操作を行う
 
-```
+```bash
 $ cd /
 $ touch gomi
 touch: gomi: Permission denied
@@ -291,16 +329,22 @@ $ sudo rm gomi
 
 sudo で実行する
 
-```
+* ssh をインストールする場合
+
+```bash
 $ sudo apt install ssh
+
+=>
 [sudo] yamasaki のパスワード: 
 
 ```
 
 インストールされていないコマンドを実行しようとした場合
 
-```
+```bash
 $ traceroute 8.8.8.8
+
+=>
 コマンド 'traceroute' が見つかりません。次の方法でインストールできます:
 sudo apt install inetutils-traceroute  # version 2:2.2-2, or
 sudo apt install traceroute            # version 1:2.1.0-2
@@ -308,17 +352,21 @@ sudo apt install traceroute            # version 1:2.1.0-2
 
 aptコマンドで tracerouteコマンドをインストール
 
-```
-$ sudo apt install traceroute
+```bash
+$ sudo apt install inetutils-traceroute
 ```
 
-```
+```bash
 $ which traceroute
-/usr/sbin/traceroute
+
+=>
+/usr/bin/traceroute
 ```
 
-```
+```bash
 $ traceroute 8.8.8.8
+
+=>
 traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
  1  _gateway (192.168.0.1)  0.618 ms  0.570 ms  0.599 ms
  2  KD121105103065.ppp-bb.dion.ne.jp (121.105.103.65)  3.927 ms  5.524 ms  3.905 ms
@@ -331,21 +379,12 @@ traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
 
 ```
 
-## ロケール（言語）の変更
-
-```
-export LANG="en_US"
-
-echo $LANG
-
-```
-
 
 ## パスワードの変更
 
 passwd コマンド
 
-```
+```bash
 passwd
 
 Old Password:
@@ -356,24 +395,22 @@ Old Password:
 
 ## IPアドレス関係情報の確認
 
-```
+```bash
 $ ip addr
-
-$ ifconfig
 ```
 
 ### 自分のIPアドレス関係情報の確認する
 
 * Windows Powershell の場合
 
-```
-ipconfig
+```bash
+$ ipconfig
 ```
 
 * Mac ターミナルの場合
 
-```
-ifconfig
+```bash
+$ ifconfig
 ```
 
 * インターフェース名（有線、無線LAN、ローカルループバック）
@@ -384,7 +421,7 @@ ifconfig
 
 ## ルーティングテーブルの確認
 
-```
+```bash
 $ ip route
 
 default via 192.168.0.1 dev wlp0s20f3 proto static metric 600 
@@ -404,7 +441,13 @@ default via 192.168.0.1 dev wlp0s20f3 proto static metric 600
 
 ## ARPテーブルの確認
 
+インストール
+
+```bash
+sudo apt install net-tools
 ```
+
+```bash
 $ arp -a
 ```
 
@@ -414,9 +457,10 @@ $ arp -a
 
 確認したい相手のIPアドレスを知る
 
-```
+```bash
 $ ping 192.168.0.35
 
+=>
 PING 192.168.0.35 (192.168.0.35) 56(84) bytes of data.
 64 bytes from 192.168.0.35: icmp_seq=1 ttl=64 time=0.326 ms
 64 bytes from 192.168.0.35: icmp_seq=2 ttl=64 time=0.530 ms
@@ -441,15 +485,16 @@ PING 192.168.0.35 (192.168.0.35) 56(84) bytes of data.
 
 ### ping した後にARPテーブルを再確認する
 
-```
+```bash
 $ arp
 ```
 
 ## traceroute で経路を確認する
 
-```
+```bash
 $ traceroute 8.8.8.8
 
+=>
 traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 52 byte packets
  1  ia201wl4 (192.168.0.1)  7.978 ms  5.241 ms  5.784 ms
  2  oha-mx480-bbbas05.qtnet.ad.jp (218.40.227.156)  10.688 ms  10.055 ms  9.346 ms
@@ -478,43 +523,40 @@ traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 52 byte packets
 * 近畿大学産業理工学部のDNSサーバ 157.13.61.1
 * 九工大のwebサーバ  www.kyutech.ac.jp
 
-## whois データベースの確認
-
-### 近畿大学産業理工学部のIPアドレスのwhoisデータベース情報の確認
-
-```
-$ whois 157.13.1.1
-```
-
-いろいろなIPアドレスの whois データベースの情報を確認する
-
-* 8.8.8.8
-* 1.1.1.1
-* traceroute の途中経路のIPアドレスの情報を確認する
 
 ## DNS関連情報
 
-```
+```bash
 $ dig
 ```
 
 ### host コマンドでIPアドレスを確認する
 
-```
+```bash
 $ host www.kindai.ac.jp
+
+=>
+www.kindai.ac.jp is an alias for kindai-1st-alb01-777703103.ap-northeast-1.elb.amazonaws.com.
+kindai-1st-alb01-777703103.ap-northeast-1.elb.amazonaws.com has address 54.199.78.235
+kindai-1st-alb01-777703103.ap-northeast-1.elb.amazonaws.com has address 52.68.198.87
 ```
 ### host コマンドでnsレコードを確認する
 
-```
+```bash
 $ host -t ns kindai.ac.jp
-```
 
+=>
+kindai.ac.jp name server tomato.cc.fuk.kindai.ac.jp.
+kindai.ac.jp name server rs6000.cc.kindai.ac.jp.
+kindai.ac.jp name server nsex.cc.kindai.ac.jp.
+kindai.ac.jp name server carrot.cc.fuk.kindai.ac.jp.
+```
 
 ## nanoエディターの練習
 
 ### ファイルの作成
 
-```
+```bash
 nano test01.txt
 ```
 
@@ -550,7 +592,7 @@ nano test01.txt
 |後方へ続けて検索　|	Alt + Q|
 |置換　　|Ctrl + WR|
 
-### 試しに次の内容を入力して保存してください
+### 試しに次の内容を nano エディタで入力して保存してください
 
 ```
 network:
