@@ -1,6 +1,7 @@
 # rails7 のインストールと devise認証
 
-最終修正 2023/12/26 Shigeichiro Yamasaki
+2024/11/10
+Shigeichiro Yamasaki
 
 ## Rubyのインストール
 
@@ -8,21 +9,8 @@
 
 ## nvmのインストール
 
-### nvm (ubuntu)のインストール
+ここを参照してください [JavaScript](../javascript/JavaScript.md)
 
-```bash
-sudo apt install curl 
-curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-source ~/.profile
-```
-
-### nvm (macOSX)のインストール
-
-```bash
-source $(brew --prefix nvm)/nvm.sh
-echo 'source $(brew --prefix nvm)/nvm.sh' >> ~/.zprofile
-source ~/.zprofile
-```
 
 ### Railsインストール
 

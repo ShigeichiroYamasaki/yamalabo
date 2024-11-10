@@ -1,9 +1,9 @@
 # Ruby インストール方法
 
-最終更新　2024/10/13
+最終更新　2024/11/10
 Shigeichiro Yamasaki
 
-推奨バージョン変更 3.3.3
+推奨バージョン変更 3.3.6
 
 ## MacOSXでのインストール
 
@@ -35,7 +35,7 @@ Your system is ready to brew.
 /bin/bash  "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 ```
 
-#### 必要（そう）なライブラリのインストール
+### 必要（そう）なライブラリのインストール
 
 ```bash
 brew update
@@ -54,7 +54,9 @@ git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 
 #### ログインスクリプト (.zshrc)の編集
 
-`nano .zshrc`
+```bash
+nano .zshrc
+```
 
 ファイルの最後に次の2行を加えて保存する
 
@@ -69,58 +71,18 @@ eval "$(rbenv init -)"
 source ~/.zshrc
 ```
 
-#### rbenvコマンドの確認
+## ubuntu 24.04LTS でのインストール
 
-インストール可能なRubyのバージョンが出てきます
-
-```bash
-git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
-rbenv install -l
-
-```
-
-新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
-
-```bash
-rm -fr ~/.rbenv/plugins/ruby-build
-git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
-
-rbenv install -l
-```
-
-### Rubyのインストール
-
-#### バージョンを指定してインストール
-
-
-コンパイルなどを行うので、かなり時間がかかります
-
-```bash
-rbenv install 3.3.5
-```
-
-#### 利用するRubyのバージョンの指定
-
-rbenvを利用すると複数のバージョンのRubyをインストールできます。
-その中で利用するバージョンを以下のようにして指定します
-
-```bash
-rbenv global 3.3.5
-source .zshrc 
-```
-
-## Ubuntuでのインストール
-
-#### 必要（そう）なライブラリのインストール
+* 必要なライブラリのインストール
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y llvm autoconf gcc clang cmake curl direnv sqlite3 libsqlite3-dev git nodejs m4 libssl-dev zlib1g-dev cmdtest build-essential wget imagemagick libyaml-dev
+sudo apt install -y curl git wget autoconf gcc make libssl-dev libffi-dev libz-dev  libyaml-dev sqlite3 sqlite-utils
 sudo apt autoremove -y
 ```
 
-#### rbenvのインストール
+### rbenvのインストール
 
 ```bash
 cd ~
@@ -128,9 +90,12 @@ rm -fr ~/.rbenv
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 ```
 
+
 #### ログインスクリプト (.bashrc)の編集
 
-`nano ~/.bashrc`
+```bash
+nano .bashrc
+```
 
 ファイルの最後に次の2行を加えて保存する
 
@@ -145,7 +110,8 @@ eval "$(rbenv init -)"
 source ~/.bashrc
 ```
 
-#### rbenvコマンドの確認
+
+## rbenvコマンドの確認
 
 インストール可能なRubyのバージョンが出てきます
 
@@ -160,16 +126,19 @@ rbenv install -l
 ```bash
 rm -fr ~/.rbenv/plugins/ruby-build
 git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+
+rbenv install -l
 ```
 
 ### Rubyのインストール
 
 #### バージョンを指定してインストール
 
+
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.3.5
+rbenv install 3.3.6
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -178,8 +147,28 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.3.5
-source .bashrc 
+rbenv global 3.3.6
+```
+
+* MacOSX の場合
+
+```bash
+source .zshrc
+```
+
+* ubuntu の場合
+
+```bash
+source .bashrc
+```
+
+### Rubyのバージョンアップの場合
+
+新しいバージョンのRubyをインストールしたい場合は以下のようにしてrbenvの環境を更新します
+
+```bash
+rm -fr ~/.rbenv/plugins/ruby-build
+git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
 ```
 
 
