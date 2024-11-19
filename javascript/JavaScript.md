@@ -26,7 +26,7 @@ nvm（Node Version Manager）は、Node.js のバージョン管理ツールで�
 ### nvm (ubuntu)のインストール
 
 ```bash
-sudo apt install curl git
+sudo apt install -y curl git tree
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 source ~/.profile
 ```
