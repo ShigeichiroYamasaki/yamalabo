@@ -1,6 +1,6 @@
 # rails7 のインストールと devise認証
 
-2024/11/10
+2025/01/24
 Shigeichiro Yamasaki
 
 ## Rubyのインストール
