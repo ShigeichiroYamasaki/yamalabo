@@ -1,4 +1,4 @@
-# rails7 のインストールと devise認証
+# rails8
 
 2025/01/24
 Shigeichiro Yamasaki
@@ -19,14 +19,6 @@ gem install bundler
 gem install sqlite3
 gem install json-jwt
 gem install jwt
-gem install nokogiri
-gem install devise
-gem install bootstrap
-gem install jquery-rails
-gem install bootstrap-sass
-gem install sass-rails
-gem install devise-i18n
-gem install devise-i18n-views
 gem install rails
 ```
 
@@ -55,9 +47,9 @@ Address:
 ###  モデル間の関連
 
 ```
-Market 1 : n Wallet
+Market 1 : n Saifu
 Market 1 : n Token
-Wallet 1 : n Address
+Saifu 1 : n Address
 ```
 
 ## Railsプロジェクトの生成
@@ -65,8 +57,7 @@ Wallet 1 : n Address
 アセットパイプラインは使用しません
 
 ```bash
-rails new wallet --skip-sprockets
-
+rails new wallet 
 cd wallet
 ```
 
@@ -78,9 +69,9 @@ bundle install
 
 ```bash
 rails g scaffold Market name
-rails g scaffold Wallet market_id:integer owner
+rails g scaffold Saifu market_id:integer owner
 rails g scaffold Token market_id:integer color
-rails g scaffold Address wallet_id:integer color
+rails g scaffold Address saifu_id:integer color
 ```
 
 #### モデル間の関連を定義
@@ -91,7 +82,7 @@ nano app/models/market.rb
 
 ```ruby
 class Market < ApplicationRecord
-  has_many :wallets
+  has_many :saifus
   has_many :tokens
 end
 ```
@@ -99,10 +90,10 @@ end
 
 * Walletモデル
 
-nano app/models/wallet.rb 
+nano app/models/saifu.rb 
 
 ```ruby
-class Wallet < ApplicationRecord
+class Saifu < ApplicationRecord
   belongs_to :market
   has_many :addresses
 end
@@ -114,7 +105,7 @@ nano app/models/token.rb
 
 ```ruby
 class Token < ApplicationRecord
-  belongs_to :wallet
+  belongs_to :saifu
 end
 ```
 
@@ -124,7 +115,7 @@ nano app/models/address.rb
 
 ```ruby
 class Address < ApplicationRecord
-  belongs_to :wallet
+  belongs_to :saifu
 end
 ```
 
