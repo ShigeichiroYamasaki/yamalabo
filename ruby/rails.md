@@ -1,6 +1,6 @@
 # rails8
 
-2025/01/24
+2025/01/31
 Shigeichiro Yamasaki
 
 ## Rubyのインストール
