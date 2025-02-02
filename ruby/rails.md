@@ -15,6 +15,9 @@ Shigeichiro Yamasaki
 ### Railsインストール
 
 ```bash
+gem update --system
+gem update
+
 gem install bundler
 gem install sqlite3
 gem install json-jwt
