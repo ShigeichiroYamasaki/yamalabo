@@ -1,6 +1,6 @@
 # 音楽ストリーミングサーバ Navidrome
 
-2024/12/18
+2025/04/07
 Shigeichiro Yamasaki
 
 ## Navidrome
@@ -13,6 +13,20 @@ Shigeichiro Yamasaki
 
 [substreamer](https://apps.apple.com/jp/app/substreamer/id1012991665)
 
+### install (MacOSX)
+
+homebrew がインストール済とします
+
+```bash
+brew install navidrome
+```
+
+* これだけでインストール完了です
+* 以下のコマンドで navidrome サーバーを起動できます
+
+```bash
+$ navidrome
+```
 
 ### install (ubuntu)
 ```bash
