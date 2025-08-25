@@ -329,17 +329,16 @@ num = '-infinity'
 ```ts
 let arr: number[] = [1,2,3,4,5,6]
 console.log(arr)
+```
 
-// node index.ts
-// [ 1, 2, 3, 4, 5, 6 ]
+```bash
+node index.ts
+[ 1, 2, 3, 4, 5, 6 ]
 ```
 
 ```ts
 let cities: string[] = ['鹿児島','福岡','大阪']
 console.log(cities)
-
-// node index.ts
-// [ '鹿児島', '福岡', '大阪' ]
 ```
 
 ### Array() コンストラクタによる配列の生成
@@ -350,9 +349,6 @@ arr3.push(3)
 arr3.push(4)
 arr3.push(5)
 console.log(arr3)
-
-// node index.ts
-// [ 3, 4, 5 ]
 ```
 
 ### 多次元配列
@@ -364,9 +360,6 @@ arr4 = [
   [4,5,6]
 ]
 console.log(arr4)
-
-// node index.ts
-// [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
 ```
 
 ### ユニオン型配列
@@ -375,7 +368,6 @@ console.log(arr4)
 let arr5: (string|number|undefined)[]
 arr5 = ['Yamasaki',68,,]
 console.log(arr5)
-//[ 'Yamasaki', 68, <1 empty item> ]
 ```
 
 
