@@ -62,7 +62,7 @@ TypeScriptの利点をより活かすには，できるだけ手続き型のコ�
 
 ## インストール
 
-Node.jsをTypeScriptを実行する場合，Node.js の 23.6.0 以降が必要です
+このチュートリアルでは，TypeScript を Node.js でサーバーサイドで利用することに特化します．Node.jsで TypeScript を実行する場合，Node.js の 23.6.0 以降が必要になります．
 
 * Node.js のインストール
 
