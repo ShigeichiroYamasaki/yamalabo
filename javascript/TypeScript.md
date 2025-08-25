@@ -145,7 +145,7 @@ tsconfig.json  は，TypeScript 言語のコンパイルを行う tsc コマン�
   * javaScript が利用するモジュールの指定
 
 
-## コンパイルと実行
+## tsc コマンドによるコンパイル
 
 TypeScriptコード → （tsc によるコンパイル） → javaScriptコード
 
@@ -174,11 +174,9 @@ ls
 index.js                index.ts                node_modules            package-lock.json       package.json            tsconfig.json
 ```
 
-* Node.js による実行
+## Node.js によるコンパイルと実行
 
-Node.js が自動的にTypeScriptへのコンパイルと javaScriptによる実行を行ってくれます
-
-Node.js による実行
+Node.js は，自動的に TypeScript プログラムののコンパイルとコンパイル結果の  javaScript コードの実行を行ってくれます
 
 ```bash
 node index.ts
