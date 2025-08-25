@@ -246,9 +246,7 @@ console.log(user)
 console.log(age)
 ```
 
-* コンパイル/実行
-
-最新の TypeScriptの機能を適切に利用するには ターゲットの指定が必要
+* コンパイルと実行
 
 ```bash
 node index.ts
@@ -269,9 +267,7 @@ console.log(user*2)
 console.log(age*2)
 ```
 
-* コンパイル/実行
-
-string 型のオブジェクトには *2 という操作は定義されていない
+string 型のオブジェクトには *2 という操作は定義されていないのでエラーになる
 
 ```bash
 node index.ts
