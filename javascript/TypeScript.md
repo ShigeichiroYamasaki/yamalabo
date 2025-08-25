@@ -661,7 +661,7 @@ let f=fib()
 
 // ジェネレータオブジェクトの生成
 
-Object [Generator] {}
+// Object [Generator] {}
 
 // ジェネレータに next() メソッドを適用してみる
 console.log(f.next()['value'])
