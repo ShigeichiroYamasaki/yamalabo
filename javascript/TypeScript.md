@@ -4,9 +4,6 @@
 
 事前に[javaScript言語入門](./JavaScript.md)を学んでいることを前提にします
 
-## 参考
-
-[TypeScript Deep Dive 日本語版](https://typescript-jp.gitbook.io/deep-dive)
 
 ## TypeScript言語の概要
 
