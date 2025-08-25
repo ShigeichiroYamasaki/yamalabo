@@ -686,6 +686,13 @@ const take=(n: number, generator)=> {
     return range(1,n).map(()=>generator.next()['value'])
 }
 
+function* fib() {
+    let x=0, y=1;
+    for(;;){
+        yield y;
+        [x,y]=[y,x+y]
+    }
+}
 // フィボナッチ数列の集合を 5個ずつ取り出す
 f=fib()
 
