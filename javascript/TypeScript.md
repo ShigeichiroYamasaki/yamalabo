@@ -1059,11 +1059,8 @@ const url =
   "https://www.jma.go.jp/bosai/forecast/data/overview_forecast/400000.json";
 
 async function httpget() {
-  // URLからデータを非同期で取得
   const response = await fetch(url);
-  // 取得したレスポンスをJSON形式に変換
   const data = await response.json();
-  // 取得したJSONデータを整形してコンソールに出力
   console.log(data);
 }
 
@@ -1094,7 +1091,7 @@ const url =
 
 async function httpget() {
   const response = await fetch(url);
-  // await をつけない場合
+  // await をつけていない
   const data = response.json();
   console.log(data);
 }
@@ -1108,7 +1105,7 @@ node index.ts
 Promise { <pending> }
 ```
 
-* コールバックチェーンによる実装
+* コールバックチェーンによる実装例
   
 上記の response はPromiseオブジェクトなので，then() メソッドを使って以下のようにコールバックチェーンで処理をつなげることと同じ意味です。
 
