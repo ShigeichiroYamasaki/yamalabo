@@ -1049,9 +1049,7 @@ await / async による記法は，Promise の使用法を劇的に簡略化す�
   
 この例は、２つの非同期処理を await によって逐次処理化する async 関数です。
 
-1. await を使ってURLへの http GET の応答を得るまで完了を待ち，その結果を変数 resp に代入します。
-   * fetch は非同期関数で、http を使って url のデータを GET し，返り値は Promise オブジェクトです．
-2. response オブジェクトに対する json() メソッドによる非同期処理によって，JSON データを取り出します．それが完了すると 変数 data に結果が代入されます
+
 
 ```ts
 // 気象庁の福岡県の天気予報の概要を取得するURL
@@ -1067,6 +1065,11 @@ async function httpget() {
 httpget();
 ```
 
+1. await を使ってURLへの http GET の応答を得るまで完了を待ち，その結果を変数 resp に代入します。
+   * fetch は非同期関数で、http を使って url のデータを GET し，返り値は Promise オブジェクトです．
+2. response オブジェクトに対する json() メソッドによる非同期処理によって，JSON データを取り出します．それが完了すると定数 data に結果が代入されます
+
+* 実行結果
 
 ```bash
 node index.ts
@@ -1080,10 +1083,7 @@ node index.ts
 }
 ```
 
-
-上記のプログラムで  `const data = await response.json();` の部分に `await` をつけないと，以下のように出力が `Promise { <pending> }` になります．
-
-これは，変数 data は fetch() による http GETの完了を待たないでこの行のプログラムが実行されるために `response` が未完了状態だからです．
+上記のプログラムで  `const data = await response.json();` の部分に `await` をつけない場合です
 
 ```js
 const url =
@@ -1099,20 +1099,21 @@ async function httpget() {
 httpget();
 ```
 
+* 実行結果
+ 
+これを実行すると，下のように出力が `Promise { <pending> }` になります．
+
+これは，定数 data は fetch() による http GETの完了を待たないでこの行のプログラムが実行されるために `response` が未完了状態だからです．
+
 ```bash
 node index.ts
 =>
 Promise { <pending> }
 ```
 
-* コールバックチェーンによる実装例
+#### コールバックチェーンによる実装例
   
 上記の response はPromiseオブジェクトなので，then() メソッドを使って以下のようにコールバックチェーンで処理をつなげることと同じ意味です。
-
-then メソッドの中のアロー関数の引数の resp に fetch の返り値の Promise オブジェクトが束縛されることになります
-
-しかし，await によるコードに比べると可読性は少し低下しています．
-コールバックチェーンが複雑化するとこの差は大きなものになります．
 
 
 ```js
@@ -1127,3 +1128,8 @@ async function httpget() {
 
 httpget();
 ```
+
+then メソッドの中のアロー関数の引数の resp に fetch の返り値の Promise オブジェクトが束縛されることになります
+
+しかし，await によるコードに比べると可読性は少し低下しています．
+コールバックチェーンが複雑化するとこの差は大きなものになります．
