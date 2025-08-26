@@ -1036,22 +1036,22 @@ await / async による記法は，Promise の使用法を劇的に簡略化す�
 
 #### await
 
-* await は Promise オブジェクトを受け取り，その完了を待ち，その返り値やエラーに変換します．
-* await が指定されたコードを含む関数は非同期関数なので， async 関数として定義しなければなりません．
-* async 関数の実行結果を得るためには，関数呼び出しに await を指定しておく必要があります．
-
 * `await p` 
   *  Promise オブジェクト p の完了を待つという意味になります。
   * その返り値が Promise オブジェクトなら、さらにそれを await することで逐次的に処理を行うことができます。
 
-* 例
-  
-下記の例の非同期関数 fetch は、http を使って url のデータを GET する Promise オブジェクトです．
+* await が指定されたコードを含む関数は非同期関数なので， async 関数のコンテクストの中で定義しなければなりません．
 
-この例は、２つの非同期処理を await によって逐次処理化するものです。
+
+
+
+#### async/await の例
+  
+この例は、２つの非同期処理を await によって逐次処理化する async 関数です。
 
 1. await を使ってURLへの http GET の応答を得るまで完了を待ち，その結果を変数 resp に代入します。
-2. response オブジェクトの json() メソッドの非同期処理によって，JSON データを取り出します．それが完了すると 変数 data に結果を代入します．
+   * fetch は非同期関数で、http を使って url のデータを GET し，返り値は Promise オブジェクトです．
+2. response オブジェクトに対する json() メソッドによる非同期処理によって，JSON データを取り出します．それが完了すると 変数 data に結果が代入されます
 
 ```ts
 // 気象庁の福岡県の天気予報の概要を取得するURL
@@ -1064,7 +1064,7 @@ async function httpget() {
   // 取得したレスポンスをJSON形式に変換
   const data = await response.json();
   // 取得したJSONデータを整形してコンソールに出力
-  console.log(JSON.stringify(data, null, 2));
+  console.log(data);
 }
 
 httpget();
@@ -1084,7 +1084,9 @@ node index.ts
 ```
 
 
-上記のプログラムで  await をつけないと，以下のように 変数 data は fetch() による http GETの完了を待たない状態のオブジェクトが代入されるので，内容は空にです．
+上記のプログラムで  `const data = await response.json();` の部分に `await` をつけないと，以下のように出力が `Promise { <pending> }` になります．
+
+これは，変数 data は fetch() による http GETの完了を待たないでこの行のプログラムが実行されるために `response` が未完了状態だからです．
 
 ```js
 const url =
@@ -1094,7 +1096,7 @@ async function httpget() {
   const response = await fetch(url);
   // await をつけない場合
   const data = response.json();
-  console.log(JSON.stringify(data, null, 2));
+  console.log(data);
 }
 
 httpget();
@@ -1103,20 +1105,27 @@ httpget();
 ```bash
 node index.ts
 =>
-{}
+Promise { <pending> }
 ```
 
+* コールバックチェーンによる実装
+  
 上記の response はPromiseオブジェクトなので，then() メソッドを使って以下のようにコールバックチェーンで処理をつなげることと同じ意味です。
 
-then メソッドの中のアロー関数の引数の response にはfetch の返り値の Promise オブジェクトが束縛されることになります
+then メソッドの中のアロー関数の引数の resp に fetch の返り値の Promise オブジェクトが束縛されることになります
+
+しかし，await によるコードに比べると可読性は少し低下しています．
+コールバックチェーンが複雑化するとこの差は大きなものになります．
+
 
 ```js
 const url =
   "https://www.jma.go.jp/bosai/forecast/data/overview_forecast/400000.json";
 
 async function httpget() {
-  const data = await fetch(url).then(resp=>resp.text())
-  console.log(JSON.stringify(data, null, 2));
+  const data = await fetch(url)
+    .then(resp=>resp.json())
+  console.log(data);
 }
 
 httpget();
