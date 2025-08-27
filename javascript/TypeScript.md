@@ -519,18 +519,17 @@ console.log(fact(20))
 
 TypeScript で bigint を使うためには es2020 以上のライブラリが必要
 
-また，数値の表記も `123n` ではなく，`BigInt(123)` のように表記します．
 
 ```ts
 const factn = (x: bigint)=>{
-    if(x==BigInt(0)) {
-        return BigInt(1);
+    if(x==0n) {
+        return 1n;
     } else {
-        return x*factn(x-BigInt(1));
+        return x*factn(x-1n);
     }
 }
 
-console.log(factn(BigInt(100)))
+console.log(factn(100n))
 // 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000n
 ```
 
