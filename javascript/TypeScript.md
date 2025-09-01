@@ -816,13 +816,11 @@ function* fib() {
     }
 }
 
+// ジェネレータオブジェクトの生成
 let f=fib()
 
-// ジェネレータオブジェクトの生成
+// ジェネレータオブジェクトに next() メソッドを適用して['value'] の値を出力する
 
-// Object [Generator] {}
-
-// ジェネレータに next() メソッドを適用してみる
 console.log(f.next()['value'])
 // 1
 console.log(f.next()['value'])
@@ -837,7 +835,7 @@ console.log(f.next()['value'])
 // 8
 ```
 
-### take で n 個取り出す
+### ジェネレータから n 個の値を取り出す （take 関数）
 
 ```ts
 const take=(n: number, generator)=> {
