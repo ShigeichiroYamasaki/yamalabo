@@ -1,6 +1,8 @@
 # TypeScript言語入門
 
-2025/08/25  Shigeichiro Yamasaki
+2025/09/01
+
+Shigeichiro Yamasaki
 
 事前に[javaScript言語入門](./JavaScript.md)を学んでいることを前提にします
 
@@ -367,6 +369,27 @@ num = 'infinity'
 num = '-infinity'
 ```
 
+## 型アサーション
+
+型推論を上書きする機能で，プログラマがコンパイラに型を伝えるために使用します
+
+* as 構文
+
+```ts
+const value: string | number = "this is a string";
+const strLength: number = (value as string).length;
+```
+
+* アングルブラケット構文
+
+```ts
+const value: string | number = "this is a string";
+const strLength: number = (<string>value).length;
+```
+
+型アサーションを使えば制限なく型の情報を上書きできるわけではありません．
+たとえば、number型をstring型にする型アサーションはコンパイルエラーになります
+
 ## 配列
 
 ### 配列の型指定
@@ -589,7 +612,7 @@ console.log(arr.filter(x => x>3))
 // [ 4, 5 ]
 ```
 
-#### redude
+#### reduce
 
 ```ts
 // 要素の和を求める（s が和を集積する変数で，その初期値は 0)
@@ -892,7 +915,7 @@ const user: Id_and_User ={
 * 型引数
   * 型パラメータに代入される型を型引数といいます
 * ジェネリック関数
-  * 関数パラメータの引数の丸括弧の前に型パラメータを `<>` で囲んで 指定した関数です
+  * 関数パラメータの引数の丸括弧の前に型パラメータをアングルブラケット構文で指定した関数です
 
 ```ts
 ジェネリック関数<型パラメータ>(引数1,...,引数m)
