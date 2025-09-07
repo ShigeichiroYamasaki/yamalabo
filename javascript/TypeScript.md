@@ -298,6 +298,8 @@ console.log(age)
 
 * コンパイルと実行
 
+node.js は TypeScriptのコンパイルと結果のjavaScriptの実行を行ってくれます
+
 ```bash
 node index.ts
 =>
@@ -403,11 +405,7 @@ javaScriptの配列と異なり，TypeScriptの配列は要素に対する型の
 ```ts
 let arr: number[] = [1,2,3,4,5,6]
 console.log(arr)
-```
-
-```bash
-node index.ts
-[ 1, 2, 3, 4, 5, 6 ]
+// [ 1, 2, 3, 4, 5, 6 ]
 ```
 
 ```ts
@@ -579,7 +577,7 @@ for (let key in week){
 // wed
 // thu
 // fri
-//sat
+// sat
 ```
 
 ### イテレータ
