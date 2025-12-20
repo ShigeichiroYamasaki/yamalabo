@@ -1,6 +1,6 @@
 # Ruby インストール方法
 
-最終更新　2025/05/08
+最終更新　2025/12/20
 Shigeichiro Yamasaki
 
 ## MacOSXでのインストール
@@ -136,7 +136,7 @@ rbenv install -l
 コンパイルなどを行うので、かなり時間がかかります
 
 ```bash
-rbenv install 3.4.3
+rbenv install 3.4.8
 ```
 
 #### 利用するRubyのバージョンの指定
@@ -145,7 +145,7 @@ rbenvを利用すると複数のバージョンのRubyをインストールで�
 その中で利用するバージョンを以下のようにして指定します
 
 ```bash
-rbenv global 3.4.3
+rbenv global 3.4.8
 ```
 
 * MacOSX の場合
