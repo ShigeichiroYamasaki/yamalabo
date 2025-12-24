@@ -37,12 +37,13 @@ sudo apt install git pip
 sudo apt update
 sudo apt install python3-pip
 sudo python3 -m pip install --upgrade pip setuptools wheel
+sudo apt install pipx
 ```
 
 ### DHT ドライバ
 
 ```bash
-sudo pip3 install Adafruit_DHT
+sudo pipx install adafruit-circuitpython-dht
 
 sudo git clone https://github.com/adafruit/Adafruit_Python_DHT.git
 cd Adafruit_Python_DHT
