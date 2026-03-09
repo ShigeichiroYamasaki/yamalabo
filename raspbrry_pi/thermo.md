@@ -1,5 +1,7 @@
 # raspberry pi DHT22 温度湿度センサー
 
+2025/12/27 Shigeichiro Yamasaki
+
 ## ３個所の温度湿度を記録
 
 1. 屋根外気: roof
@@ -33,11 +35,11 @@
 ## raspbeery pi のセットアップ
 
 ```bash
-sudo apt install git pip
+sudo apt install git python
 sudo apt update
 sudo apt install python3-pip
 sudo python3 -m pip install --upgrade pip setuptools wheel
-sudo apt install pipx
+
 ```
 
 ### DHT ドライバ
