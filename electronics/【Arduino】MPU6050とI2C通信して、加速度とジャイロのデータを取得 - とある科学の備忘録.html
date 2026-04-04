@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="ja" data-admin-domain="//blog.hatena.ne.jp" data-admin-origin="https://blog.hatena.ne.jp" data-author="pythonjacascript" data-avail-langs="ja en" data-blog="shizenkarasuzon.hatenablog.com" data-blog-host="shizenkarasuzon.hatenablog.com" data-blog-is-public="1" data-blog-name="とある科学の備忘録" data-blog-owner="pythonjacascript" data-blog-show-ads="1" data-blog-show-sleeping-ads="1" data-blog-uri="https://shizenkarasuzon.hatenablog.com/" data-blog-uuid="17391345971657998092" data-blogs-uri-base="https://shizenkarasuzon.hatenablog.com" data-brand="hatenablog" data-data-layer="{&quot;hatenablog&quot;:{&quot;admin&quot;:{},&quot;analytics&quot;:{&quot;brand_property_id&quot;:&quot;&quot;,&quot;measurement_id&quot;:&quot;&quot;,&quot;non_sampling_property_id&quot;:&quot;&quot;,&quot;property_id&quot;:&quot;&quot;,&quot;separated_property_id&quot;:&quot;UA-29716941-22&quot;},&quot;blog&quot;:{&quot;blog_id&quot;:&quot;17391345971657998092&quot;,&quot;content_seems_japanese&quot;:&quot;true&quot;,&quot;disable_ads&quot;:&quot;&quot;,&quot;enable_ads&quot;:&quot;true&quot;,&quot;entry_show_footer_related_entries&quot;:&quot;true&quot;,&quot;force_pc_view&quot;:&quot;true&quot;,&quot;is_public&quot;:&quot;true&quot;,&quot;is_responsive_view&quot;:&quot;false&quot;,&quot;is_sleeping&quot;:&quot;true&quot;,&quot;lang&quot;:&quot;ja&quot;,&quot;name&quot;:&quot;\u3068\u3042\u308b\u79d1\u5b66\u306e\u5099\u5fd8\u9332&quot;,&quot;owner_name&quot;:&quot;pythonjacascript&quot;,&quot;uri&quot;:&quot;https://shizenkarasuzon.hatenablog.com/&quot;},&quot;brand&quot;:&quot;hatenablog&quot;,&quot;page_id&quot;:&quot;entry&quot;,&quot;permalink_entry&quot;:{&quot;author_name&quot;:&quot;pythonjacascript&quot;,&quot;categories&quot;:&quot;Arduino&quot;,&quot;character_count&quot;:5563,&quot;date&quot;:&quot;2019-02-16&quot;,&quot;entry_id&quot;:&quot;17680117126965765090&quot;,&quot;first_category&quot;:&quot;Arduino&quot;,&quot;hour&quot;:&quot;16&quot;,&quot;title&quot;:&quot;\u3010Arduino\u3011MPU6050\u3068I2C\u901a\u4fe1\u3057\u3066\u3001\u52a0\u901f\u5ea6\u3068\u30b8\u30e3\u30a4\u30ed\u306e\u30c7\u30fc\u30bf\u3092\u53d6\u5f97&quot;,&quot;uri&quot;:&quot;https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647&quot;},&quot;pro&quot;:&quot;free&quot;,&quot;router_type&quot;:&quot;blogs&quot;}}" data-device="pc" data-dont-recommend-pro="false" data-global-domain="https://hatena.blog" data-globalheader-color="b" data-globalheader-type="pc" data-has-touch-view="1" data-help-url="https://help.hatenablog.com" data-no-suggest-touch-view="1" data-page="entry" data-parts-domain="https://hatenablog-parts.com" data-plus-available="" data-pro="false" data-router-type="blogs" data-sentry-dsn="https://03a33e4781a24cf2885099fed222b56d@sentry.io/1195218" data-sentry-environment="production" data-sentry-sample-rate="0.1" data-show-heading-anchor-link="1" data-static-domain="https://cdn.blog.st-hatena.com" data-version="7f426fc3872c20ac503d7219c8e7e3" data-initial-state="{}"><head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  
+
+  
+
+  
+
+
+  
+  <meta name="Hatena::Bookmark" content="nocomment">
+
+
+  <meta name="robots" content="max-image-preview:large">
+
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=7; IE=9; IE=10; IE=11">
+  <title>【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得 - とある科学の備忘録</title>
+
+  
+  <link rel="canonical" href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647">
+
+
+
+  
+
+<meta itemprop="name" content="【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得 - とある科学の備忘録">
+
+  <meta itemprop="image" content="https://cdn.image.st-hatena.com/image/scale/08e1eff243a1a8e4581f8518c39679f88693ab7a/backend=imagemagick;version=1;width=1300/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fp%2Fpythonjacascript%2F20190216%2F20190216151131.jpg">
+
+
+  <meta property="og:title" content="【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得 - とある科学の備忘録">
+<meta property="og:type" content="article">
+  <meta property="og:url" content="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647">
+
+  <meta property="og:image" content="https://cdn.image.st-hatena.com/image/scale/08e1eff243a1a8e4581f8518c39679f88693ab7a/backend=imagemagick;version=1;width=1300/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fp%2Fpythonjacascript%2F20190216%2F20190216151131.jpg">
+
+<meta property="og:image:alt" content="【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得 - とある科学の備忘録">
+    <meta property="og:description" content="題名の通り、今回から6軸センサーの「MPU-6050」を使用していきます。この記事では、MPU6050から加速度とジャイロの計測データを取得して、それをシリアルモニターに表示するところまでを行います。 それ以降の内容（角度算出etc.）は、別の記事に書いていくつもりです。 1.下準備（反田付け） 2.回路図 3.サンプルプログラム 4.実行 5.簡単に解説 （1）MPU-6050のセットアップ (2) 通信相手の確認 (3) 動作モードの読み出し (4) 値を取得 (5) 値を補正 (6) 送信 参考文献 1.下準備（反田付け） 私は、ここからMPU-6050のモジュールを購入しました。Ama…">
+<meta property="og:site_name" content="とある科学の備忘録">
+
+  <meta property="article:published_time" content="2019-02-16T07:26:47Z">
+
+    <meta property="article:tag" content="Arduino">
+      <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://cdn.image.st-hatena.com/image/scale/08e1eff243a1a8e4581f8518c39679f88693ab7a/backend=imagemagick;version=1;width=1300/https%3A%2F%2Fcdn-ak.f.st-hatena.com%2Fimages%2Ffotolife%2Fp%2Fpythonjacascript%2F20190216%2F20190216151131.jpg">  <meta name="twitter:title" content="【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得 - とある科学の備忘録">    <meta name="twitter:description" content="題名の通り、今回から6軸センサーの「MPU-6050」を使用していきます。この記事では、MPU6050から加速度とジャイロの計測データを取得して、それをシリアルモニターに表示するところまでを行います。 それ以降の内容（角度算出etc.）は、別の記事に書いていくつもりです。 1.下準備（反田付け） 2.回路図 3.サンプ…">  <meta name="twitter:app:name:iphone" content="はてなブログアプリ">
+  <meta name="twitter:app:id:iphone" content="583299321">
+  <meta name="twitter:app:url:iphone" content="hatenablog:///open?uri=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F02%2F16%2F162647">
+  
+    <meta name="description" content="題名の通り、今回から6軸センサーの「MPU-6050」を使用していきます。この記事では、MPU6050から加速度とジャイロの計測データを取得して、それをシリアルモニターに表示するところまでを行います。 それ以降の内容（角度算出etc.）は、別の記事に書いていくつもりです。 1.下準備（反田付け） 2.回路図 3.サンプルプログラム 4.実行 5.簡単に解説 （1）MPU-6050のセットアップ (2) 通信相手の確認 (3) 動作モードの読み出し (4) 値を取得 (5) 値を補正 (6) 送信 参考文献 1.下準備（反田付け） 私は、ここからMPU-6050のモジュールを購入しました。Ama…">
+    <meta name="google-site-verification" content="NJsmbT99Levw26xQBlm8H6gltGUOTMmONyqHmVAfS78">
+    <meta name="keywords" content="&lt;meta name=&quot;keywords&quot; content=&quot;Arduino&quot;,&quot;Python&quot;,&quot;CNC&quot;,&quot;C&quot;,&quot;HTML&quot; &gt;">
+
+
+  
+<script type="text/javascript" id="www-widgetapi-script" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/www-widgetapi.js" async=""></script><script type="text/javascript" async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/js"></script><script src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/iframe_api.js"></script><script async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/gtm.js"></script><script id="embed-gtm-data-layer-loader" data-data-layer-page-specific="{&quot;hatenablog&quot;:{&quot;blogs_permalink&quot;:{&quot;entry_afc_issued&quot;:&quot;false&quot;,&quot;has_related_entries_with_elasticsearch&quot;:&quot;true&quot;,&quot;is_author_pro&quot;:&quot;false&quot;,&quot;blog_afc_issued&quot;:&quot;false&quot;,&quot;is_blog_sleeping&quot;:&quot;true&quot;}}}">
+(function() {
+  function loadDataLayer(elem, attrName) {
+    if (!elem) { return {}; }
+    var json = elem.getAttribute(attrName);
+    if (!json) { return {}; }
+    return JSON.parse(json);
+  }
+
+  var globalVariables = loadDataLayer(
+    document.documentElement,
+    'data-data-layer'
+  );
+  var pageSpecificVariables = loadDataLayer(
+    document.getElementById('embed-gtm-data-layer-loader'),
+    'data-data-layer-page-specific'
+  );
+
+  var variables = [globalVariables, pageSpecificVariables];
+
+  if (!window.dataLayer) {
+    window.dataLayer = [];
+  }
+
+  for (var i = 0; i < variables.length; i++) {
+    window.dataLayer.push(variables[i]);
+  }
+})();
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P4CXTW');</script>
+<!-- End Google Tag Manager -->
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="https://shizenkarasuzon.hatenablog.com/icon/favicon">
+<link rel="apple-touch-icon" href="https://shizenkarasuzon.hatenablog.com/icon/touch">
+<link rel="icon" sizes="192x192" href="https://shizenkarasuzon.hatenablog.com/icon/link">
+
+  
+
+<link rel="alternate" type="application/atom+xml" title="Atom" href="https://shizenkarasuzon.hatenablog.com/feed">
+<link rel="alternate" type="application/rss+xml" title="RSS2.0" href="https://shizenkarasuzon.hatenablog.com/rss">
+
+  <link rel="alternate" type="application/json+oembed" href="https://hatena.blog/oembed?url=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F02%2F16%2F162647&amp;format=json" title="oEmbed Profile of 【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得">
+<link rel="alternate" type="text/xml+oembed" href="https://hatena.blog/oembed?url=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F02%2F16%2F162647&amp;format=xml" title="oEmbed Profile of 【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得">
+  
+  <link rel="author" href="http://www.hatena.ne.jp/pythonjacascript/">
+
+  
+
+  
+      <link rel="preload" href="https://cdn-ak.f.st-hatena.com/images/fotolife/p/pythonjacascript/20181118/20181118113132.jpg" as="image">
+
+
+  
+    
+<link rel="stylesheet" type="text/css" href="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/blog.css">
+
+    
+  <link rel="stylesheet" type="text/css" href="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/e9c76294a3fe6f5fb8d5809cc6eea3168f54dee8.css">
+  
+  
+
+  
+
+  
+<script> </script>
+
+  
+<style>
+  div#google_afc_user,
+  div.google-afc-user-container,
+  div.google_afc_image,
+  div.google_afc_blocklink {
+      display: block !important;
+  }
+</style>
+
+
+  
+    <script src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/valve.js" async=""></script>
+<script id="test-valve-definition">
+  var valve = window.valve || [];
+
+  valve.push(function(v) {
+    
+    
+
+    v.config({
+      service: 'blog',
+      content: {
+        result: 'adtrust',
+        documentIds: ["blog:entry:17680117126965765090"]
+      }
+    });
+    v.defineDFPSlot({"sizes":[[300,250],[336,280]],"slotId":"google_afc_user_container_0","unit":"/4374287/blo_pc_com_6_3328_0_no"});    v.defineDFPSlot({"lazy":1,"sizes":{"mappings":[[[320,568],[[336,280],[300,250],"fluid"]],[[0,0],[[300,250]]]]},"slotId":"sleeping-ad-in-entry","unit":"/4374287/blog_pc_entry_sleep_in-article"});    v.defineDFPSlot({"lazy":"","sizes":[[300,250],[336,280],[468,60],"fluid"],"slotId":"google_afc_user_container_1","unit":"/4374287/blog_user"});
+    v.sealDFPSlots();
+  });
+</script>
+
+  
+
+  
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","dateModified":"2019-02-16T16:26:47+09:00","datePublished":"2019-02-16T16:26:47+09:00","description":"題名の通り、今回から6軸センサーの「MPU-6050」を使用していきます。この記事では、MPU6050から加速度とジャイロの計測データを取得して、それをシリアルモニターに表示するところまでを行います。 それ以降の内容（角度算出etc.）は、別の記事に書いていくつもりです。 1.下準備（反田付け） 2.回路図 3.サンプルプログラム 4.実行 5.簡単に解説 （1）MPU-6050のセットアップ (2) 通信相手の確認 (3) 動作モードの読み出し (4) 値を取得 (5) 値を補正 (6) 送信 参考文献 1.下準備（反田付け） 私は、ここからMPU-6050のモジュールを購入しました。Ama…","headline":"【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得","image":["https://cdn-ak.f.st-hatena.com/images/fotolife/p/pythonjacascript/20190216/20190216151131.jpg"],"mainEntityOfPage":{"@id":"https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647","@type":"WebPage"}}</script>
+
+  
+
+  <script type="text/javascript">
+ if( location.href == 'https://shizenkarasuzon.hatenablog.com/'){
+ location.href='https://shizenkarasuzon.hatenablog.com/archive';
+}
+</script>
+<noscript>
+<p><a href="https://shizenkarasuzon.hatenablog.com/archive">とある科学の備忘録</a></p>
+</noscript>
+
+  
+
+<script type="text/javascript" async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/itm.js"></script><script type="text/javascript" async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/pwt.js"></script><script type="text/javascript" async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/tag"></script><script type="text/javascript" async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/gpt.js"></script></head>
+
+  <body class="page-entry header-image-enable enable-top-editarea category-Arduino globalheader-ng-enabled">
+    
+
+<div id="globalheader-container" data-brand="hatenablog">
+  <iframe id="globalheader" height="37" frameborder="0" allowtransparency="true"></iframe>
+</div>
+
+
+  
+  
+  
+    <nav class="
+      blog-controlls
+      
+    ">
+      <div class="blog-controlls-blog-icon">
+        <a href="https://shizenkarasuzon.hatenablog.com/">
+          <img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn.user.blog.st-hatena.jpg" alt="とある科学の備忘録">
+        </a>
+      </div>
+      <div class="blog-controlls-title">
+        <a href="https://shizenkarasuzon.hatenablog.com/">とある科学の備忘録</a>
+      </div>
+      <a href="https://blog.hatena.ne.jp/pythonjacascript/shizenkarasuzon.hatenablog.com/subscribe?utm_medium=button&amp;utm_source=blogs_topright_button&amp;utm_campaign=subscribe_blog" class="blog-controlls-subscribe-btn test-blog-header-controlls-subscribe">
+        読者になる
+      </a>
+    </nav>
+  
+
+  <div id="container">
+    <div id="container-inner">
+      <header id="blog-title" data-brand="hatenablog">
+  <div id="blog-title-inner" style="background-image: url('https://cdn-ak.f.st-hatena.com/images/fotolife/p/pythonjacascript/20181118/20181118113132.jpg'); background-position: center -46px;">
+    <div id="blog-title-content">
+      <h1 id="title"><a href="https://shizenkarasuzon.hatenablog.com/">とある科学の備忘録</a></h1>
+      
+        <h2 id="blog-description">CやPythonのプログラミング、Arduino等を使った電子工作をメインに書いています。また、木製CNCやドローンの自作製作記も更新中です。たまに機械学習とかもやってます。</h2>
+      
+    </div>
+  </div>
+</header>
+
+      
+  <div id="top-editarea">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=0.5,user-scalable=yes,initial-scale=1.0">
+
+
+<div class="mymenu">
+    <label for="show-menu" class="show-menu"> Show Menu</label>
+    <input type="checkbox" id="show-menu" role="button">
+    <ul id="menu">
+       <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/212542">プログラミング</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/212542#1C%E8%A8%80%E8%AA%9E">C/C++</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/212542#2Python">Python</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/212542#3Arduino">HTML</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/212542#4Processing">Processing</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223117">マイコン・通信</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223117#Arduino">Arduino</a></li>
+                    <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223117#Raspberry-Pi">Raspberry pi</a></li>
+                    <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223117#PIC">PIC</a></li>
+                    <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223117#M5Stack">M5 Stack</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223512">人工知能・制御</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223512#%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%A9%E3%83%AB%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF">Neural Network</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223512#PID%E5%88%B6%E5%BE%A1">PID制御</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223512#MPC%E5%88%B6%E5%BE%A1">MPC制御</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/223512#%E6%9C%80%E9%81%A9%E5%8C%96">最適化</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/222426">PA音響</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/222426#1%E3%82%B1%E3%83%BC%E3%83%96%E3%83%AB%E8%87%AA%E4%BD%9C">ケーブルの自作</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/222426#2REAPER">REAPER</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/08/26/222426#3Audacity">Audacity</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/11/04/235423">Projects</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/11/04/235423#%E6%9C%A8%E8%A3%BDCNC">木製CNC</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/11/04/235423#%E3%83%89%E3%83%AD%E3%83%BC%E3%83%B3">ドローン</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2018/11/04/235423#FireFly">Firefly</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/06/17/230406">映像制作</a>
+            <ul class="hidden">
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2019/06/17/230406#AviUtl">AviUtl</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2019/06/17/230406#Davinch-Resolve">Davinch Resolve</a></li>
+                <li><a href="https://shizenkarasuzon.hatenablog.com/entry/2019/06/17/230406#%E5%8B%95%E7%94%BB%E3%81%9F%E3%81%A1">動画たち</a></li>
+            </ul>
+        </li>
+                <li>
+            <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E9%AB%98%E6%A0%A1%E7%A7%91%E5%AD%A6">勉強</a>
+        </li>
+    </ul>
+</div>
+  </div>
+
+
+      
+      
+
+
+
+
+<div id="content" class="hfeed">
+  <div id="content-inner">
+    <div id="wrapper">
+      <div id="main">
+        <div id="main-inner">
+          
+  <article class="entry no-entry sleeping-ads" style="display: block !important;">
+    <div class="entry-inner">
+      <div class="entry-content">
+        
+        
+        <div class="variable-mobileWeb-ad">
+          <div id="google_afc_user_container_0" class="sleeping-ad" style="display: block !important;"><iframe id="google_ads_iframe_/4374287/blo_pc_com_6_3328_0_no_1" srcdoc="&lt;body&gt;&lt;/body&gt;" style="position: absolute; width: 0px; height: 0px; left: 0px; right: 0px; z-index: -1; border: 0px;" width="0" height="0"></iframe></div>
+        </div>
+        
+
+        
+        <p class="sleeping-ads-notice" style="display: none;">この広告は、90日以上更新していないブログに表示しています。</p>
+      <div id="my-footer">
+
+<iframe src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/iframe.html" allowtransparency="true" frameborder="0" scrolling="no" width="150" height="28"></iframe>
+
+
+<ul class="neos21-share">
+  <li class="neos21-share-hatebu"><a href="http://b.hatena.ne.jp/entry/https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647"><i class="blogicon-bookmark"></i><span>Bookmark</span></a></li>
+  <li class="neos21-share-twitter"><a href="https://twitter.com/share?url=https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647&amp;text=%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B8%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97"><i class="blogicon-twitter"></i><span>Twitter</span></a></li>
+  <li class="neos21-share-facebook"><a href="http://www.facebook.com/share.php?u=https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647"><i class="blogicon-facebook"></i><span>Facebook</span></a></li>
+  <li class="neos21-share-pocket"><a href="http://getpocket.com/edit?url=https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647&amp;title=%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B8%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97"><i class="blogicon-chevron-down"></i><span>Pocket</span></a></li>
+</ul>
+
+</div></div>
+    </div>
+  </article>
+
+
+          
+
+
+  
+
+
+          
+  
+  <!-- google_ad_section_start -->
+  <!-- rakuten_ad_target_begin -->
+  
+  
+  
+
+  
+
+  
+    
+      
+        <article class="entry hentry test-hentry js-entry-article date-first autopagerize_page_element chars-5600 words-600 mode-hatena entry-odd" id="entry-17680117126965765090" data-keyword-campaign="" data-uuid="17680117126965765090" data-publication-type="entry">
+  <div class="entry-inner">
+    <header class="entry-header">
+  
+    <div class="date entry-date first">
+    <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/02/16" rel="nofollow">
+      <time datetime="2019-02-16T07:26:47Z" title="2019-02-16T07:26:47Z">
+        <span class="date-year">2019</span><span class="hyphen">-</span><span class="date-month">02</span><span class="hyphen">-</span><span class="date-day">16</span>
+      </time>
+    </a>
+      </div>
+  <h1 class="entry-title">
+  <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647" class="entry-title-link bookmark">【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得</a>
+</h1>
+
+  
+  
+
+  <div class="entry-categories categories">
+    
+    <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino" class="entry-category-link category-Arduino">Arduino</a>
+    
+  </div>
+
+
+  
+
+  
+
+</header>
+
+    
+
+
+    <div class="entry-content hatenablog-entry">
+  
+    <p>題名の通り、今回から6軸センサーの「<span style="color: #ffff00"><b><a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050</b></span>」を使用していきます。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216151131.jpg" alt="f:id:pythonjacascript:20190216151131j:plain" title="f:id:pythonjacascript:20190216151131j:plain" class="hatena-fotolife" itemprop="image"></span></p><p>この記事では、MPU6050から加速度とジャイロの計測データを取得して、それをシリアルモニターに表示するところまでを行います。<br>
+それ以降の内容（角度算出etc.）は、別の記事に書いていくつもりです。</p>
+<ul class="table-of-contents">
+    <li><a href="#1下準備反田付け">1.下準備（反田付け）</a></li>
+    <li><a href="#2回路図">2.回路図</a></li>
+    <li><a href="#3サンプルプログラム">3.サンプルプログラム</a></li>
+    <li><a href="#4実行">4.実行</a></li>
+    <li><a href="#5簡単に解説">5.簡単に解説</a><ul>
+            <li><a href="#1MPU-6050のセットアップ">（1）MPU-6050のセットアップ</a></li>
+            <li><a href="#2-通信相手の確認">(2) 通信相手の確認</a></li>
+            <li><a href="#3-動作モードの読み出し">(3) 動作モードの読み出し</a></li>
+            <li><a href="#4-値を取得">(4) 値を取得</a></li>
+            <li><a href="#5-値を補正">(5) 値を補正</a></li>
+            <li><a href="#6-送信">(6) 送信</a></li>
+        </ul>
+    </li>
+    <li><a href="#参考文献">参考文献</a></li>
+</ul>
+<div class="section">
+    <h3 id="1下準備反田付け">1.下準備（反田付け） <a href="#1下準備反田付け" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>私は、<a href="https://www.amazon.co.jp/ps61003-MPU-6050-%E4%BD%BF%E7%94%A8-%EF%BC%93%E8%BB%B8%E3%82%B8%E3%83%A3%E3%82%A4%E3%83%AD%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%97%E3%83%BB%EF%BC%93%E8%BB%B8%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%82%BB%E3%83%B3%E3%82%B5%E3%83%BC-%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/dp/B008BOPN40">ここ</a>から<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050のモジュールを購入しました。Amaozonさんです。</p><br>
+<p>購入すると、このようにピンヘッダが2種類付属していたので、曲がっている方をとりあえず半田付けします。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216151456.jpg" alt="f:id:pythonjacascript:20190216151456j:plain" title="f:id:pythonjacascript:20190216151456j:plain" class="hatena-fotolife" itemprop="image"></span></p><br>
+<p>半田付け後、裏面の様子です。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216151537.jpg" alt="f:id:pythonjacascript:20190216151537j:plain" title="f:id:pythonjacascript:20190216151537j:plain" class="hatena-fotolife" itemprop="image"></span></p><p></p>
+
+</div>
+<div class="section">
+    <h3 id="2回路図">2.回路図 <a href="#2回路図" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>以下のような回路を組んでください。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216153145.jpg" alt="f:id:pythonjacascript:20190216153145j:plain" title="f:id:pythonjacascript:20190216153145j:plain" class="hatena-fotolife" itemprop="image"></span></p><br>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>内部で線がつながっているので、このように繋いでもOKです。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216162859.jpg" alt="f:id:pythonjacascript:20190216162859j:plain" title="f:id:pythonjacascript:20190216162859j:plain" class="hatena-fotolife" itemprop="image"></span></p><br>
+<p>本当は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の入出力ピンが5V、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の入出力が3.3Vなので、電圧変換モジュールをはさんだ方がよいと思います。<br>
+上のように組んでも一応動きます。<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h3 id="3サンプルプログラム">3.サンプルプログラム <a href="#3サンプルプログラム" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>以下のプログラムを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>に書き込んでください。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;Wire.h&gt;</span>
+
+<span class="synComment">// MPU-6050のアドレス、レジスタ設定値</span>
+<span class="synPreProc">#define MPU6</span><span class="synComment">050_WHO_AM_I     0x75  // Read Only</span>
+<span class="synPreProc">#define MPU6</span><span class="synComment">050_PWR_MGMT_1   0x6B  // Read and Write</span>
+<span class="synPreProc">#define MPU_ADDRESS  </span><span class="synConstant">0x68</span>
+
+
+<span class="synComment">// デバイス初期化時に実行される</span>
+<span class="synType">void</span> setup() {
+  Wire.begin();
+
+  <span class="synComment">// PCとの通信を開始</span>
+  Serial.begin(<span class="synConstant">115200</span>); <span class="synComment">//115200bps</span>
+ 
+  <span class="synComment">// 初回の読み出し</span>
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(MPU6050_WHO_AM_I);  <span class="synComment">//MPU6050_PWR_MGMT_1</span>
+  Wire.write(<span class="synConstant">0x00</span>);
+  Wire.endTransmission();
+
+  <span class="synComment">// 動作モードの読み出し</span>
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(MPU6050_PWR_MGMT_1);  <span class="synComment">//MPU6050_PWR_MGMT_1レジスタの設定</span>
+  Wire.write(<span class="synConstant">0x00</span>);
+  Wire.endTransmission();
+  
+}
+
+
+<span class="synType">void</span> loop() {
+  Wire.beginTransmission(<span class="synConstant">0x68</span>);
+  Wire.write(<span class="synConstant">0x3B</span>);
+  Wire.endTransmission(<span class="synConstant">false</span>);
+  Wire.requestFrom(<span class="synConstant">0x68</span>, <span class="synConstant">14</span>, <span class="synConstant">true</span>);
+  <span class="synStatement">while</span> (Wire.available() &lt; <span class="synConstant">14</span>);
+  <span class="synType">int16_t</span> axRaw, ayRaw, azRaw, gxRaw, gyRaw, gzRaw, Temperature;
+
+  axRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  ayRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  azRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  Temperature = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  gxRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  gyRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  gzRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+
+  <span class="synComment">// 加速度値を分解能で割って加速度(G)に変換する</span>
+  <span class="synType">float</span> acc_x = axRaw / <span class="synConstant">16384.0</span>;  <span class="synComment">//FS_SEL_0 16,384 LSB / g</span>
+  <span class="synType">float</span> acc_y = ayRaw / <span class="synConstant">16384.0</span>;
+  <span class="synType">float</span> acc_z = azRaw / <span class="synConstant">16384.0</span>;
+
+  <span class="synComment">// 角速度値を分解能で割って角速度(degrees per sec)に変換する</span>
+  <span class="synType">float</span> gyro_x = gxRaw / <span class="synConstant">131.0</span>;<span class="synComment">//FS_SEL_0 131 LSB / (°/s)</span>
+  <span class="synType">float</span> gyro_y = gyRaw / <span class="synConstant">131.0</span>;
+  <span class="synType">float</span> gyro_z = gzRaw / <span class="synConstant">131.0</span>;
+
+  Serial.print(acc_x);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(acc_y);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(acc_z);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_x); Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_y); Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_z); Serial.println(<span class="synConstant">""</span>);
+}
+</pre><p>　<br>
+<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h3 id="4実行">4.実行 <a href="#4実行" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>プログラムを書き込んだら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>をUSBでPCに接続し、シリアルモニターを開きます。<br>
+通信速度は115200bpsに設定しておいてください。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216170934.jpg" alt="f:id:pythonjacascript:20190216170934j:plain" title="f:id:pythonjacascript:20190216170934j:plain" class="hatena-fotolife" itemprop="image"></span><br>
+電源が供給されると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の基盤に実装されたチップLEDが赤く光ります。</p><br>
+<p>下のようにデータが送られてきたら成功です。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216153627.jpg" alt="f:id:pythonjacascript:20190216153627j:plain" title="f:id:pythonjacascript:20190216153627j:plain" class="hatena-fotolife" itemprop="image"></span><br>
+　<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h3 id="5簡単に解説">5.簡単に解説 <a href="#5簡単に解説" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>まず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の通信には、I2Cという通信規格が用いられています。<br>
+I2C通信を行うには、「<span style="color: #ffff00"><b><a class="keyword" href="http://d.hatena.ne.jp/keyword/Wire">Wire</a>.h</b></span>」というライブラリを使用する必要があります。</p><p>では、このプログラムの動作を考えていきます。<br>
+<br>
+</p>
+
+<div class="section">
+    <h4 id="1MPU-6050のセットアップ">（1）<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050のセットアップ <a href="#1MPU-6050のセットアップ" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <p>まず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の初期設定を行います。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">Wire.begin();
+</pre><p>の命令で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050とのI2C通信を開始します。</p><br>
+<br>
+<p>次に、MPU6050のデ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>確認と設定を行います。</p>
+
+</div>
+<div class="section">
+    <h4 id="2-通信相手の確認">(2) 通信相手の確認 <a href="#2-通信相手の確認" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <pre class="code lang-cpp" data-lang="cpp" data-unlink="">  <span class="synComment">// 初回の読み出し</span>
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(MPU6050_WHO_AM_I);
+  Wire.write(<span class="synConstant">0x00</span>);
+  Wire.endTransmission();
+</pre><p>の4行は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の通信アドレスを確認しています。</p><br>
+<p>正確には、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の中の<span style="color: #ffff00"><b>「WHO_AM_I」<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a></b></span>を読み込んでいます。<br>
+「WHO_AM_I」<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>のメモリ番地は0x75なので、</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#define MPU6</span><span class="synComment">050_WHO_AM_I     0x75  // R</span>
+</pre><p>と書いているのです。</p><p>この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>はデ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>の識別情報を確認するために使用されます。 WHO_AM_Iの内容は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-60X0の7ビットI2Cアドレスの上位6ビットであり、デフォルト値は0x68です。</p><br>
+<p>WHO_AM_I<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>の中身です。（<span style="color: #ffff00"><b><a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050 Register Map</b></span>より）<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216155542.jpg" alt="f:id:pythonjacascript:20190216155542j:plain" title="f:id:pythonjacascript:20190216155542j:plain" class="hatena-fotolife" itemprop="image"></span></p><br>
+<p>この4行は通信相手の動作確認のために書いたので、削除しても動作します。<br>
+<br>
+<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h4 id="3-動作モードの読み出し">(3) 動作モードの読み出し <a href="#3-動作モードの読み出し" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#define MPU6</span><span class="synComment">050_PWR_MGMT_1   0x6B  // Read and Write</span>
+（中略）
+<span class="synComment">// 動作モードの読み出し</span>
+Wire.beginTransmission(MPU_ADDRESS);
+Wire.write(MPU6050_PWR_MGMT_1);  <span class="synComment">//PWR_MGMT_1レジスタの設定</span>
+Wire.write(<span class="synConstant">0x00</span>);
+Wire.endTransmission();
+</pre><p>この4行で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の動作モードを読み込みます。</p><p>0x6B とは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の「<span style="color: #ffff00"><b>PWR_<a class="keyword" href="http://d.hatena.ne.jp/keyword/MGMT">MGMT</a>_1<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>」</b></span>の番地を表しています。</p><p>PWR_<a class="keyword" href="http://d.hatena.ne.jp/keyword/MGMT">MGMT</a>_1<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>は、電力モードとクロックソースの設定を行うためのものです。</p><p>また、デ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>全体をリセットするためのビットと、温度センサーを無効にするためのビットもあります。</p><p>PWR_<a class="keyword" href="http://d.hatena.ne.jp/keyword/MGMT">MGMT</a>_1<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>の中身です。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216155526.jpg" alt="f:id:pythonjacascript:20190216155526j:plain" title="f:id:pythonjacascript:20190216155526j:plain" class="hatena-fotolife" itemprop="image"></span></p><br>
+<p>次の表に従ってクロックソースを選択できます。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216160430.jpg" alt="f:id:pythonjacascript:20190216160430j:plain" title="f:id:pythonjacascript:20190216160430j:plain" class="hatena-fotolife" itemprop="image"></span><br>
+　</p><p>この4行は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050の重要な設定が含まれているので、削除すると動かなくなります。<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h4 id="4-値を取得">(4) 値を取得 <a href="#4-値を取得" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <p>以下の部分で値を取得します。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">  Wire.beginTransmission(<span class="synConstant">0x68</span>);
+  Wire.write(<span class="synConstant">0x3B</span>);
+  Wire.endTransmission(<span class="synConstant">false</span>);
+  Wire.requestFrom(<span class="synConstant">0x68</span>, <span class="synConstant">14</span>, <span class="synConstant">true</span>);
+  <span class="synStatement">while</span> (Wire.available() &lt; <span class="synConstant">14</span>);
+  <span class="synType">int16_t</span> axRaw, ayRaw, azRaw, gxRaw, gyRaw, gzRaw, Temperature;
+
+  axRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+  ayRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+(以下も同じ形式なので略）
+</pre><p><span style="color: #ffff00"><b>int16_t </b></span>とは、符号付き整数を格納する16ビットの変数型です。<br>
+ここでは使用しませんが、<span style="color: #ffff00"><b>uint16_t </b></span>にすると、正の整数の16ビットになります。<br>
+<br>
+</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">  Wire.beginTransmission(<span class="synConstant">0x68</span>);
+  Wire.write(<span class="synConstant">0x3B</span>);
+  Wire.endTransmission(<span class="synConstant">false</span>);
+  Wire.requestFrom(<span class="synConstant">0x68</span>, <span class="synConstant">14</span>, <span class="synConstant">true</span>);
+</pre><p>は、「今からデータを送って下さい！！」という命令を送信しています。<br>
+因みに、0ｘ3Bは、ACCEL_XOUT_H（x軸加速度データの上位バイト）が格納されている<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>の番地です。</p><p>「ACCEL_XOUT_H<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>から14ビット分連続で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>の値を送信してください」という命令です。</p><p>ちなみに、ACCEL_XOUT_H<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>以降の値は以下の表のとおりです。<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216161555.jpg" alt="f:id:pythonjacascript:20190216161555j:plain" title="f:id:pythonjacascript:20190216161555j:plain" class="hatena-fotolife" itemprop="image"></span></p><p>加速度のほかにも、角速度、温度のデータを送っていることがわかります。</p><br>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/MPU">MPU</a>-6050から送られてくる加速度、角速度のデータは16ビットですが、I2C通信で一回で送ることのできる値は8ビットです。<br>
+そこで、一つのデータ（数値）あたり2回のI2C読み込み処理を行って、特定の変数に格納する作業が</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">  axRaw = Wire.read() &lt;&lt; <span class="synConstant">8</span> | Wire.read();
+</pre><p>の部分で行われています。<br>
+<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h4 id="5-値を補正">(5) 値を補正 <a href="#5-値を補正" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <p>送られてきた値を補正します。</p><p>というのも、PWR_<a class="keyword" href="http://d.hatena.ne.jp/keyword/MGMT">MGMT</a>_1でセンサー感度を設定したとき、それと同時に測定値の数値のScalability（数値の示す大きさ）を変更したことになります。そこで、下のように数値を乗除して正しい値にしているのです。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">  <span class="synComment">// 加速度値を分解能で割って加速度(G)に変換する</span>
+  <span class="synType">float</span> acc_x = axRaw / <span class="synConstant">16384.0</span>;  <span class="synComment">//FS_SEL_0 16,384 LSB / g</span>
+  <span class="synType">float</span> acc_y = ayRaw / <span class="synConstant">16384.0</span>;
+  <span class="synType">float</span> acc_z = azRaw / <span class="synConstant">16384.0</span>;
+
+  <span class="synComment">// 角速度値を分解能で割って角速度(degrees per sec)に変換する</span>
+  <span class="synType">float</span> gyro_x = gxRaw / <span class="synConstant">131.0</span>;
+  <span class="synType">float</span> gyro_y = gyRaw / <span class="synConstant">131.0</span>;
+  <span class="synType">float</span> gyro_z = gzRaw / <span class="synConstant">131.0</span>;
+</pre><p>これらの値は、データシートに基づいています。<br>
+（加速度の設定）<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216162202.jpg" alt="f:id:pythonjacascript:20190216162202j:plain" title="f:id:pythonjacascript:20190216162202j:plain" class="hatena-fotolife" itemprop="image"></span><br>
+上のプログラムの場合、「<span style="color: #ffff00"><b>AFS-SEL</b></span>」は0に設定されているため、16384で割っています。</p><p>（ジャイロの設定）<br>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/20190216162205.jpg" alt="f:id:pythonjacascript:20190216162205j:plain" title="f:id:pythonjacascript:20190216162205j:plain" class="hatena-fotolife" itemprop="image"></span><br>
+上のプログラムの場合、「<span style="color: #ffff00"><b>FS-SEL</b></span>」は0に設定されているため、131で割っています。<br>
+<br>
+<br>
+</p>
+
+</div>
+<div class="section">
+    <h4 id="6-送信">(6) 送信 <a href="#6-送信" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h4>
+    <p>あとは、補正した値をシリアル通信で送信するだけです。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">  Serial.print(acc_x);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(acc_y);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(acc_z);  Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_x); Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_y); Serial.print(<span class="synConstant">","</span>);
+  Serial.print(gyro_z); Serial.println(<span class="synConstant">""</span>);
+</pre><p>これらの命令達をループ関数内で繰り返し行うことで、連続して値を取得することができます。<br>
+<br>
+<br>
+</p>
+
+</div>
+</div>
+<div class="section">
+    <h3 id="参考文献">参考文献 <a href="#参考文献" class="heading-anchor-link" aria-label="この見出しへのリンク"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" class="blogicon">
+<path d="M318-120q-82 0-140-58t-58-140q0-40 15-76t43-64l134-133 56 56-134 134q-17 17-25.5 38.5T200-318q0 49 34.5 83.5T318-200q23 0 45-8.5t39-25.5l133-134 57 57-134 133q-28 28-64 43t-76 15Zm79-220-57-57 223-223 57 57-223 223Zm251-28-56-57 134-133q17-17 25-38t8-44q0-50-34-85t-84-35q-23 0-44.5 8.5T558-726L425-592l-57-56 134-134q28-28 64-43t76-15q82 0 139.5 58T839-641q0 39-14.5 75T782-502L648-368Z"></path>
+</svg></a></h3>
+    <p>MPU6050のデータシート：<br>
+<a href="https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf">https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf</a></p><br>
+<p>MPU6050の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>一覧：<br>
+<a href="https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf">https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf</a></p><p><a href="http://www.widesnow.com/entry/2015/09/06/211055">Raspberry Pi 2でI2C (MPU-6050の制御) 動作確認編 - wide_snow’s blog</a></p><p><a href="https://garchiving.com/how-to-use-mpu6050-in-arduino/">Arduinoから MPU6050の値を取得してみる – 自作のいろいろ</a></p><p><a href="https://qiita.com/key/items/8c6b684e6308cc5f451f">初めての電子工作: Arduinoで6軸センサを動かしてみる - Qiita</a></p><p><a href="https://playground.arduino.cc/Main/MPU-6050">Arduino Playground - MPU-6050</a></p>
+
+</div>
+    
+    
+
+
+
+
+    
+
+  
+</div>
+
+    
+  <footer class="entry-footer">
+    
+    <div class="entry-tags-wrapper">
+  <div class="entry-tags">  </div>
+</div>
+
+    <p class="entry-footer-section track-inview-by-gtm" data-gtm-track-json="{&quot;area&quot;: &quot;finish_reading&quot;}" data-gtm-vis-recent-on-screen350810_366="300715" data-gtm-vis-first-on-screen350810_366="300715" data-gtm-vis-total-visible-time350810_366="100" data-gtm-vis-has-fired350810_366="1" data-gtm-vis-first-on-screen350810_437="300722" data-gtm-vis-total-visible-time350810_437="100" data-gtm-vis-has-fired350810_437="1">
+  <span class="author vcard"><span class="fn" data-load-nickname="1" data-user-name="pythonjacascript"><span class="user-name-nickname">TNC</span> <span class="user-name-paren">(</span><span class="user-name-hatena-id">id:pythonjacascript</span><span class="user-name-paren">)</span></span></span>
+  <span class="entry-footer-time"><a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647"><time data-relative="" datetime="2019-02-16T07:26:47Z" title="2019-02-16T07:26:47Z" class="updated">7年前</time></a></span>
+  
+  
+  
+    <span class="
+      entry-footer-subscribe
+      
+    " data-test-blog-controlls-subscribe="">
+      <a href="https://blog.hatena.ne.jp/pythonjacascript/shizenkarasuzon.hatenablog.com/subscribe?utm_campaign=subscribe_blog&amp;utm_medium=button&amp;utm_source=blogs_entry_footer">
+        読者になる
+      </a>
+    </span>
+  
+</p>
+
+    
+  <div class="hatena-star-container" data-hatena-star-container="" data-hatena-star-url="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/162647" data-hatena-star-title="【Arduino】MPU6050とI2C通信して、加速度とジャイロのデータを取得" data-hatena-star-variant="profile-icon" data-hatena-star-profile-url-template="https://blog.hatena.ne.jp/{username}/"><span data-hatena-star=""></span></div>
+
+
+    
+<div class="social-buttons">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</div>
+
+    
+  
+  
+    
+    <div class="google-afc-image test-google-rectangle-ads">      
+      
+      <div id="google_afc_user_container_1" class="google-afc-user-container google_afc_blocklink2_5 google_afc_boder" data-test-unit="/4374287/blog_user"><iframe id="google_ads_iframe_/4374287/blog_user_1" srcdoc="&lt;body&gt;&lt;/body&gt;" style="position: absolute; width: 0px; height: 0px; left: 0px; right: 0px; z-index: -1; border: 0px;" width="0" height="0"></iframe></div>
+      
+        <a href="http://blog.hatena.ne.jp/guide/pro" class="open-pro-modal" data-guide-pro-modal-ad-url="https://hatena.blog/guide/pro/modal/ad">広告を非表示にする</a>
+      
+    </div>
+  
+  
+
+
+    <div class="customized-footer">
+      
+
+        
+
+          <div class="entry-footer-modules" id="entry-footer-secondary-modules">      
+<div class="hatena-module hatena-module-related-entries">
+      
+  <!-- Hatena-Epic-has-related-entries-with-elasticsearch:true -->
+  <div class="hatena-module-title">
+    関連記事
+  </div>
+  <div class="hatena-module-body">
+    <ul class="related-entries hatena-urllist urllist-with-thumbnails">
+  
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/09/164542">
+  <img alt="Raspberry Pi と Arduino でUSBシリアル通信（複数の値を送受信）（第二弾）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_010.jpg" class="urllist-image related-entries-image" title="Raspberry Pi と Arduino でUSBシリアル通信（複数の値を送受信）（第二弾）" width="100" height="100" loading="lazy">
+</a>
+            <div class="urllist-date-link related-entries-date-link">
+  <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/03/09" rel="nofollow">
+    <time datetime="2019-03-09T07:45:42Z" title="2019年3月9日">
+      2019-03-09
+    </time>
+  </a>
+</div>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/09/164542" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">Raspberry Pi と Arduino でUSBシリアル通信（複数の値を送受信）（第二弾）</a>
+
+
+
+
+          
+          
+
+                      <div class="urllist-entry-body related-entries-entry-body">前回、このような記事を書きました。 shizenkarasuzon.hatenabl…</div>
+      </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/171256">
+  <img alt="【Raspberry Pi】MPU-6050を使って姿勢角算出（C言語編）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_004.jpg" class="urllist-image related-entries-image" title="【Raspberry Pi】MPU-6050を使って姿勢角算出（C言語編）" width="100" height="100" loading="lazy">
+</a>
+            <div class="urllist-date-link related-entries-date-link">
+  <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/03/06" rel="nofollow">
+    <time datetime="2019-03-06T08:12:56Z" title="2019年3月6日">
+      2019-03-06
+    </time>
+  </a>
+</div>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/171256" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Raspberry Pi】MPU-6050を使って姿勢角算出（C言語編）</a>
+
+
+
+
+          
+          
+
+                      <div class="urllist-entry-body related-entries-entry-body">この記事の内容 ハードウェア プログラム 実行方法 実行結果 姿…</div>
+      </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/163906">
+  <img alt="【Raspberry Pi】MPU-6050を使って姿勢角算出（Python編）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_004.jpg" class="urllist-image related-entries-image" title="【Raspberry Pi】MPU-6050を使って姿勢角算出（Python編）" width="100" height="100" loading="lazy">
+</a>
+            <div class="urllist-date-link related-entries-date-link">
+  <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/03/06" rel="nofollow">
+    <time datetime="2019-03-06T07:39:06Z" title="2019年3月6日">
+      2019-03-06
+    </time>
+  </a>
+</div>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/163906" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Raspberry Pi】MPU-6050を使って姿勢角算出（Python編）</a>
+
+
+
+
+          
+          
+
+                      <div class="urllist-entry-body related-entries-entry-body">この記事の内容 ハードウェア プログラム 実行結果 姿勢角の算…</div>
+      </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/114248">
+  <img alt="【Raspberry Pi】MPU-6050から加速度とジャイロと気温データを取得（Python編）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_004.jpg" class="urllist-image related-entries-image" title="【Raspberry Pi】MPU-6050から加速度とジャイロと気温データを取得（Python編）" width="100" height="100" loading="lazy">
+</a>
+            <div class="urllist-date-link related-entries-date-link">
+  <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/03/06" rel="nofollow">
+    <time datetime="2019-03-06T02:42:48Z" title="2019年3月6日">
+      2019-03-06
+    </time>
+  </a>
+</div>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/06/114248" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Raspberry Pi】MPU-6050から加速度とジャイロと気温データを取得（Python編）</a>
+
+
+
+
+          
+          
+
+                      <div class="urllist-entry-body related-entries-entry-body">shizenkarasuzon.hatenablog.com↑の記事のRaspberry Piバージョ…</div>
+      </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/04/004048">
+  <img alt="Raspberry Pi と Arduino をUSBシリアル通信（第一弾）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_010.jpg" class="urllist-image related-entries-image" title="Raspberry Pi と Arduino をUSBシリアル通信（第一弾）" width="100" height="100" loading="lazy">
+</a>
+            <div class="urllist-date-link related-entries-date-link">
+  <a href="https://shizenkarasuzon.hatenablog.com/archive/2019/03/04" rel="nofollow">
+    <time datetime="2019-03-03T15:40:48Z" title="2019年3月4日">
+      2019-03-04
+    </time>
+  </a>
+</div>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/04/004048" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">Raspberry Pi と Arduino をUSBシリアル通信（第一弾）</a>
+
+
+
+
+          
+          
+
+                      <div class="urllist-entry-body related-entries-entry-body">今回は、Raspberry PiとArduinoのコンビです。 シリアル通信を…</div>
+      </div>
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+  </div>
+        
+  <div class="entry-footer-html">
+<script>
+var myFooter=document.getElementById("my-footer");
+var temp=myFooter.cloneNode(true);
+myFooter.parentNode.removeChild(myFooter);
+document.getElementsByClassName("entry-content")[0].appendChild(temp);
+</script></div>
+
+
+      
+    </div>
+    
+
+  </footer>
+
+  </div>
+</article>
+
+      
+      
+    
+  
+
+  
+  <!-- rakuten_ad_target_end -->
+  <!-- google_ad_section_end -->
+  
+  
+  
+  <div class="pager pager-permalink permalink">
+    
+      
+      <span class="pager-prev">
+        <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/163954" rel="prev">
+          <span class="pager-arrow">« </span>
+          【Processing】Arduinoで受信したMPU-6050…
+        </a>
+      </span>
+    
+    
+      
+      <span class="pager-next">
+        <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/09/085419" rel="next">
+          FFmpegのダウンロード・インストール方法
+          <span class="pager-arrow"> »</span>
+        </a>
+      </span>
+    
+  </div>
+
+
+  
+
+
+
+        </div>
+      </div>
+
+      <aside id="box1">
+  <div id="box1-inner">
+  </div>
+</aside>
+
+    </div><!-- #wrapper -->
+
+    
+<aside id="box2">
+  
+  <div id="box2-inner">
+    
+      <div class="hatena-module hatena-module-search-box">
+  <div class="hatena-module-title">
+    検索
+  </div>
+  <div class="hatena-module-body">
+    <form class="search-form" role="search" action="https://shizenkarasuzon.hatenablog.com/search" method="get">
+  <input type="text" name="q" class="search-module-input" placeholder="記事を検索" required="">
+  <input type="submit" value="検索" class="search-module-button">
+</form>
+
+  </div>
+</div>
+
+    
+      
+
+<div class="hatena-module hatena-module-category">
+  <div class="hatena-module-title">
+    カテゴリー
+  </div>
+  <div class="hatena-module-body">
+    <ul class="hatena-urllist">
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Android" class="category-Android">
+            Android (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino" class="category-Arduino">
+            Arduino (26)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/AviUtl" class="category-AviUtl">
+            AviUtl (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/CNC" class="category-CNC">
+            CNC (6)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/CSS" class="category-CSS">
+            CSS (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/C%E8%A8%80%E8%AA%9E" class="category-C言語">
+            C言語 (24)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/DesignSpark" class="category-DesignSpark">
+            DesignSpark (7)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/HTML" class="category-HTML">
+            HTML (6)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Linux" class="category-Linux">
+            Linux (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/M5Stack" class="category-M5Stack">
+            M5Stack (9)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Mission-E" class="category-Mission-E">
+            Mission-E (1)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Node.js" class="category-Node.js">
+            Node.js (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/OpenCV" class="category-OpenCV">
+            OpenCV (9)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/OpenGL" class="category-OpenGL">
+            OpenGL (12)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/PA" class="category-PA">
+            PA (7)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/PIC" class="category-PIC">
+            PIC (8)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/PID" class="category-PID">
+            PID (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Processing" class="category-Processing">
+            Processing (6)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Python" class="category-Python">
+            Python (48)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Python-pyaudio" class="category-Python-pyaudio">
+            Python-pyaudio (4)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Raspberry%20pi" class="category-Raspberry-pi">
+            Raspberry pi (10)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/React_Native" class="category-React_Native">
+            React_Native (1)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Verilog%20HDL" class="category-Verilog-HDL">
+            Verilog HDL (3)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/Win32%20API" class="category-Win32-API">
+            Win32 API (9)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/WIP" class="category-WIP">
+            WIP (1)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/xBee" class="category-xBee">
+            xBee (3)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E3%82%B7%E3%83%BC%E3%82%B1%E3%83%B3%E3%82%B9%E5%88%B6%E5%BE%A1" class="category-シーケンス制御">
+            シーケンス制御 (5)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E3%83%89%E3%83%AD%E3%83%BC%E3%83%B3%E8%87%AA%E4%BD%9C" class="category-ドローン自作">
+            ドローン自作 (10)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E3%83%91%E3%82%BD%E3%82%B3%E3%83%B3" class="category-パソコン">
+            パソコン (3)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E3%83%96%E3%83%AD%E3%82%B0%E9%81%8B%E5%96%B6" class="category-ブログ運営">
+            ブログ運営 (5)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E5%8B%95%E7%94%BB%E7%B7%A8%E9%9B%86" class="category-動画編集">
+            動画編集 (5)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E5%95%86%E5%93%81%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC" class="category-商品レビュー">
+            商品レビュー (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92" class="category-機械学習">
+            機械学習 (2)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E7%99%BB%E5%B1%B1" class="category-登山">
+            登山 (1)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E9%9B%BB%E5%AD%90%E5%B7%A5%E4%BD%9C" class="category-電子工作">
+            電子工作 (1)
+          </a>
+        </li>
+      
+        <li>
+          <a href="https://shizenkarasuzon.hatenablog.com/archive/category/%E9%AB%98%E6%A0%A1%E7%A7%91%E5%AD%A6" class="category-高校科学">
+            高校科学 (6)
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+    
+      
+<div class="hatena-module hatena-module-related-entries">
+  
+  <div class="hatena-module-title">
+    関連記事
+  </div>
+  <div class="hatena-module-body">
+    <ul class="related-entries hatena-urllist urllist-with-thumbnails">
+  
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2020/08/27/195418">
+  <img alt="【Arduino＆Pmod NAV】地磁気センサからヨー軸算出" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonjacas.jpg" class="urllist-image related-entries-image" title="【Arduino＆Pmod NAV】地磁気センサからヨー軸算出" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2020/08/27/195418" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Arduino＆Pmod NAV】地磁気センサからヨー軸算出</a>
+
+
+
+
+          
+                      <div class="urllist-categories related-entries-categories">    <a class="urllist-category-link related-entries-category-link category-Arduino" href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino">
+      Arduino
+    </a>
+</div>
+
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/181342">
+  <img alt="【Arduino 】MPU-6050を使って姿勢角を算出　（MadgwickFilterを使用）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_013.jpg" class="urllist-image related-entries-image" title="【Arduino 】MPU-6050を使って姿勢角を算出　（MadgwickFilterを使用）" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/181342" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Arduino 】MPU-6050を使って姿勢角を算出　（MadgwickFilterを使用）</a>
+
+
+
+
+          
+                      <div class="urllist-categories related-entries-categories">    <a class="urllist-category-link related-entries-category-link category-Arduino" href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino">
+      Arduino
+    </a>
+</div>
+
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/170706">
+  <img alt="【Arduino】MPU-6050を使って姿勢角を算出　（フィルターなし）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_005.jpg" class="urllist-image related-entries-image" title="【Arduino】MPU-6050を使って姿勢角を算出　（フィルターなし）" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/170706" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Arduino】MPU-6050を使って姿勢角を算出　（フィルターなし）</a>
+
+
+
+
+          
+                      <div class="urllist-categories related-entries-categories">    <a class="urllist-category-link related-entries-category-link category-Arduino" href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino">
+      Arduino
+    </a>
+</div>
+
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/163954">
+  <img alt="【Processing】Arduinoで受信したMPU-6050の測定値の可視化" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_009.jpg" class="urllist-image related-entries-image" title="【Processing】Arduinoで受信したMPU-6050の測定値の可視化" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/02/16/163954" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Processing】Arduinoで受信したMPU-6050の測定値の可視化</a>
+
+
+
+
+          
+                      <div class="urllist-categories related-entries-categories">    <a class="urllist-category-link related-entries-category-link category-Arduino" href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino">
+      Arduino
+    </a>
+</div>
+
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item related-entries-item">
+      <div class="urllist-item-inner related-entries-item-inner">
+        
+          
+                      <a class="urllist-image-link related-entries-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/01/27/080334">
+  <img alt="【Arduino】Arduinoでサーボモーターを制御する" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_002.jpg" class="urllist-image related-entries-image" title="【Arduino】Arduinoでサーボモーターを制御する" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/01/27/080334" class="urllist-title-link related-entries-title-link  urllist-title related-entries-title">【Arduino】Arduinoでサーボモーターを制御する</a>
+
+
+
+
+          
+                      <div class="urllist-categories related-entries-categories">    <a class="urllist-category-link related-entries-category-link category-Arduino" href="https://shizenkarasuzon.hatenablog.com/archive/category/Arduino">
+      Arduino
+    </a>
+</div>
+
+
+                </div>
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+    
+      
+<div class="hatena-module hatena-module-entries-access-ranking" data-count="10" data-source="access" data-enable_customize_format="0" data-display_entry_image_size_width="30" data-display_entry_image_size_height="30" data-display_entry_category="0" data-display_entry_image="1" data-display_entry_body_length="0" data-display_entry_date="0" data-display_entry_title_length="20" data-restrict_entry_title_length="0" data-display_bookmark_count="0">
+  <div class="hatena-module-title">
+    
+      注目記事
+    
+  </div>
+  <div class="hatena-module-body">
+    
+  <ul class="entries-access-ranking hatena-urllist urllist-with-thumbnails">
+  
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-1">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2021/04/10/003410">
+  <img alt="【Linux】Ubuntuの不要ファイルを徹底的に削除する" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonjacas.png" class="urllist-image entries-access-ranking-image" title="【Linux】Ubuntuの不要ファイルを徹底的に削除する" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2021/04/10/003410" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【Linux】Ubuntuの不要ファイルを徹底的に削除する</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-2">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/16/013551">
+  <img alt="【DesignSpark】基本的な使い方" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_011.jpg" class="urllist-image entries-access-ranking-image" title="【DesignSpark】基本的な使い方" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/16/013551" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【DesignSpark】基本的な使い方</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-3">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2020/06/25/150229">
+  <img alt="【C++】UDP通信を実装する（Windows/Linux環境）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_003.jpg" class="urllist-image entries-access-ranking-image" title="【C++】UDP通信を実装する（Windows/Linux環境）" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2020/06/25/150229" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【C++】UDP通信を実装する（Windows/Linux環境）</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-4">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2019/01/19/112922">
+  <img alt="【電子工作】1.5V→5Vの昇圧回路を作成" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_008.jpg" class="urllist-image entries-access-ranking-image" title="【電子工作】1.5V→5Vの昇圧回路を作成" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2019/01/19/112922" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【電子工作】1.5V→5Vの昇圧回路を作成</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-5">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2020/03/21/001327">
+  <img alt="【C++ Win32】ボタンを作成する（通常ボタン、ラジオボタン、チェックボックス etc.）" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_012.jpg" class="urllist-image entries-access-ranking-image" title="【C++ Win32】ボタンを作成する（通常ボタン、ラジオボタン、チェックボックス etc.）" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2020/03/21/001327" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【C++ Win32】ボタンを作成する（通常ボタン、ラジオボタン、チェックボックス etc.）</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-6">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2021/07/05/034351">
+  <img alt="Windows10のキャッシュを徹底的に削除する" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_007.jpg" class="urllist-image entries-access-ranking-image" title="Windows10のキャッシュを徹底的に削除する" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2021/07/05/034351" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">Windows10のキャッシュを徹底的に削除する</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-7">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/10/023130">
+  <img alt="【Design Spark Mechanical】NO.1 使い方編" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_011.jpg" class="urllist-image entries-access-ranking-image" title="【Design Spark Mechanical】NO.1 使い方編" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/10/023130" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【Design Spark Mechanical】NO.1 使い方編</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-8">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2018/09/05/051335">
+  <img alt="【Arduino IDE】オフラインのPCにライブラリやArduinoボードをインストールする方法" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_002.png" class="urllist-image entries-access-ranking-image" title="【Arduino IDE】オフラインのPCにライブラリやArduinoボードをインストールする方法" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/09/05/051335" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【Arduino IDE】オフラインのPCにライブラリやArduinoボードをインストールする方法</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-9">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/09/142624">
+  <img alt="【DesignSpark】DesignSparkMechanicalのダウンロード＆インストール" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_011.jpg" class="urllist-image entries-access-ranking-image" title="【DesignSpark】DesignSparkMechanicalのダウンロード＆インストール" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/12/09/142624" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【DesignSpark】DesignSparkMechanicalのダウンロード＆インストール</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+    
+    <li class="urllist-item entries-access-ranking-item rank-10">
+      <div class="urllist-item-inner entries-access-ranking-item-inner">
+        
+          
+                      <a class="urllist-image-link entries-access-ranking-image-link" href="https://shizenkarasuzon.hatenablog.com/entry/2018/09/09/115621">
+  <img alt="【REAPER】REAPER の使い方 NO.1" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn-ak.f.st-hatena.com_images_fotolife_p_pythonj_006.jpg" class="urllist-image entries-access-ranking-image" title="【REAPER】REAPER の使い方 NO.1" width="30" height="30" loading="lazy">
+</a>
+
+          <a href="https://shizenkarasuzon.hatenablog.com/entry/2018/09/09/115621" class="urllist-title-link entries-access-ranking-title-link  urllist-title entries-access-ranking-title">【REAPER】REAPER の使い方 NO.1</a>
+
+
+
+
+          
+          
+
+                </div>
+    </li>
+  
+</ul>
+</div>
+</div>
+
+    
+    
+  </div>
+</aside>
+
+
+  </div>
+</div>
+
+
+
+
+      
+
+      
+
+    </div>
+  </div>
+  
+<footer id="footer" data-brand="hatenablog">
+  <div id="footer-inner">
+    
+      <div style="display: block !important;" class="guest-footer js-guide-register test-blogs-register-guide" data-action="guide-register">
+  <div class="guest-footer-content">
+    <h3>はてなブログをはじめよう！</h3>
+    <p>pythonjacascriptさんは、はてなブログを使っています。あなたもはてなブログをはじめてみませんか？</p>
+    <div class="guest-footer-btn-container">
+      <div class="guest-footer-btn">
+        <a class="btn btn-register js-inherit-ga" href="https://blog.hatena.ne.jp/register?via=200227" target="_blank">はてなブログをはじめる（無料）</a>
+      </div>
+      <div class="guest-footer-btn">
+        <a href="https://hatena.blog/guide" target="_blank">はてなブログとは</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    <address class="footer-address">
+      <a href="https://shizenkarasuzon.hatenablog.com/">
+        <img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/https___cdn.user.blog.st-hatena.jpg" width="16" height="16" alt="とある科学の備忘録">
+        <span class="footer-address-name">とある科学の備忘録</span>
+      </a>
+    </address>
+    <p class="services">
+      Powered by <a href="https://hatena.blog/">Hatena Blog</a>
+      |
+        <a href="https://blog.hatena.ne.jp/-/abuse_report?target_url=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F02%2F16%2F162647" class="report-abuse-link test-report-abuse-link" target="_blank">ブログを報告する</a>
+    </p>
+  </div>
+</footer>
+
+
+  
+  <script async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/star.js"></script>
+  
+  
+  <script>
+    if (typeof window.Hatena === 'undefined') {
+      window.Hatena = {};
+    }
+    if (!Hatena.hasOwnProperty('Star')) {
+      Hatena.Star = {
+        VERSION: 2,
+      };
+    }
+  </script>
+
+
+  
+  
+
+<div class="quote-box" style="top: 10754px; left: 362.5px; display: none;">
+  <div class="tooltip-quote tooltip-quote-stock" style="display: block;">
+    <i class="blogicon-quote" title="引用をストック"></i>
+  </div>
+  <div class="tooltip-quote tooltip-quote-tweet js-tooltip-quote-tweet available">
+    <a class="js-tweet-quote" target="_blank" data-track-name="quote-tweet" data-track-once="" href="https://x.com/share?url=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F02%2F16%2F162647&amp;text=%E2%80%9C%2F%2F+%E5%8A%A0%E9%80%9F%E5%BA%A6%E5%80%A4%E3%82%92%E5%88%86%E8%A7%A3%E8%83%BD%E3%81%A7%E5%89%B2%E3%81%A3%E3%81%A6%E5%8A%A0%E9%80%9F%E5%BA%A6(G)%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B%0A++float+acc_x+%3D+axRaw+%2F+16384.0%3B++%2F%2FFS_SEL_0+16%2C384+LSB+%2F+g%0A++float+acc_y+%3D+ayRaw+%2F+16384.0%3B%0A++float+acc_z+%3D+azRaw+%2F+16384.0%3B%0A%0A++%2F%2F+%E8%A7%92%E9%80%9F%E5%BA%A6%E5%80%A4%E3%82%92%E5%88%86%E8%A7%A3%E8%83%BD%E3%81%A7%E5%89%B2%E3%81%A3%E3%81%A6%E8%A7%92%E9%80%9F%E5%BA%A6(degrees+per+sec)%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B%0A++float+gyro_x+%3D+gxRaw+%2F+131.0%3B%0A++float+gyro_y+%3D+gyRaw+%2F+131.0%3B%0A++float+gyro_z+%3D+gzRaw+%2F+131.0%3B%E2%80%9D">
+      <img src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/quote-x-icon.svg" title="引用して投稿する">
+    </a>
+  </div>
+</div>
+
+<div class="quote-stock-panel" id="quote-stock-message-box" style="position: absolute; z-index: 3000">
+  <div class="message-box" id="quote-stock-succeeded-message" style="display: none">
+    <p>引用をストックしました</p>
+    <button class="btn btn-primary" id="quote-stock-show-editor-button" data-track-name="curation-quote-edit-button">ストック一覧を見る</button>
+    <button class="btn quote-stock-close-message-button">閉じる</button>
+  </div>
+
+  <div class="message-box" id="quote-login-required-message" style="display: none">
+    <p>引用するにはまずログインしてください</p>
+    <button class="btn btn-primary" id="quote-login-button">ログイン</button>
+    <button class="btn quote-stock-close-message-button">閉じる</button>
+  </div>
+
+  <div class="error-box" id="quote-stock-failed-message" style="display: none">
+    <p>引用をストックできませんでした。再度お試しください</p>
+    <button class="btn quote-stock-close-message-button">閉じる</button>
+  </div>
+
+  <div class="error-box" id="unstockable-quote-message-box" style="display: none; position: absolute; z-index: 3000;">
+    <p>限定公開記事のため引用できません。</p>
+  </div>
+</div>
+
+<script type="x-underscore-template" id="js-requote-button-template">
+  <div class="requote-button js-requote-button">
+    <button class="requote-button-btn tipsy-top" title="引用する"><i class="blogicon-quote"></i></button>
+  </div>
+</script>
+
+
+
+  
+  <div id="hidden-subscribe-button" style="display: none;">
+    <div class="hatena-follow-button-box btn-subscribe js-hatena-follow-button-box">
+
+  <a href="#" class="hatena-follow-button js-hatena-follow-button unsubscribing">
+    <span class="subscribing">
+      <span class="foreground">読者です</span>
+      <span class="background">読者をやめる</span>
+    </span>
+    <span class="unsubscribing" data-track-name="profile-widget-subscribe-button" data-track-once="">
+      <span class="foreground">読者になる</span>
+      <span class="background">読者になる</span>
+    </span>
+  </a>
+  <div class="subscription-count-box js-subscription-count-box" style="display: block;">
+    <i></i>
+    <u></u>
+    <span class="subscription-count js-subscription-count">104</span>
+  </div>
+</div>
+
+  </div>
+
+  
+
+
+
+    
+
+
+  <script async="" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/widgets.js" charset="utf-8"></script>
+
+<script src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/bookmark_button.js" charset="utf-8" async="async"></script>
+
+
+<script type="text/javascript" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/jquery.min.js"></script>
+
+
+
+
+
+
+
+<script src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/texts-ja.js"></script>
+
+
+
+  <script id="vendors-js" data-env="production" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/vendors.js" crossorigin="anonymous"></script>
+
+<script id="hatenablog-js" data-env="production" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/hatenablog.js" crossorigin="anonymous" data-page-id="entry"></script>
+
+
+  <script>Hatena.Diary.GlobalHeader.init()</script>
+
+
+
+
+
+
+
+    
+  <script id="valve-dmp" data-service="blog" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/dmp.js" data-test-id="dmpjs" async=""></script>
+
+
+    
+
+
+
+
+
+  
+
+
+<div id="cboxOverlay" style="display: none;"></div><div id="colorbox" class="" role="dialog" tabindex="-1" style="display: none;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxTitle" style="float: left;"></div><div id="cboxCurrent" style="float: left;"></div><button type="button" id="cboxPrevious"></button><button type="button" id="cboxNext"></button><button type="button" id="cboxSlideshow"></button><div id="cboxLoadingOverlay" style="float: left;"></div><div id="cboxLoadingGraphic" style="float: left;"></div></div><div id="cboxMiddleRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none; max-width: none;"></div></div><iframe marginwidth="0" marginheight="0" scrolling="no" frameborder="0" id="1917c50a57139f8" width="0" height="0" src="%E3%80%90Arduino%E3%80%91MPU6050%E3%81%A8I2C%E9%80%9A%E4%BF%A1%E3%81%97%E3%81%A6%E3%80%81%E5%8A%A0%E9%80%9F%E5%BA%A6%E3%81%A8%E3%82%B7%E3%82%99%E3%83%A3%E3%82%A4%E3%83%AD%E3%81%AE%E3%83%86%E3%82%99%E3%83%BC%E3%82%BF%E3%82%92%E5%8F%96%E5%BE%97%20-%20%E3%81%A8%E3%81%82%E3%82%8B%E7%A7%91%E5%AD%A6%E3%81%AE%E5%82%99%E5%BF%98%E9%8C%B2_files/a_009.html" style="display: none; height: 0px; width: 0px; border: 0px;" name="__pb_locator__"></iframe></body><iframe sandbox="allow-scripts allow-same-origin" id="216e64e2943ee8" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://ads.pubmatic.com/AdServer/js/user_sync.html?kdntuid=1&amp;p=157377">
+    </iframe><iframe sandbox="allow-scripts allow-same-origin" id="36ba18cb09428d" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://acdn.adnxs.com/dmp/async_usersync.html">
+    </iframe><iframe sandbox="allow-scripts allow-same-origin" id="47e4c22681a90e" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://gum.criteo.com/syncframe?origin=criteoPrebidAdapter&amp;topUrl=shizenkarasuzon.hatenablog.com&amp;gpp=#{%22cw%22:true,%22lsw%22:true,%22origin%22:%22criteoPrebidAdapter%22,%22requestId%22:%220.07993750332053529%22,%22tld%22:%22shizenkarasuzon.hatenablog.com%22,%22topUrl%22:%22shizenkarasuzon.hatenablog.com%22,%22version%22:%2210_23_0%22}">
+    </iframe><iframe sandbox="allow-scripts allow-same-origin" id="5bdd66b6b2a6358" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://u.openx.net/w/1.0/pd?ph=2d1251ae-7f3a-47cf-bd2a-2f288854a0ba">
+    </iframe><iframe sandbox="allow-scripts allow-same-origin" id="6737a215cc3e4a" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://eus.rubiconproject.com/usync.html">
+    </iframe><iframe sandbox="allow-scripts allow-same-origin" id="7fbb7c393e495f" frameborder="0" allowtransparency="true" marginheight="0" marginwidth="0" width="0" hspace="0" vspace="0" height="0" style="height:0px;width:0px;display:none;" scrolling="no" src="https://y.one.impact-ad.jp/push_sync">
+    </iframe></html>
