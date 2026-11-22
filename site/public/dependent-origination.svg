@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">因果連鎖と相互依存ネットワーク</title>
+  <desc id="description">左にAからB、BからCへの連鎖。右に四つの条件を結ぶ分岐と循環。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0L9 4.5L0 9Z" fill="#abe8df"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="630" fill="#102239"/>
+  <g fill="#172f4b">
+    <rect x="60" y="167" width="466" height="390" rx="24"/>
+    <rect x="550" y="167" width="590" height="390" rx="24"/>
+  </g>
+  <g font-family="Hiragino Sans, Noto Sans CJK JP, sans-serif" fill="#fff" font-weight="bold">
+    <text x="60" y="105" font-size="49">仏教の縁起は数学的に証明できるか</text>
+    <text x="94" y="232" font-size="34">因果連鎖</text>
+    <text x="587" y="232" font-size="34">相互依存ネットワーク</text>
+  </g>
+  <g stroke="#abe8df" stroke-width="4" fill="none" marker-end="url(#arrow)">
+    <path d="M182 380H253"/><path d="M332 380H403"/>
+    <path d="M757 330L928 330"/><path d="M757 470H928"/>
+    <path d="M954 364L954 435"/><path d="M923 457L754 348"/>
+    <path d="M724 363V435"/>
+  </g>
+  <g fill="#28576a" stroke="#abe8df" stroke-width="2">
+    <circle cx="146" cy="380" r="35"/><circle cx="296" cy="380" r="35"/><circle cx="446" cy="380" r="35"/>
+    <circle cx="724" cy="330" r="31"/><circle cx="964" cy="330" r="31"/><circle cx="724" cy="470" r="31"/><circle cx="964" cy="470" r="31"/>
+  </g>
+  <g fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">
+    <text x="146" y="388">A</text><text x="296" y="388">B</text><text x="446" y="388">C</text>
+    <text x="724" y="338">A</text><text x="964" y="338">B</text><text x="724" y="478">C</text><text x="964" y="478">D</text>
+  </g>
+</svg>
