@@ -1,0 +1,13 @@
+{
+  "name": "yamalabo-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vitepress build site",
+    "dev": "vitepress dev site"
+  },
+  "devDependencies": {
+    "markdown-it-mathjax3": "4.3.2",
+    "vitepress": "1.6.4"
+  }
+}
